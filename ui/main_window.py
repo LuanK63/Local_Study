@@ -182,18 +182,24 @@ class MainWindow(QMainWindow):
         first_subject_id = next(iter(self.subjects))
         first_subject = self.subjects[first_subject_id]
 
+        def safe_tab(tab_class, name):
+            try:
+                return tab_class(first_subject_id, first_subject)
+            except Exception as e:
+                return ContentPlaceholder(name, "Tính năng đang ở nhánh khác")
+
         # Build placeholder pages
         self.pages: dict[str, QWidget] = {
-            "explain":   ExplainTab(first_subject_id, first_subject),
-            "document":  DocumentTab(first_subject_id, first_subject),
-            "visualize": VisualizeTab(first_subject_id, first_subject),
-            "code":      CodeTab(first_subject_id, first_subject),
-            "sandbox":   SandboxTab(first_subject_id, first_subject),
-            "quiz":      QuizTab(first_subject_id, first_subject),
-            "practice":  PracticeTab(first_subject_id, first_subject),
-            "flashcard": FlashcardTab(first_subject_id, first_subject),
-            "path":      PathTab(first_subject_id, first_subject),
-            "weakness":  WeaknessTab(first_subject_id, first_subject),
+            "explain":   safe_tab(ExplainTab, "Giải thích"),
+            "document":  safe_tab(DocumentTab, "Tài liệu"),
+            "visualize": safe_tab(VisualizeTab, "Visualizer"),
+            "code":      safe_tab(CodeTab, "Code"),
+            "sandbox":   safe_tab(SandboxTab, "Sandbox"),
+            "quiz":      safe_tab(QuizTab, "Quiz"),
+            "practice":  safe_tab(PracticeTab, "Luyện tập"),
+            "flashcard": safe_tab(FlashcardTab, "Flashcard"),
+            "path":      safe_tab(PathTab, "Lộ trình"),
+            "weakness":  safe_tab(WeaknessTab, "Điểm yếu"),
         }
         for page in self.pages.values():
             self.stack.addWidget(page)
@@ -220,7 +226,10 @@ class MainWindow(QMainWindow):
         # Update subject in all pages that support it
         for page in self.pages.values():
             if hasattr(page, "set_subject"):
-                page.set_subject(subject_id, subject)
+                try:
+                    page.set_subject(subject_id, subject)
+                except Exception:
+                    pass
 
         # Connect nav buttons → stack pages
         for page_id, btn in self.sidebar.nav_buttons.items():
