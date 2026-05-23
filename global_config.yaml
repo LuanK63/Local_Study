@@ -10,8 +10,8 @@ embedding:
   base_url: "http://localhost:11434"
 
 retrieval:
-  chunk_size: 512
-  chunk_overlap: 64
+  chunk_size: 1000    # ký tự (characters) — dùng cho RecursiveCharacterTextSplitter
+  chunk_overlap: 150  # ký tự gối nhau giữa các chunk
   top_k: 5
   bm25_weight: 0.4
   vector_weight: 0.6

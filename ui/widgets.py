@@ -349,7 +349,8 @@ class SourcesPanel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("SourcesPanel")
-        self.setFixedWidth(280)
+        self.setMinimumWidth(220)
+        self.setMaximumWidth(600)
         self.setStyleSheet("""
             QWidget#SourcesPanel {
                 background: #181825;
