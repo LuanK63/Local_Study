@@ -15,6 +15,13 @@ retrieval:
   top_k: 5
   bm25_weight: 0.4
   vector_weight: 0.6
+  # ── HyDE (Hypothetical Document Embeddings) ────────────────────
+  hyde: True                 # bật/tắt HyDE vector search
+  
+  # ── Multi-Query Expansion ─────────────────────────────────────
+  query_expansion: True      # bật/tắt multi-query expansion
+  query_variants: 2          # số lượng câu hỏi biến thể sinh thêm
+  retrieval_multiplier: 2    # hệ số nhân số lượng chunk fetch trước khi fusion (fetch_k = top_k * multiplier)
 
 sandbox:
   timeout_seconds: 5

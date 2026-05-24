@@ -124,32 +124,85 @@ def _rrf_score(rank: int, k: int = 60) -> float:
     return 1.0 / (k + rank + 1)
 
 
+def _chunk_key(hit: dict) -> str:
+    """Stable dedup key for a chunk."""
+    return f"{hit['file_path']}:{hit['page_num']}:{hit['text'][:40]}"
+
+
 def hybrid_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     """
-    Combine BM25 + Vector results using Reciprocal Rank Fusion.
-    Returns top_k chunks sorted by fused score.
+    Multi-query + HyDE hybrid search:
+      1. HyDE: sinh câu trả lời giả → embed → vector search (tìm trang 4!)
+      2. Multi-query: expand query → BM25 + vector mỗi variant
+      3. Merge tất cả với RRF → top_k tốt nhất
+
+    Tại sao cần cả 2?
+      - HyDE: tìm chunk định nghĩa chính xác (cao về semantic)
+      - Multi-query: tìm chunk liên quan gián tiếp (cao về keyword)
     """
-    cfg = get_config()["retrieval"]
-    bm25_w = cfg["bm25_weight"]
-    vec_w  = cfg["vector_weight"]
+    from core.retrieval.query_expander import expand_query, generate_hyde
+    from core.document_processor.embedder import embed_text
 
-    vec_results = vector_search(query, subject_id, top_k=top_k * 2)
-    bm25_results = bm25_search(query, subject_id, top_k=top_k * 2)
+    cfg     = get_config()["retrieval"]
+    bm25_w  = cfg["bm25_weight"]
+    vec_w   = cfg["vector_weight"]
+    fetch_k = top_k * cfg.get("retrieval_multiplier", 2)
 
-    # Build score map: key = (file_path, page_num, text[:50])
     scores: dict[str, dict] = {}
 
-    for rank, hit in enumerate(vec_results):
-        key = f"{hit['file_path']}:{hit['page_num']}:{hit['text'][:40]}"
-        if key not in scores:
-            scores[key] = {**hit, "fused": 0.0}
-        scores[key]["fused"] += vec_w * _rrf_score(rank)
+    # ── Step 1: HyDE vector search ───────────────────────────────────────────
+    # Tạo câu trả lời giả → embed → vector search với embedding đó
+    if cfg.get("hyde", True):
+        hyde_text = generate_hyde(query)
+        if hyde_text:
+            try:
+                hyde_vec = embed_text(hyde_text)   # embed hypothetical answer
+                from core.retrieval.vector_search import _get_collection
+                col = _get_collection(subject_id)
+                results = col.query(
+                    query_embeddings=[hyde_vec],
+                    n_results=min(fetch_k, col.count() or 1),
+                    include=["documents", "metadatas", "distances"],
+                )
+                for rank, (doc, meta, dist) in enumerate(zip(
+                    results["documents"][0],
+                    results["metadatas"][0],
+                    results["distances"][0],
+                )):
+                    hit = {
+                        "text":      doc,
+                        "file_path": meta.get("file_path", ""),
+                        "page_num":  meta.get("page_num", ""),
+                        "doc_name":  meta.get("doc_name", ""),
+                        "score":     1.0 - dist,
+                    }
+                    key = _chunk_key(hit)
+                    if key not in scores:
+                        scores[key] = {**hit, "fused": 0.0}
+                    scores[key]["fused"] += vec_w * _rrf_score(rank)
+            except Exception:
+                # Fallback silently if HyDE fails
+                pass
 
-    for rank, hit in enumerate(bm25_results):
-        key = f"{hit['file_path']}:{hit['page_num']}:{hit['text'][:40]}"
-        if key not in scores:
-            scores[key] = {**hit, "fused": 0.0}
-        scores[key]["fused"] += bm25_w * _rrf_score(rank)
+    # ── Step 2 & 3: Multi-query search + RRF accumulation ───────────────────
+    queries = expand_query(query)   # [original, var1, var2, ...]
 
+    for q in queries:
+        vec_results  = vector_search(q, subject_id, top_k=fetch_k)
+        bm25_results = bm25_search(q, subject_id, top_k=fetch_k)
+
+        for rank, hit in enumerate(vec_results):
+            key = _chunk_key(hit)
+            if key not in scores:
+                scores[key] = {**hit, "fused": 0.0}
+            scores[key]["fused"] += vec_w * _rrf_score(rank)
+
+        for rank, hit in enumerate(bm25_results):
+            key = _chunk_key(hit)
+            if key not in scores:
+                scores[key] = {**hit, "fused": 0.0}
+            scores[key]["fused"] += bm25_w * _rrf_score(rank)
+
+    # ── Step 4: Sort & return top_k ─────────────────────────────────────────
     ranked = sorted(scores.values(), key=lambda x: x["fused"], reverse=True)
     return ranked[:top_k]
