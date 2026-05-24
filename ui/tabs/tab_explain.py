@@ -33,6 +33,7 @@ class ExplainTab(QWidget):
         self._thread = None
         self._worker = None
         self._current_chunks: list[dict] = []   # retrieved chunks for last query
+        self._current_sources: list[dict] = []  # parsed sources from last answer
         self._chat_bubbles: list[ChatBubble] = []
         self._citation_popup = CitationPopup(self)
         self._citation_popup.hide()
@@ -327,35 +328,58 @@ class ExplainTab(QWidget):
         from core.retrieval.hybrid_retriever import hybrid_search
         self._current_chunks = hybrid_search(query, self.subject_id, top_k=top_k)
 
-        # Add assistant bubble (empty, will be filled by stream)
+        # Add assistant bubble (placeholder while LLM thinks)
         asst_bubble = self._add_bubble("assistant")
-        asst_bubble.begin_streaming()           # ← prepare for incoming tokens
+        asst_bubble.set_text("⏳ Đang suy nghĩ...")
         self._current_assistant_bubble = asst_bubble
         self._scroll_to_bottom()
 
-        # Stream answer
+        # Non-streaming structured call → get StructuredAnswer dict
         self.status.set_loading("Đang tạo câu trả lời...")
-        hint = self.subject_cfg.prompt_hints.get("explain", "")
+        hint   = self.subject_cfg.prompt_hints.get("explain", "")
         chunks = self._current_chunks
 
-        def _stream():
+        def _generate():
             from core.pipeline.answer_generator import generate_with_context
-            return generate_with_context(query, chunks, system_hint=hint, stream=True)
+            return generate_with_context(
+                query, chunks, system_hint=hint,
+                stream=False, structured=True,
+            )
 
-        self._worker = StreamWorker(_stream)
-        self._worker.token.connect(asst_bubble.append_token)
-        self._worker.token.connect(lambda _: self._scroll_to_bottom())
-        self._worker.error.connect(lambda e: self.status.set_error(e))
+        from ui.worker import LLMWorker
+        self._worker = LLMWorker(_generate)
+        self._worker.result.connect(self._on_answer_ready)
+        self._worker.error.connect(lambda e: (
+            self.status.set_error(e),
+            asst_bubble.set_text(f"❌ Lỗi: {e}"),
+        ))
         self._worker.finished.connect(self._on_done)
         self._thread = run_in_thread(self._worker)
+
+    @pyqtSlot(object)
+    def _on_answer_ready(self, result):
+        """Nhận StructuredAnswer dict, format và hiển thị vào bubble."""
+        if self._current_assistant_bubble is None:
+            return
+
+        answer_text: str  = result.get("answer", "")
+        sources: list     = result.get("sources", [])
+        self._current_sources = sources
+
+        lines = [answer_text]
+        if sources:
+            lines.append("")
+            lines.append("**Nguồn:**")
+            for s in sources:
+                lines.append(f"[{s['index']}] {s['doc_name']} — Trang {s['page_num']}")
+
+        self._current_assistant_bubble.set_text("\n".join(lines))
+        self._scroll_to_bottom()
 
     def _on_done(self):
         self.ask_btn.setEnabled(True)
         self.query_input.setEnabled(True)
         self.query_input.setFocus()
-        # Re-render plain text → HTML with clickable [N] citations
-        if self._current_assistant_bubble:
-            self._current_assistant_bubble.finalize()  # ← key fix
         self.status.set_done(
             f"Tìm thấy {len(self._current_chunks)} đoạn liên quan"
         )
@@ -364,10 +388,26 @@ class ExplainTab(QWidget):
     # ── Citation clicked ──────────────────────────────────────────────────────
     @pyqtSlot(int)
     def _on_citation_clicked(self, num: int):
-        idx = num - 1
-        if 0 <= idx < len(self._current_chunks):
-            chunk = self._current_chunks[idx]
-            # Position popup relative to window
+        # Ưu tiên dùng _current_sources để lấy file_path chính xác
+        chunk: dict | None = None
+        for s in self._current_sources:
+            if s.get("index") == num:
+                # Tìm chunk tương ứng trong _current_chunks theo file_path + page_num
+                fp   = s.get("file_path", "")
+                page = s.get("page_num")
+                for c in self._current_chunks:
+                    if str(c.get("page_num")) == str(page) and (
+                        not fp or c.get("file_path") == fp
+                    ):
+                        chunk = c
+                        break
+                break
+        # Fallback: index trực tiếp vào _current_chunks
+        if chunk is None:
+            idx = num - 1
+            if 0 <= idx < len(self._current_chunks):
+                chunk = self._current_chunks[idx]
+        if chunk:
             pos = self.mapToGlobal(QPoint(
                 self.width() // 2 - 200,
                 self.height() // 2 - 150,
@@ -381,7 +421,8 @@ class ExplainTab(QWidget):
             self._chat_vbox.removeWidget(bubble)
             bubble.deleteLater()
         self._chat_bubbles.clear()
-        self._current_chunks = []
+        self._current_chunks  = []
+        self._current_sources = []
         self._current_assistant_bubble = None
         self._citation_popup.hide()
         self.status.clear_status()
