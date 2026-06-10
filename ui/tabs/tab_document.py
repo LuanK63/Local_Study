@@ -37,35 +37,40 @@ class DocumentTab(QWidget):
             "AI sẽ đọc, phân tích và học thuộc tài liệu này để trả lời các câu hỏi của bạn."
         )
         desc.setWordWrap(True)
-        desc.setFont(QFont("Segoe UI", 10))
+        desc.setFont(QFont("Inter", 10))
         layout.addWidget(desc)
 
         # Upload Box
         self.box = QFrame()
         self.box.setStyleSheet(
-            "QFrame { background:#1e1e2e; border:2px dashed #45475a; border-radius:12px; }"
+            "QFrame { background:#14152a; border:2px dashed #3a3c52; border-radius:14px; }"
         )
         self.box.setMinimumHeight(200)
         box_layout = QVBoxLayout(self.box)
         box_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.file_label = QLabel("Chưa chọn file nào")
-        self.file_label.setFont(QFont("Segoe UI", 11))
-        self.file_label.setStyleSheet("color:#a6adc8; border: none;")
+        self.file_label.setFont(QFont("Inter", 11))
+        self.file_label.setStyleSheet("color:#8a8daa; border: none;")
         self.file_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         box_layout.addWidget(self.file_label)
 
         btn_row = QHBoxLayout()
         self.select_btn = QPushButton("📂 Chọn File")
         self.select_btn.setFixedSize(130, 40)
-        self.select_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.select_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.select_btn.clicked.connect(self._select_file)
         btn_row.addWidget(self.select_btn)
 
         self.upload_btn = QPushButton("🚀 Tải Lên & Xử Lý")
         self.upload_btn.setFixedSize(160, 40)
-        self.upload_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
-        self.upload_btn.setStyleSheet("background:#89b4fa; color:#1e1e2e;")
+        self.upload_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
+        self.upload_btn.setStyleSheet(
+            "QPushButton{background:#89b4fa; color:#1a1b2e; border-radius:8px;}"
+            "QPushButton:hover{background:#9dc2fc;}"
+            "QPushButton:pressed{background:#7aa8f0;}"
+            "QPushButton:disabled{background:#3a3c52; color:#5a5d78;}"
+        )
         self.upload_btn.clicked.connect(self._upload_file)
         self.upload_btn.setEnabled(False)
         btn_row.addWidget(self.upload_btn)
@@ -92,7 +97,7 @@ class DocumentTab(QWidget):
         if file_path:
             self._selected_file = file_path
             self.file_label.setText(f"📄 {Path(file_path).name}")
-            self.file_label.setStyleSheet("color:#a6e3a1; border: none; font-weight: bold;")
+            self.file_label.setStyleSheet("color:#a6e3a1; border: none; font-weight: bold; background:transparent;")
             self.upload_btn.setEnabled(True)
 
     def _upload_file(self):
@@ -132,7 +137,7 @@ class DocumentTab(QWidget):
         self.status.set_done(f"Thành công! Đã trích xuất và học được {chunks} đoạn kiến thức mới.")
         self._selected_file = None
         self.file_label.setText("Chưa chọn file nào")
-        self.file_label.setStyleSheet("color:#a6adc8; border: none;")
+        self.file_label.setStyleSheet("color:#8a8daa; border: none;")
         
     def _on_error(self, err: str):
         self.status.set_error(f"Lỗi: {err}")

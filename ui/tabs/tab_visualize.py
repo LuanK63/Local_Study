@@ -63,20 +63,20 @@ class ArrayVisualWidget(QWidget):
             elif i in self._sorted:
                 bg = QColor("#a6e3a1")   # green — sorted
             else:
-                bg = QColor("#313244")   # default
+                bg = QColor("#2a2b3d")   # default
 
             painter.setBrush(QBrush(bg))
-            painter.setPen(QPen(QColor("#45475a"), 1))
+            painter.setPen(QPen(QColor("#3a3c52"), 1))
             painter.drawRoundedRect(x + 2, y, cell_w - 4, cell_h, 6, 6)
 
             # Draw value
-            painter.setPen(QPen(QColor("#1e1e2e") if i in (self._comparing + self._highlight + self._sorted) else QColor("#cdd6f4")))
+            painter.setPen(QPen(QColor("#1a1b2e") if i in (self._comparing + self._highlight + self._sorted) else QColor("#cdd6f4")))
             painter.setFont(QFont("Consolas", 13, QFont.Weight.Bold))
             painter.drawText(x + 2, y, cell_w - 4, cell_h,
                              Qt.AlignmentFlag.AlignCenter, str(val))
 
             # Draw index
-            painter.setPen(QPen(QColor("#6c7086")))
+            painter.setPen(QPen(QColor("#5a5d78")))
             painter.setFont(QFont("Consolas", 9))
             painter.drawText(x + 2, y + cell_h + 2, cell_w - 4, 16,
                              Qt.AlignmentFlag.AlignCenter, f"[{i}]")
@@ -122,7 +122,7 @@ class VisualizeTab(QWidget):
         self.input_field.setFixedHeight(36)
         self.input_field.setMinimumWidth(200)
         self.input_field.setStyleSheet(
-            "background:#313244; border:1px solid #45475a; border-radius:6px; "
+            "background:#2a2b3d; border:1px solid #3a3c52; border-radius:6px; "
             "color:#cdd6f4; padding:0 10px;"
         )
         cfg.addWidget(self.input_field)
@@ -130,9 +130,9 @@ class VisualizeTab(QWidget):
         cfg.addStretch()
         self.gen_btn = QPushButton("▶ Tạo Simulation")
         self.gen_btn.setFixedSize(150, 36)
-        self.gen_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.setStyleSheet(
-            "background:#cba6f7; color:#1e1e2e; border-radius:6px; font-weight:bold;"
+            "background:#cba6f7; color:#1a1b2e; border-radius:6px; font-weight:bold;"
         )
         self.gen_btn.clicked.connect(self._generate)
         cfg.addWidget(self.gen_btn)
@@ -148,37 +148,37 @@ class VisualizeTab(QWidget):
 
         # Complexity banner
         self.complexity_label = QLabel("")
-        self.complexity_label.setFont(QFont("Segoe UI", 10))
+        self.complexity_label.setFont(QFont("Inter", 10))
         self.complexity_label.setStyleSheet(
-            "background:#313244; border-radius:6px; padding:6px 12px; color:#cba6f7;"
+            "background:#2a2b3d; border-radius:6px; padding:6px 12px; color:#cba6f7;"
         )
         content_layout.addWidget(self.complexity_label)
 
         # Array visualizer
         self.array_widget = ArrayVisualWidget()
         self.array_widget.setStyleSheet(
-            "background:#1e1e2e; border:1px solid #313244; border-radius:8px;"
+            "background:#1a1b2e; border:1px solid #2a2b3d; border-radius:8px;"
         )
         content_layout.addWidget(self.array_widget)
 
         # Step info
         step_info_row = QHBoxLayout()
         self.step_label = QLabel("Bước 0 / 0")
-        self.step_label.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.step_label.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.step_label.setStyleSheet("color:#cba6f7;")
         step_info_row.addWidget(self.step_label)
         step_info_row.addStretch()
         content_layout.addLayout(step_info_row)
 
         self.step_title = QLabel("")
-        self.step_title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        self.step_title.setFont(QFont("Inter", 12, QFont.Weight.Bold))
         content_layout.addWidget(self.step_title)
 
         self.step_desc = QLabel("")
-        self.step_desc.setFont(QFont("Segoe UI", 10))
+        self.step_desc.setFont(QFont("Inter", 10))
         self.step_desc.setWordWrap(True)
         self.step_desc.setStyleSheet(
-            "background:#313244; border-radius:6px; padding:10px; color:#cdd6f4;"
+            "background:#2a2b3d; border-radius:6px; padding:10px; color:#cdd6f4;"
         )
         content_layout.addWidget(self.step_desc)
 
@@ -188,10 +188,10 @@ class VisualizeTab(QWidget):
             ("#f38ba8", "Đang so sánh"),
             ("#f9e2af", "Đang chú ý"),
             ("#a6e3a1", "Đã sắp xếp / Hoàn thành"),
-            ("#313244", "Chưa xử lý"),
+            ("#2a2b3d", "Chưa xử lý"),
         ]:
             dot = QLabel(f"● {text}")
-            dot.setFont(QFont("Segoe UI", 9))
+            dot.setFont(QFont("Inter", 9))
             dot.setStyleSheet(f"color:{color};")
             legend.addWidget(dot)
         legend.addStretch()
@@ -227,8 +227,8 @@ class VisualizeTab(QWidget):
         controls.addStretch()
 
         self.step_counter = QLabel("0 / 0")
-        self.step_counter.setFont(QFont("Segoe UI", 10))
-        self.step_counter.setStyleSheet("color:#6c7086;")
+        self.step_counter.setFont(QFont("Inter", 10))
+        self.step_counter.setStyleSheet("color:#5a5d78;")
         controls.addWidget(self.step_counter)
 
         content_layout.addLayout(controls)
@@ -249,7 +249,7 @@ class VisualizeTab(QWidget):
             item = model.item(sep_item)
             if item:
                 item.setEnabled(False)
-                item.setForeground(QColor("#6c7086"))
+                item.setForeground(QColor("#5a5d78"))
 
             for algo_id, algo_name in algos:
                 self.algo_combo.addItem(algo_name, algo_id)

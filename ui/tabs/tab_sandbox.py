@@ -48,15 +48,15 @@ class SandboxTab(QWidget):
 
         self.run_btn = QPushButton("▶ Chạy")
         self.run_btn.setFixedSize(90, 34)
-        self.run_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
-        self.run_btn.setStyleSheet("background:#a6e3a1; color:#1e1e2e; border-radius:6px;")
+        self.run_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
+        self.run_btn.setStyleSheet("background:#a6e3a1; color:#1a1b2e; border-radius:6px;")
         self.run_btn.clicked.connect(self._on_run)
         ctrl.addWidget(self.run_btn)
 
         self.grade_btn = QPushButton("🏆 Chấm bài")
         self.grade_btn.setFixedSize(100, 34)
-        self.grade_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
-        self.grade_btn.setStyleSheet("background:#cba6f7; color:#1e1e2e; border-radius:6px;")
+        self.grade_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
+        self.grade_btn.setStyleSheet("background:#cba6f7; color:#1a1b2e; border-radius:6px;")
         self.grade_btn.clicked.connect(self._on_grade)
         ctrl.addWidget(self.grade_btn)
         ll.addLayout(ctrl)
@@ -72,7 +72,7 @@ class SandboxTab(QWidget):
         self.stdin_input.setFont(QFont("Consolas", 10))
         self.stdin_input.setFixedHeight(60)
         self.stdin_input.setStyleSheet(
-            "background:#181825; border:1px solid #45475a; border-radius:6px; "
+            "background:#14152a; border:1px solid #3a3c52; border-radius:6px; "
             "color:#cdd6f4; padding:4px;"
         )
         ll.addWidget(self.stdin_input)
@@ -91,7 +91,7 @@ class SandboxTab(QWidget):
         self.output_display.setFont(QFont("Consolas", 10))
         self.output_display.setFixedHeight(160)
         self.output_display.setStyleSheet(
-            "background:#181825; border:1px solid #313244; border-radius:6px; "
+            "background:#14152a; border:1px solid #2a2b3d; border-radius:6px; "
             "color:#cdd6f4; padding:8px;"
         )
         rl.addWidget(self.output_display)
@@ -132,8 +132,8 @@ class SandboxTab(QWidget):
         self.tc_table.setFixedHeight(160)
         self.tc_table.setFont(QFont("Consolas", 9))
         self.tc_table.setStyleSheet(
-            "QTableWidget { background:#181825; color:#cdd6f4; border:1px solid #313244; }"
-            "QHeaderView::section { background:#313244; color:#cba6f7; padding:4px; }"
+            "QTableWidget { background:#14152a; color:#cdd6f4; border:1px solid #2a2b3d; }"
+            "QHeaderView::section { background:#2a2b3d; color:#cba6f7; padding:4px; }"
         )
         layout.addWidget(self.tc_table)
 

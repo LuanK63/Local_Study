@@ -51,7 +51,7 @@ class FlashcardTab(QWidget):
         cfg.addStretch()
         self.gen_btn = QPushButton("✨ Tạo Flashcard")
         self.gen_btn.setFixedSize(130, 36)
-        self.gen_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_flashcards)
         cfg.addWidget(self.gen_btn)
         layout.addLayout(cfg)
@@ -65,21 +65,21 @@ class FlashcardTab(QWidget):
         card_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.progress_label = QLabel("")
-        self.progress_label.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.progress_label.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.progress_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         card_layout.addWidget(self.progress_label)
 
         # The Card
         self.card_frame = QFrame()
         self.card_frame.setStyleSheet(
-            "QFrame { background:#313244; border-radius:12px; border:2px solid #45475a; }"
+            "QFrame { background:#2a2b3d; border-radius:12px; border:2px solid #3a3c52; }"
         )
         self.card_frame.setFixedSize(500, 300)
         card_inner = QVBoxLayout(self.card_frame)
         card_inner.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.card_text = QLabel("Mặt trước")
-        self.card_text.setFont(QFont("Segoe UI", 14))
+        self.card_text.setFont(QFont("Inter", 14))
         self.card_text.setWordWrap(True)
         self.card_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.card_text.setStyleSheet("color:#cdd6f4; border: none;")
@@ -98,7 +98,7 @@ class FlashcardTab(QWidget):
 
         self.flip_btn = QPushButton("🔄 Lật thẻ")
         self.flip_btn.setFixedSize(120, 40)
-        self.flip_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.flip_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.flip_btn.clicked.connect(self._flip_card)
         controls.addWidget(self.flip_btn)
 
@@ -170,7 +170,7 @@ class FlashcardTab(QWidget):
         self.progress_label.setText(f"Thẻ {self._current_idx + 1} / {total}")
         self.card_text.setText(card.get("front", ""))
         self.card_frame.setStyleSheet(
-            "QFrame { background:#313244; border-radius:12px; border:2px solid #45475a; }"
+            "QFrame { background:#2a2b3d; border-radius:12px; border:2px solid #3a3c52; }"
         )
 
         self.prev_btn.setEnabled(self._current_idx > 0)
@@ -185,12 +185,12 @@ class FlashcardTab(QWidget):
         if self._showing_answer:
             self.card_text.setText(card.get("back", ""))
             self.card_frame.setStyleSheet(
-                "QFrame { background:#1e1e2e; border-radius:12px; border:2px solid #a6e3a1; }"
+                "QFrame { background:#1a1b2e; border-radius:12px; border:2px solid #a6e3a1; }"
             )
         else:
             self.card_text.setText(card.get("front", ""))
             self.card_frame.setStyleSheet(
-                "QFrame { background:#313244; border-radius:12px; border:2px solid #45475a; }"
+                "QFrame { background:#2a2b3d; border-radius:12px; border:2px solid #3a3c52; }"
             )
 
     def _prev_card(self):

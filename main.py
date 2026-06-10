@@ -3,6 +3,13 @@ main.py — Entry point for Local Study RAG Agent (Desktop)
 Run with: python main.py  OR  LocalStudyRAGAgent.exe
 """
 import sys
+
+# Reconfigure stdout/stderr to use UTF-8 on Windows to avoid UnicodeEncodeErrors
+if sys.platform.startswith('win'):
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QFont
 from utils.db_schema import init_db
@@ -23,7 +30,7 @@ def main():
     app.setApplicationName("Local Study RAG Agent")
     app.setApplicationVersion("1.0.0")
     app.setStyle("Fusion")
-    app.setFont(QFont("Segoe UI", 10))
+    app.setFont(QFont("Inter", 10))
     load_stylesheet(app)
 
     # ── First-run setup ───────────────────────────────────────────────────────
@@ -38,6 +45,16 @@ def main():
 
     # ── Init DB ───────────────────────────────────────────────────────────────
     init_db()
+
+    # ── Warm up BM25 index from ChromaDB ─────────────────────────────────────
+    # BM25 is in-memory only; it must be rebuilt from ChromaDB on every startup.
+    try:
+        from utils.subject_loader import get_all_subjects
+        from core.retrieval.hybrid_retriever import warm_up_bm25
+        subject_ids = list(get_all_subjects().keys())
+        warm_up_bm25(subject_ids)
+    except Exception as e:
+        print(f"[WARN] BM25 warm-up failed: {e}")
 
     # ── Main window ───────────────────────────────────────────────────────────
     from ui.main_window import MainWindow

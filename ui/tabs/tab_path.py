@@ -34,14 +34,14 @@ class PathTab(QWidget):
             "và điểm yếu được phân tích từ lịch sử làm bài tập/trắc nghiệm của bạn."
         )
         desc.setWordWrap(True)
-        desc.setFont(QFont("Segoe UI", 10))
+        desc.setFont(QFont("Inter", 10))
         layout.addWidget(desc)
 
         # Controls
         controls = QHBoxLayout()
         self.gen_btn = QPushButton("✨ Tạo Lộ Trình Học Tập")
         self.gen_btn.setFixedSize(200, 40)
-        self.gen_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_path)
         controls.addWidget(self.gen_btn)
         controls.addStretch()

@@ -21,8 +21,9 @@ def read_docx(file_path: str | Path) -> list[PageContent]:
     if not path.exists():
         raise FileNotFoundError(f"DOCX not found: {file_path}")
 
+    import unicodedata
     doc = docx.Document(str(path))
-    paragraphs = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
+    paragraphs = [unicodedata.normalize('NFC', p.text.strip()) for p in doc.paragraphs if p.text.strip()]
 
     # Group paragraphs into virtual "pages" of ~400 words each
     pages, current, word_count, page_num = [], [], 0, 1

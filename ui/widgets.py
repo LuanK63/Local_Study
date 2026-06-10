@@ -20,14 +20,14 @@ class OutputDisplay(QTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setReadOnly(True)
-        self.setFont(QFont("Segoe UI", 10))
+        self.setFont(QFont("Inter", 10))
         self.setObjectName("OutputDisplay")
         self.setStyleSheet("""
             QTextEdit#OutputDisplay {
-                background-color: #181825;
-                border: 1px solid #313244;
-                border-radius: 8px;
-                padding: 12px;
+                background-color: #14152a;
+                border: 1px solid #2a2b3d;
+                border-radius: 10px;
+                padding: 16px;
                 color: #cdd6f4;
             }
         """)
@@ -58,15 +58,15 @@ class CitationTextEdit(QTextBrowser):
         super().__init__(parent)
         self.setReadOnly(True)
         self.setOpenLinks(False)
-        self.setFont(QFont("Segoe UI", 10))
+        self.setFont(QFont("Inter", 10))
         self.setObjectName("CitationDisplay")
         self.setStyleSheet("""
             QTextBrowser#CitationDisplay {
-                background-color: #1e1e2e;
+                background-color: #1a1b2e;
                 border: none;
                 color: #cdd6f4;
                 padding: 8px 4px;
-                selection-background-color: #45475a;
+                selection-background-color: #3a3c52;
                 line-height: 1.6;
             }
             QTextBrowser#CitationDisplay a {
@@ -112,7 +112,7 @@ class CitationTextEdit(QTextBrowser):
                 n = m.group(1)
                 return (
                     f'<a href="cite://{n}" style="'
-                    f'display:inline-block;color:#1e1e2e;background:#89b4fa;'
+                    f'display:inline-block;color:#1a1b2e;background:#89b4fa;'
                     f'border-radius:4px;padding:0px 6px;font-weight:bold;'
                     f'font-size:8pt;text-decoration:none;margin:0 1px;">'
                     f'[{n}]</a>'
@@ -131,17 +131,17 @@ class CitationTextEdit(QTextBrowser):
             answer_part = text[:m.start()].strip()
             sources_part = text[m.start():].strip()
             body = (
-                f'<div style="font-family:Segoe UI;font-size:10pt;'
+                f'<div style="font-family:Inter,Segoe UI;font-size:10pt;'
                 f'line-height:1.8;color:#cdd6f4;">'
                 f'{_to_html(answer_part)}'
-                f'<hr style="border:none;border-top:1px solid #313244;margin:14px 0 8px 0;">'
-                f'<div style="color:#a6adc8;font-size:9pt;line-height:1.9;">'
+                f'<hr style="border:none;border-top:1px solid #2a2b3d;margin:14px 0 8px 0;">'
+                f'<div style="color:#8a8daa;font-size:9pt;line-height:1.9;">'
                 f'{_to_html(sources_part)}'
                 f'</div></div>'
             )
         else:
             body = (
-                f'<div style="font-family:Segoe UI;font-size:10pt;'
+                f'<div style="font-family:Inter,Segoe UI;font-size:10pt;'
                 f'line-height:1.8;color:#cdd6f4;">'
                 f'{_to_html(text)}</div>'
             )
@@ -195,16 +195,16 @@ class IngestProgressWidget(QFrame):
         self.setObjectName("IngestProgress")
         self.setStyleSheet("""
             QFrame#IngestProgress {
-                background: #11111b;
-                border-top: 1px solid #313244;
+                background: #0e0f1e;
+                border-top: 1px solid #2a2b3d;
             }
         """)
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(12, 8, 12, 10)
-        layout.setSpacing(4)
+        layout.setContentsMargins(16, 8, 16, 12)
+        layout.setSpacing(6)
 
         self._file_lbl = QLabel("Đang xử lý...")
-        self._file_lbl.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
+        self._file_lbl.setFont(QFont("Inter", 8, QFont.Weight.Bold))
         self._file_lbl.setStyleSheet("color:#cba6f7; background:transparent;")
         self._file_lbl.setWordWrap(True)
         layout.addWidget(self._file_lbl)
@@ -216,11 +216,11 @@ class IngestProgressWidget(QFrame):
             ("store", "#fab387"),
         ]:
             row = QHBoxLayout()
-            row.setSpacing(6)
+            row.setSpacing(8)
             lbl = QLabel({"read": "📄 Đọc", "embed": "🔢 Embed", "store": "💾 Lưu"}[stage])
-            lbl.setFont(QFont("Segoe UI", 8))
+            lbl.setFont(QFont("Inter", 8))
             lbl.setFixedWidth(64)
-            lbl.setStyleSheet("color:#a6adc8; background:transparent;")
+            lbl.setStyleSheet("color:#8a8daa; background:transparent;")
             row.addWidget(lbl)
 
             bar = QProgressBar()
@@ -230,7 +230,7 @@ class IngestProgressWidget(QFrame):
             bar.setTextVisible(False)
             bar.setStyleSheet(f"""
                 QProgressBar {{
-                    background: #313244; border: none; border-radius: 3px;
+                    background: #2a2b3d; border: none; border-radius: 3px;
                 }}
                 QProgressBar::chunk {{
                     background: {color}; border-radius: 3px;
@@ -239,9 +239,9 @@ class IngestProgressWidget(QFrame):
             row.addWidget(bar)
 
             pct_lbl = QLabel("0%")
-            pct_lbl.setFont(QFont("Segoe UI", 8))
-            pct_lbl.setFixedWidth(30)
-            pct_lbl.setStyleSheet("color:#6c7086; background:transparent;")
+            pct_lbl.setFont(QFont("Inter", 8))
+            pct_lbl.setFixedWidth(32)
+            pct_lbl.setStyleSheet("color:#5a5d78; background:transparent;")
             row.addWidget(pct_lbl)
 
             layout.addLayout(row)
@@ -249,8 +249,8 @@ class IngestProgressWidget(QFrame):
             setattr(self, f"_{stage}_pct", pct_lbl)
 
         self._pages_lbl = QLabel("")
-        self._pages_lbl.setFont(QFont("Segoe UI", 8))
-        self._pages_lbl.setStyleSheet("color:#6c7086; background:transparent;")
+        self._pages_lbl.setFont(QFont("Inter", 8))
+        self._pages_lbl.setStyleSheet("color:#5a5d78; background:transparent;")
         layout.addWidget(self._pages_lbl)
 
     def set_file(self, name: str):
@@ -297,45 +297,49 @@ class SourceFileCard(QFrame):
         self.setObjectName("SourceCard")
         self.setStyleSheet("""
             QFrame#SourceCard {
-                background: #181825;
-                border: 1px solid #313244;
-                border-radius: 8px;
-                padding: 4px;
+                background: #14152a;
+                border: 1px solid #2a2b3d;
+                border-radius: 10px;
+                padding: 2px;
             }
             QFrame#SourceCard:hover {
-                border-color: #45475a;
+                border-color: #4e5068;
+                background: #191a30;
             }
         """)
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(10, 8, 8, 8)
-        layout.setSpacing(8)
+        layout.setContentsMargins(12, 10, 10, 10)
+        layout.setSpacing(10)
 
         icon = QLabel("📄")
-        icon.setFont(QFont("Segoe UI", 14))
+        icon.setFont(QFont("Inter", 14))
         icon.setFixedWidth(24)
+        icon.setStyleSheet("background:transparent; border:none;")
         layout.addWidget(icon)
 
         text_col = QVBoxLayout()
         text_col.setSpacing(2)
         name_lbl = QLabel(doc_name)
-        name_lbl.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
+        name_lbl.setFont(QFont("Inter", 9, QFont.Weight.Bold))
         name_lbl.setStyleSheet("color:#cdd6f4; background:transparent; border:none;")
         name_lbl.setWordWrap(True)
         text_col.addWidget(name_lbl)
 
         info_lbl = QLabel(f"{chunks} đoạn văn bản")
-        info_lbl.setFont(QFont("Segoe UI", 8))
-        info_lbl.setStyleSheet("color:#6c7086; background:transparent; border:none;")
+        info_lbl.setFont(QFont("Inter", 8))
+        info_lbl.setStyleSheet("color:#5a5d78; background:transparent; border:none;")
         text_col.addWidget(info_lbl)
         layout.addLayout(text_col)
         layout.addStretch()
 
         del_btn = QPushButton("✕")
-        del_btn.setFixedSize(20, 20)
-        del_btn.setFont(QFont("Segoe UI", 8))
+        del_btn.setFixedSize(24, 24)
+        del_btn.setFont(QFont("Inter", 9))
+        del_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        del_btn.setToolTip("Xóa tài liệu này")
         del_btn.setStyleSheet(
-            "QPushButton{background:transparent;color:#6c7086;border:none;border-radius:4px;padding:0;}"
-            "QPushButton:hover{background:#313244;color:#f38ba8;}"
+            "QPushButton{background:transparent;color:#5a5d78;border:none;border-radius:6px;padding:0;}"
+            "QPushButton:hover{background:#2a2b3d;color:#f38ba8;}"
         )
         del_btn.clicked.connect(lambda: self.remove_requested.emit(self.file_path))
         layout.addWidget(del_btn)
@@ -353,8 +357,8 @@ class SourcesPanel(QWidget):
         self.setMaximumWidth(600)
         self.setStyleSheet("""
             QWidget#SourcesPanel {
-                background: #181825;
-                border-right: 1px solid #313244;
+                background: #14152a;
+                border-right: 1px solid #2a2b3d;
             }
         """)
         self._cards: dict[str, SourceFileCard] = {}
@@ -365,18 +369,18 @@ class SourcesPanel(QWidget):
 
         # Header
         header = QFrame()
-        header.setStyleSheet("background:#11111b; border-bottom:1px solid #313244;")
-        header.setFixedHeight(52)
+        header.setStyleSheet("background:#0e0f1e; border-bottom:1px solid #2a2b3d;")
+        header.setFixedHeight(48)
         hlay = QHBoxLayout(header)
-        hlay.setContentsMargins(14, 0, 14, 0)
+        hlay.setContentsMargins(16, 0, 16, 0)
         title = QLabel("📚 Nguồn tài liệu")
-        title.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        title.setFont(QFont("Inter", 11, QFont.Weight.Bold))
         title.setStyleSheet("color:#cba6f7; background:transparent; border:none;")
         hlay.addWidget(title)
         hlay.addStretch()
         self.count_lbl = QLabel("0 nguồn")
-        self.count_lbl.setFont(QFont("Segoe UI", 8))
-        self.count_lbl.setStyleSheet("color:#6c7086; background:transparent; border:none;")
+        self.count_lbl.setFont(QFont("Inter", 8))
+        self.count_lbl.setStyleSheet("color:#5a5d78; background:transparent; border:none;")
         hlay.addWidget(self.count_lbl)
         outer.addWidget(header)
 
@@ -395,24 +399,29 @@ class SourcesPanel(QWidget):
 
         # Add source button
         footer = QFrame()
-        footer.setStyleSheet("background:#11111b; border-top:1px solid #313244;")
+        footer.setStyleSheet("background:#0e0f1e; border-top:1px solid #2a2b3d;")
         footer.setFixedHeight(56)
         flay = QHBoxLayout(footer)
         flay.setContentsMargins(12, 8, 12, 8)
         add_btn = QPushButton("＋  Thêm tài liệu")
-        add_btn.setFixedHeight(36)
-        add_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        add_btn.setFixedHeight(38)
+        add_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
+        add_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         add_btn.setStyleSheet("""
             QPushButton {
-                background: #313244;
+                background: #2a2b3d;
                 color: #cba6f7;
-                border: 1px dashed #45475a;
-                border-radius: 8px;
+                border: 1px dashed #3a3c52;
+                border-radius: 10px;
                 text-align: center;
                 padding: 0;
             }
-            QPushButton:hover { background: #3d3d52; border-color: #cba6f7; }
-            QPushButton:pressed { background: #2a2a3d; }
+            QPushButton:hover {
+                background: #363850;
+                border-color: #cba6f7;
+                border-style: solid;
+            }
+            QPushButton:pressed { background: #22243a; }
         """)
         add_btn.clicked.connect(self.add_source_clicked.emit)
         flay.addWidget(add_btn)
@@ -481,36 +490,37 @@ class CitationPopup(QFrame):
         self.setWindowFlags(Qt.WindowType.ToolTip)
         self.setStyleSheet("""
             QFrame#CitationPopup {
-                background: #24273a;
+                background: #1e2038;
                 border: 1px solid #89b4fa;
-                border-radius: 10px;
+                border-radius: 12px;
             }
         """)
         self.setMinimumWidth(360)
         self.setMaximumWidth(480)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(14, 12, 14, 12)
-        layout.setSpacing(6)
+        layout.setContentsMargins(16, 14, 16, 14)
+        layout.setSpacing(8)
 
         # Header row
         header_row = QHBoxLayout()
         self._num_lbl = QLabel("[1]")
-        self._num_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self._num_lbl.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self._num_lbl.setStyleSheet("color:#89b4fa; background:transparent;")
         header_row.addWidget(self._num_lbl)
 
         self._file_lbl = QLabel()
-        self._file_lbl.setFont(QFont("Segoe UI", 9))
-        self._file_lbl.setStyleSheet("color:#a6adc8; background:transparent;")
+        self._file_lbl.setFont(QFont("Inter", 9))
+        self._file_lbl.setStyleSheet("color:#8a8daa; background:transparent;")
         self._file_lbl.setWordWrap(True)
         header_row.addWidget(self._file_lbl, 1)
 
         close_btn = QPushButton("✕")
-        close_btn.setFixedSize(18, 18)
+        close_btn.setFixedSize(20, 20)
+        close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         close_btn.setStyleSheet(
-            "QPushButton{background:transparent;color:#6c7086;border:none;font-size:9pt;padding:0;}"
-            "QPushButton:hover{color:#f38ba8;}"
+            "QPushButton{background:transparent;color:#5a5d78;border:none;font-size:9pt;padding:0;border-radius:4px;}"
+            "QPushButton:hover{color:#f38ba8;background:#2a2b3d;}"
         )
         close_btn.clicked.connect(self.hide)
         header_row.addWidget(close_btn)
@@ -519,27 +529,27 @@ class CitationPopup(QFrame):
         # Divider
         div = QFrame()
         div.setFrameShape(QFrame.Shape.HLine)
-        div.setStyleSheet("background:#313244; max-height:1px;")
+        div.setStyleSheet("background:#2a2b3d; max-height:1px;")
         layout.addWidget(div)
 
         # Page info
         self._page_lbl = QLabel()
-        self._page_lbl.setFont(QFont("Segoe UI", 8))
-        self._page_lbl.setStyleSheet("color:#6c7086; background:transparent;")
+        self._page_lbl.setFont(QFont("Inter", 8))
+        self._page_lbl.setStyleSheet("color:#5a5d78; background:transparent;")
         layout.addWidget(self._page_lbl)
 
         # Text excerpt
         self._text_edit = QTextEdit()
         self._text_edit.setReadOnly(True)
         self._text_edit.setMaximumHeight(180)
-        self._text_edit.setFont(QFont("Segoe UI", 9))
+        self._text_edit.setFont(QFont("Inter", 9))
         self._text_edit.setStyleSheet("""
             QTextEdit {
-                background:#1e1e2e;
-                border:1px solid #313244;
-                border-radius:6px;
+                background:#14152a;
+                border:1px solid #2a2b3d;
+                border-radius:8px;
                 color:#cdd6f4;
-                padding:8px;
+                padding:10px;
             }
         """)
         layout.addWidget(self._text_edit)
@@ -568,11 +578,11 @@ class ChatBubble(QFrame):
         self.setObjectName("ChatBubble")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 4, 0, 4)
-        layout.setSpacing(4)
+        layout.setSpacing(6)
 
         # Role header
         role_lbl = QLabel("🧑 Bạn" if role == "user" else "🤖 Trợ lý")
-        role_lbl.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
+        role_lbl.setFont(QFont("Inter", 8, QFont.Weight.Bold))
         role_lbl.setStyleSheet(
             f"color:{'#89b4fa' if role == 'user' else '#a6e3a1'}; background:transparent;"
         )
@@ -587,15 +597,15 @@ class ChatBubble(QFrame):
         else:
             self._display = QTextEdit()
             self._display.setReadOnly(True)
-            self._display.setFont(QFont("Segoe UI", 10))
+            self._display.setFont(QFont("Inter", 10))
             self._display.setMaximumHeight(200)
             self._display.setStyleSheet("""
                 QTextEdit {
-                    background: #313244;
+                    background: #2a2b3d;
                     border: none;
-                    border-radius: 8px;
+                    border-radius: 10px;
                     color: #cdd6f4;
-                    padding: 10px 12px;
+                    padding: 12px 16px;
                 }
             """)
 
@@ -661,7 +671,7 @@ class CppHighlighter(QSyntaxHighlighter):
         self._rules.append((re.compile(r'\b\d+\.?\d*\b'), num_fmt))
 
         self._comment_fmt = QTextCharFormat()
-        self._comment_fmt.setForeground(QColor("#6c7086"))
+        self._comment_fmt.setForeground(QColor("#5a5d78"))
         self._comment_fmt.setFontItalic(True)
         self._rules.append((re.compile(r'//[^\n]*'), self._comment_fmt))
         self._rules.append((re.compile(r'#[^\n]*'), self._comment_fmt))
@@ -685,12 +695,15 @@ class CodeEditor(QPlainTextEdit):
         self.setObjectName("CodeEditor")
         self.setStyleSheet("""
             QPlainTextEdit#CodeEditor {
-                background-color: #1e1e2e;
-                border: 1px solid #45475a;
-                border-radius: 6px;
+                background-color: #14152a;
+                border: 1px solid #3a3c52;
+                border-radius: 8px;
                 color: #cdd6f4;
-                padding: 8px;
-                selection-background-color: #45475a;
+                padding: 12px;
+                selection-background-color: #3a3c52;
+            }
+            QPlainTextEdit#CodeEditor:focus {
+                border-color: #89b4fa;
             }
         """)
         if language in ("c", "cpp"):
@@ -712,7 +725,7 @@ class SourcesWidget(QWidget):
         super().__init__(parent)
         self._layout = QHBoxLayout(self)
         self._layout.setContentsMargins(0, 4, 0, 4)
-        self._layout.setSpacing(6)
+        self._layout.setSpacing(8)
         self._layout.addStretch()
 
     def set_sources(self, sources: list[dict]):
@@ -723,9 +736,9 @@ class SourcesWidget(QWidget):
 
         for s in sources:
             badge = QLabel(f"📄 {s['doc_name']} p.{s['page_num']}")
-            badge.setFont(QFont("Segoe UI", 8))
+            badge.setFont(QFont("Inter", 8))
             badge.setStyleSheet(
-                "background:#313244; color:#cba6f7; border-radius:4px; padding:2px 8px;"
+                "background:#2a2b3d; color:#cba6f7; border-radius:6px; padding:4px 10px;"
             )
             self._layout.addWidget(badge)
         self._layout.addStretch()
@@ -735,7 +748,7 @@ class SourcesWidget(QWidget):
 class SectionHeader(QLabel):
     def __init__(self, text: str, parent=None):
         super().__init__(text, parent)
-        self.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
+        self.setFont(QFont("Inter", 13, QFont.Weight.Bold))
         self.setObjectName("SectionHeader")
         self.setStyleSheet("color: #cba6f7; padding: 4px 0 8px 0;")
 
@@ -744,7 +757,7 @@ class SectionHeader(QLabel):
 class StatusLabel(QLabel):
     def __init__(self, parent=None):
         super().__init__("", parent)
-        self.setFont(QFont("Segoe UI", 9))
+        self.setFont(QFont("Inter", 9))
         self.setObjectName("PlaceholderInfo")
 
     def set_loading(self, msg: str = "Đang xử lý..."):
