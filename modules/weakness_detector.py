@@ -1,45 +1,112 @@
-"""
-modules/weakness_detector.py
-Stub implementation for side-branches (like feature/sandbox)
-to prevent crash when the weakness detector module is not present on this branch.
-"""
+"""Weakness detection helpers for the study agent."""
+from typing import List
 
-def get_weak_topics(subject_id: str) -> list[dict]:
-    """Return mock weak topics for testing side-branches."""
-    return [
-        {
-            "topic_id": "recursion",
-            "attempts": 10,
-            "wrong": 6,
-            "wrong_rate": 0.6
-        },
-        {
-            "topic_id": "linked_list",
-            "attempts": 8,
-            "wrong": 3,
-            "wrong_rate": 0.375
-        },
-        {
-            "topic_id": "sorting",
-            "attempts": 5,
-            "wrong": 1,
-            "wrong_rate": 0.2
+from utils.db_schema import get_connection
+from utils.subject_loader import get_topic
+
+
+def get_weak_topics(subject_id: str) -> List[dict]:
+    """Return weak topics for a subject based on quiz and practice history."""
+    conn = get_connection()
+    cur = conn.cursor()
+
+    weak_data = {}
+
+    cur.execute(
+        """
+        SELECT topic_id,
+               COUNT(*) AS attempts,
+               SUM(CASE WHEN is_correct = 0 THEN 1 ELSE 0 END) AS wrong
+        FROM quiz_sessions
+        WHERE subject_id = ?
+          AND topic_id IS NOT NULL
+        GROUP BY topic_id
+        """,
+        (subject_id,)
+    )
+    for row in cur.fetchall():
+        topic_id = row[0]
+        weak_data[topic_id] = {
+            "topic_id": topic_id,
+            "attempts": int(row[1]),
+            "wrong": int(row[2] or 0),
         }
+
+    cur.execute(
+        """
+        SELECT topic_id,
+               COUNT(*) AS attempts,
+               SUM(CASE
+                       WHEN score IS NULL THEN 1
+                       WHEN score < 0.7 THEN 1
+                       ELSE 0
+                   END) AS wrong
+        FROM practice_sessions
+        WHERE subject_id = ?
+          AND topic_id IS NOT NULL
+        GROUP BY topic_id
+        """,
+        (subject_id,)
+    )
+    for row in cur.fetchall():
+        topic_id = row[0]
+        practice_attempts = int(row[1])
+        practice_wrong = int(row[2] or 0)
+        if topic_id in weak_data:
+            weak_data[topic_id]["attempts"] += practice_attempts
+            weak_data[topic_id]["wrong"] += practice_wrong
+        else:
+            weak_data[topic_id] = {
+                "topic_id": topic_id,
+                "attempts": practice_attempts,
+                "wrong": practice_wrong,
+            }
+
+    # Compute wrong rate and sort by severity.
+    results = []
+    for data in weak_data.values():
+        attempts = data["attempts"]
+        if attempts == 0:
+            continue
+        wrong = data["wrong"]
+        data["wrong_rate"] = wrong / attempts
+        results.append(data)
+
+    results.sort(key=lambda item: (-item["wrong_rate"], -item["wrong"], item["topic_id"]))
+    return results
+
+
+def generate_review_plan(weak_topics: List[dict], subject_id: str) -> str:
+    """Generate a simple review plan from weak topics."""
+    if not weak_topics:
+        return "Không có đủ dữ liệu để tạo kế hoạch ôn tập. Hãy làm thêm bài Quiz hoặc Practice trước nhé."
+
+    lines = [
+        "Kế hoạch ôn tập cá nhân hóa:"
     ]
 
-def generate_review_plan(weak_topics: list[dict], subject_id: str) -> str:
-    """Return a mock AI review plan for side-branches."""
-    return """## 💡 Kế hoạch ôn tập đề xuất (Sandbox Stub)
+    for index, topic_data in enumerate(weak_topics, start=1):
+        topic_id = topic_data["topic_id"]
+        topic_info = get_topic(subject_id, topic_id)
+        topic_name = topic_info["name"] if topic_info else topic_id
 
-Dựa trên dữ liệu học tập của bạn ở môn học này, dưới đây là phân tích và gợi ý ôn tập:
+        wrong_rate = topic_data["wrong_rate"]
+        difficulty = "Rất yếu" if wrong_rate >= 0.6 else "Cần cải thiện" if wrong_rate >= 0.3 else "Nhẹ"
 
-1. **Đệ quy (Recursion) - Tỷ lệ sai: 60%** (Cần ưu tiên gấp!)
-   - **Lý do:** Đây là chủ đề bạn gặp khó khăn nhất.
-   - **Đề xuất:** Xem lại khái niệm base case (điều kiện dừng) và call stack. Thử vẽ cây đệ quy cho bài toán tháp Hà Nội hoặc Fibonacci.
+        lines.append(
+            f"{index}. {topic_name} ({topic_id}) - {topic_data['wrong']} sai / {topic_data['attempts']} thử ({wrong_rate*100:.0f}%). {difficulty}."
+        )
+        lines.append(
+            "   - Học lại lý thuyết chính, xem ví dụ mẫu và làm thêm ít nhất 3 bài tập liên quan."
+        )
+        lines.append(
+            "   - Nếu là bài code, viết lại giải pháp và kiểm tra từng bước."
+        )
 
-2. **Danh sách liên kết (Linked List) - Tỷ lệ sai: 38%**
-   - **Đề xuất:** Thực hành thêm các thao tác thêm/xoá nút ở đầu, giữa và cuối danh sách liên kết đơn/kép.
+    lines.append("")
+    lines.append("Gợi ý chung:")
+    lines.append("- Bắt đầu với chủ đề có tỷ lệ sai cao nhất.")
+    lines.append("- Ghi chú lại lỗi, xác định nguyên nhân và ôn lại các khái niệm liên quan.")
+    lines.append("- Tận dụng Flashcards hoặc ghi chú nhanh để ôn lại sau mỗi buổi học.")
 
-3. **Sắp xếp (Sorting) - Tỷ lệ sai: 20%**
-   - **Đề xuất:** Bạn đang làm khá tốt. Hãy tiếp tục củng cố kiến thức về độ phức tạp thuật toán (Time Complexity).
-"""
+    return "\n".join(lines)
