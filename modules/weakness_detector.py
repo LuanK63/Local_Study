@@ -1,8 +1,11 @@
-"""Weakness detection helpers for the study agent."""
+"""
+modules/weakness_detector.py
+Analyze quiz/practice history to find weak topics and suggest review using AI.
+"""
 from typing import List
-
 from utils.db_schema import get_connection
 from utils.subject_loader import get_topic
+from core.pipeline.answer_generator import generate
 
 
 def get_weak_topics(subject_id: str) -> List[dict]:
@@ -77,36 +80,32 @@ def get_weak_topics(subject_id: str) -> List[dict]:
 
 
 def generate_review_plan(weak_topics: List[dict], subject_id: str) -> str:
-    """Generate a simple review plan from weak topics."""
+    """Generate a personalized review plan based on detected weaknesses using LLM."""
     if not weak_topics:
-        return "Không có đủ dữ liệu để tạo kế hoạch ôn tập. Hãy làm thêm bài Quiz hoặc Practice trước nhé."
+        return "✅ Không phát hiện điểm yếu rõ ràng. Hãy tiếp tục luyện tập!"
 
-    lines = [
-        "Kế hoạch ôn tập cá nhân hóa:"
-    ]
-
-    for index, topic_data in enumerate(weak_topics, start=1):
-        topic_id = topic_data["topic_id"]
+    # We can fetch human-readable names to make the LLM prompt more informative
+    topic_lines = []
+    for t in weak_topics[:5]:
+        topic_id = t["topic_id"]
         topic_info = get_topic(subject_id, topic_id)
         topic_name = topic_info["name"] if topic_info else topic_id
-
-        wrong_rate = topic_data["wrong_rate"]
-        difficulty = "Rất yếu" if wrong_rate >= 0.6 else "Cần cải thiện" if wrong_rate >= 0.3 else "Nhẹ"
-
-        lines.append(
-            f"{index}. {topic_name} ({topic_id}) - {topic_data['wrong']} sai / {topic_data['attempts']} thử ({wrong_rate*100:.0f}%). {difficulty}."
+        topic_lines.append(
+            f"- {topic_name} ({topic_id}): {t['wrong']}/{t['attempts']} sai ({t['wrong_rate']*100:.0f}%)"
         )
-        lines.append(
-            "   - Học lại lý thuyết chính, xem ví dụ mẫu và làm thêm ít nhất 3 bài tập liên quan."
-        )
-        lines.append(
-            "   - Nếu là bài code, viết lại giải pháp và kiểm tra từng bước."
-        )
+    topic_list = "\n".join(topic_lines)
 
-    lines.append("")
-    lines.append("Gợi ý chung:")
-    lines.append("- Bắt đầu với chủ đề có tỷ lệ sai cao nhất.")
-    lines.append("- Ghi chú lại lỗi, xác định nguyên nhân và ôn lại các khái niệm liên quan.")
-    lines.append("- Tận dụng Flashcards hoặc ghi chú nhanh để ôn lại sau mỗi buổi học.")
-
-    return "\n".join(lines)
+    system = (
+        "Bạn là cố vấn học tập. Dựa vào thống kê điểm yếu của học sinh, "
+        "hãy đề xuất kế hoạch ôn tập cụ thể, ưu tiên các chủ đề yếu nhất. "
+        "Gợi ý cả phương pháp ôn tập phù hợp. Dùng Markdown."
+    )
+    user = f"Điểm yếu của học sinh (môn {subject_id}):\n{topic_list}\n\nĐề xuất kế hoạch ôn tập."
+    
+    try:
+        plan = generate(system, user, stream=False)
+        if isinstance(plan, str):
+            return plan
+        return "Không thể khởi tạo kế hoạch ôn tập lúc này."
+    except Exception as e:
+        return f"Lỗi lập kế hoạch ôn tập: {e}"
