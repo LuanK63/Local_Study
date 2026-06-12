@@ -31,7 +31,7 @@ class CodeTab(QWidget):
 
         # Sub-tabs: Generator | Explainer | Complexity
         self.sub_tabs = QTabWidget()
-        self.sub_tabs.setFont(QFont("Segoe UI", 10))
+        self.sub_tabs.setFont(QFont("Inter", 10))
         self.sub_tabs.addTab(self._build_generator(), "✨ Generator")
         self.sub_tabs.addTab(self._build_explainer(), "🔍 Explainer")
         self.sub_tabs.addTab(self._build_complexity(), "⏱ Complexity")
@@ -49,10 +49,10 @@ class CodeTab(QWidget):
         from PyQt6.QtWidgets import QTextEdit
         self.gen_input = QTextEdit()
         self.gen_input.setPlaceholderText("Vd: Viết thuật toán QuickSort bằng C++")
-        self.gen_input.setFont(QFont("Segoe UI", 10))
+        self.gen_input.setFont(QFont("Inter", 10))
         self.gen_input.setFixedHeight(80)
         self.gen_input.setStyleSheet(
-            "background:#313244; border:1px solid #45475a; border-radius:6px; "
+            "background:#2a2b3d; border:1px solid #3a3c52; border-radius:6px; "
             "color:#cdd6f4; padding:8px;"
         )
         layout.addWidget(self.gen_input)
@@ -67,7 +67,7 @@ class CodeTab(QWidget):
         ctrl.addStretch()
         self.gen_btn = QPushButton("✨ Tạo code")
         self.gen_btn.setFixedSize(120, 36)
-        self.gen_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._on_generate)
         ctrl.addWidget(self.gen_btn)
         layout.addLayout(ctrl)
@@ -103,7 +103,7 @@ class CodeTab(QWidget):
         exp_ctrl.addStretch()
         self.exp_btn = QPushButton("🔍 Giải thích")
         self.exp_btn.setFixedSize(120, 36)
-        self.exp_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.exp_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.exp_btn.clicked.connect(self._on_explain)
         exp_ctrl.addWidget(self.exp_btn)
         ll.addLayout(exp_ctrl)
@@ -139,7 +139,7 @@ class CodeTab(QWidget):
         ctrl.addStretch()
         self.cplx_btn = QPushButton("⏱ Phân tích Complexity")
         self.cplx_btn.setFixedSize(180, 36)
-        self.cplx_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.cplx_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.cplx_btn.clicked.connect(self._on_complexity)
         ctrl.addWidget(self.cplx_btn)
         layout.addLayout(ctrl)

@@ -49,14 +49,14 @@ def _get_collection(subject_id: str):
     )
 
 
-# ── Index ─────────────────────────────────────────────────────────────────────
+# ── Index ────────────────────────────────────────────────────────────────────────────────
 def index_chunks(
     chunks: list[Chunk],
     subject_id: str,
     progress_cb=None,
 ):
     """
-    Embed and store chunks into ChromaDB collection for a subject.
+    Embed and store flat chunks into ChromaDB (legacy/backward-compat).
     progress_cb(stage, done, total) — stage: 'embed' or 'store'
     """
     from core.document_processor.embedder import embed_chunks
@@ -71,8 +71,14 @@ def index_chunks(
     ids = [f"{c.doc_name}_p{c.page_num}_c{c.chunk_idx}" for c in chunks]
     docs = [c.text for c in chunks]
     metas = [
-        {"file_path": c.file_path, "page_num": c.page_num,
-         "doc_name": c.doc_name, "chunk_idx": c.chunk_idx}
+        {
+            "file_path": c.file_path,
+            "page_num":  c.page_num,
+            "doc_name":  c.doc_name,
+            "chunk_idx": c.chunk_idx,
+            "parent_id": getattr(c, "parent_id", ""),
+            **getattr(c, "headers", {})
+        }
         for c in chunks
     ]
 
@@ -89,14 +95,72 @@ def index_chunks(
             progress_cb("store", min(i + batch, len(ids)), len(ids))
 
 
-# ── Search ────────────────────────────────────────────────────────────────────
+def index_parent_chunks(
+    parent_chunks: list,
+    subject_id: str,
+    progress_cb=None,
+):
+    """
+    Embed và lưu child chunks vào ChromaDB, kèm parent_id và header metadata.
+    parent_chunks: list[ParentChunk] từ chunk_pages_hierarchical().
+    Parent text được lưu riêng trong SQLite (không lưu vào ChromaDB để tiết kiệm dung lượng).
+    progress_cb(stage, done, total) — stage: 'embed' hoặc 'store'
+    """
+    from core.document_processor.embedder import embed_chunks
+
+    # Flatten tất cả child chunks
+    all_children: list[Chunk] = []
+    for parent in parent_chunks:
+        all_children.extend(parent.children)
+
+    if not all_children:
+        return
+
+    def _embed_progress(done, total):
+        if progress_cb:
+            progress_cb("embed", done, total)
+
+    col     = _get_collection(subject_id)
+    vectors = embed_chunks(all_children, progress_cb=_embed_progress)
+
+    ids  = [f"{c.doc_name}_p{c.page_num}_c{c.chunk_idx}" for c in all_children]
+    docs = [c.text for c in all_children]
+    metas = [
+        {
+            "file_path": c.file_path,
+            "page_num":  c.page_num,
+            "doc_name":  c.doc_name,
+            "chunk_idx": c.chunk_idx,
+            "parent_id": c.parent_id,   # key để lookup SQLite
+            **getattr(c, "headers", {})
+        }
+        for c in all_children
+    ]
+
+    batch = 200
+    for i in range(0, len(ids), batch):
+        col.upsert(
+            ids=ids[i:i+batch],
+            embeddings=vectors[i:i+batch],
+            documents=docs[i:i+batch],
+            metadatas=metas[i:i+batch],
+        )
+        if progress_cb:
+            progress_cb("store", min(i + batch, len(ids)), len(ids))
+
+
+
+# ── Search ────────────────────────────────────────────────────────────────────────────────
 def vector_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     """
     Search for top_k most similar chunks to query.
-    Returns list of {text, score, file_path, page_num, doc_name}.
+    Returns list of {text, score, file_path, page_num, doc_name, parent_id}.
     """
     col = _get_collection(subject_id)
     q_vec = embed_text(query)
+    
+    # Logging chiều dữ liệu vector embedding để debug
+    print(f"[RAG DEBUG] Chiều dữ liệu (Dimension) của query embedding: {len(q_vec)}")
 
     results = col.query(
         query_embeddings=[q_vec],
@@ -110,12 +174,14 @@ def vector_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
         results["metadatas"][0],
         results["distances"][0],
     ):
+        meta_dict = meta if meta is not None else {}
         hits.append({
             "text":      doc,
             "score":     1.0 - dist,   # cosine distance → similarity
-            "file_path": meta["file_path"],
-            "page_num":  meta["page_num"],
-            "doc_name":  meta["doc_name"],
+            "file_path": meta_dict.get("file_path", ""),
+            "page_num":  meta_dict.get("page_num", 0),
+            "doc_name":  meta_dict.get("doc_name", ""),
+            "parent_id": meta_dict.get("parent_id", ""),   # có thể rỗng với flat chunks cũ
         })
     return hits
 

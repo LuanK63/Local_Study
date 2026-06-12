@@ -36,20 +36,20 @@ class WeaknessTab(QWidget):
             "để tìm ra các chủ đề còn yếu."
         )
         desc.setWordWrap(True)
-        desc.setFont(QFont("Segoe UI", 10))
+        desc.setFont(QFont("Inter", 10))
         layout.addWidget(desc)
 
         # Controls
         controls = QHBoxLayout()
         self.scan_btn = QPushButton("🔍 Quét Lịch Sử Học Tập")
         self.scan_btn.setFixedSize(200, 40)
-        self.scan_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.scan_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.scan_btn.clicked.connect(self._scan_weaknesses)
         controls.addWidget(self.scan_btn)
         
         self.plan_btn = QPushButton("💡 Đề xuất Kế Hoạch Ôn Tập")
         self.plan_btn.setFixedSize(220, 40)
-        self.plan_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.plan_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.plan_btn.clicked.connect(self._generate_plan)
         self.plan_btn.setEnabled(False)
         controls.addWidget(self.plan_btn)
@@ -65,8 +65,8 @@ class WeaknessTab(QWidget):
         self.table.setHorizontalHeaderLabels(["Chủ đề", "Số lần thử", "Số lần sai", "Tỷ lệ sai"])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.table.setStyleSheet(
-            "QTableWidget { background:#1e1e2e; color:#cdd6f4; gridline-color:#45475a; border: 1px solid #45475a; border-radius: 6px; }"
-            "QHeaderView::section { background:#313244; color:#cdd6f4; padding:4px; font-weight:bold; border: 1px solid #45475a; }"
+            "QTableWidget { background:#1a1b2e; color:#cdd6f4; gridline-color:#3a3c52; border: 1px solid #3a3c52; border-radius: 6px; }"
+            "QHeaderView::section { background:#2a2b3d; color:#cdd6f4; padding:4px; font-weight:bold; border: 1px solid #3a3c52; }"
         )
         layout.addWidget(self.table)
 

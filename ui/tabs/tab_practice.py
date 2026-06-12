@@ -55,7 +55,7 @@ class PracticeTab(QWidget):
         cfg.addStretch()
         self.gen_btn = QPushButton("📝 Ra đề")
         self.gen_btn.setFixedSize(110, 36)
-        self.gen_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_question)
         cfg.addWidget(self.gen_btn)
         layout.addLayout(cfg)
@@ -70,10 +70,10 @@ class PracticeTab(QWidget):
 
         # Question Label
         self.question_label = QLabel("Đề bài sẽ hiện ở đây...")
-        self.question_label.setFont(QFont("Segoe UI", 11))
+        self.question_label.setFont(QFont("Inter", 11))
         self.question_label.setWordWrap(True)
         self.question_label.setStyleSheet(
-            "background:#313244; border-radius:8px; padding:12px; color:#cdd6f4;"
+            "background:#2a2b3d; border-radius:8px; padding:12px; color:#cdd6f4;"
         )
         self.question_label.setMinimumHeight(80)
         prac_layout.addWidget(self.question_label)
@@ -83,7 +83,7 @@ class PracticeTab(QWidget):
         self.answer_input = QTextEdit()
         self.answer_input.setFont(QFont("Consolas", 11))
         self.answer_input.setStyleSheet(
-            "background:#1e1e2e; border:1px solid #45475a; border-radius:6px; "
+            "background:#1a1b2e; border:1px solid #3a3c52; border-radius:6px; "
             "color:#cdd6f4; padding:8px;"
         )
         prac_layout.addWidget(self.answer_input)
@@ -92,12 +92,12 @@ class PracticeTab(QWidget):
         nav = QHBoxLayout()
         self.submit_btn = QPushButton("✅ Nộp bài")
         self.submit_btn.setFixedSize(120, 36)
-        self.submit_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.submit_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.submit_btn.clicked.connect(self._submit_answer)
         nav.addWidget(self.submit_btn)
         
         self.score_label = QLabel("")
-        self.score_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        self.score_label.setFont(QFont("Inter", 12, QFont.Weight.Bold))
         self.score_label.setStyleSheet("color:#cba6f7;")
         nav.addWidget(self.score_label)
         nav.addStretch()
@@ -105,9 +105,9 @@ class PracticeTab(QWidget):
 
         self.feedback_label = QLabel()
         self.feedback_label.setWordWrap(True)
-        self.feedback_label.setFont(QFont("Segoe UI", 10))
+        self.feedback_label.setFont(QFont("Inter", 10))
         self.feedback_label.setStyleSheet(
-            "background:#181825; border-radius:6px; padding:12px; color:#a6e3a1; border: 1px solid #a6e3a1;"
+            "background:#14152a; border-radius:6px; padding:12px; color:#a6e3a1; border: 1px solid #a6e3a1;"
         )
         self.feedback_label.hide()
         prac_layout.addWidget(self.feedback_label)
@@ -197,6 +197,6 @@ class PracticeTab(QWidget):
         
         self.feedback_label.setText(feedback)
         self.feedback_label.setStyleSheet(
-            f"background:#181825; border-radius:6px; padding:12px; color:#cdd6f4; border: 1px solid {color};"
+            f"background:#14152a; border-radius:6px; padding:12px; color:#cdd6f4; border: 1px solid {color};"
         )
         self.feedback_label.show()

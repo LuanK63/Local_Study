@@ -60,7 +60,7 @@ class QuizTab(QWidget):
         cfg.addStretch()
         self.gen_btn = QPushButton("🎲 Tạo Quiz")
         self.gen_btn.setFixedSize(110, 36)
-        self.gen_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_quiz)
         cfg.addWidget(self.gen_btn)
         layout.addLayout(cfg)
@@ -74,15 +74,15 @@ class QuizTab(QWidget):
 
         # Progress
         self.progress_label = QLabel("")
-        self.progress_label.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.progress_label.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         quiz_layout.addWidget(self.progress_label)
 
         # Question
         self.question_label = QLabel("")
-        self.question_label.setFont(QFont("Segoe UI", 12))
+        self.question_label.setFont(QFont("Inter", 12))
         self.question_label.setWordWrap(True)
         self.question_label.setStyleSheet(
-            "background:#313244; border-radius:8px; padding:12px 16px; color:#cdd6f4;"
+            "background:#2a2b3d; border-radius:8px; padding:12px 16px; color:#cdd6f4;"
         )
         quiz_layout.addWidget(self.question_label)
 
@@ -91,7 +91,7 @@ class QuizTab(QWidget):
         self.option_btns: list[QRadioButton] = []
         for i in range(4):
             rb = QRadioButton("")
-            rb.setFont(QFont("Segoe UI", 11))
+            rb.setFont(QFont("Inter", 11))
             rb.setStyleSheet("color:#cdd6f4; padding:6px;")
             self.option_btns.append(rb)
             self.btn_group.addButton(rb, i)
@@ -100,9 +100,9 @@ class QuizTab(QWidget):
         # Feedback
         self.feedback_label = QLabel("")
         self.feedback_label.setWordWrap(True)
-        self.feedback_label.setFont(QFont("Segoe UI", 10))
+        self.feedback_label.setFont(QFont("Inter", 10))
         self.feedback_label.setStyleSheet(
-            "background:#1e1e2e; border-radius:6px; padding:10px; color:#a6e3a1;"
+            "background:#1a1b2e; border-radius:6px; padding:10px; color:#a6e3a1;"
         )
         self.feedback_label.hide()
         quiz_layout.addWidget(self.feedback_label)
@@ -111,7 +111,7 @@ class QuizTab(QWidget):
         nav = QHBoxLayout()
         self.submit_btn = QPushButton("✅ Trả lời")
         self.submit_btn.setFixedSize(120, 36)
-        self.submit_btn.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.submit_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.submit_btn.clicked.connect(self._submit_answer)
         nav.addWidget(self.submit_btn)
 
@@ -123,7 +123,7 @@ class QuizTab(QWidget):
         nav.addStretch()
 
         self.score_label = QLabel("")
-        self.score_label.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        self.score_label.setFont(QFont("Inter", 11, QFont.Weight.Bold))
         self.score_label.setStyleSheet("color:#cba6f7;")
         nav.addWidget(self.score_label)
         quiz_layout.addLayout(nav)
@@ -209,12 +209,12 @@ class QuizTab(QWidget):
         if is_correct:
             self._score += 1
             self.feedback_label.setStyleSheet(
-                "background:#1e1e2e; border-radius:6px; padding:10px; color:#a6e3a1;"
+                "background:#1a1b2e; border-radius:6px; padding:10px; color:#a6e3a1;"
             )
             self.feedback_label.setText(f"✅ Đúng! {q.get('explanation', '')}")
         else:
             self.feedback_label.setStyleSheet(
-                "background:#1e1e2e; border-radius:6px; padding:10px; color:#f38ba8;"
+                "background:#1a1b2e; border-radius:6px; padding:10px; color:#f38ba8;"
             )
             self.feedback_label.setText(
                 f"❌ Sai! Đáp án đúng: {correct}\n{q.get('explanation', '')}"

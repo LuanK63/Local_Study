@@ -10,11 +10,26 @@ embedding:
   base_url: "http://localhost:11434"
 
 retrieval:
-  chunk_size: 512
-  chunk_overlap: 64
+  # Parent-Child Chunking
+  parent_chunk_size: 1200   # ký tự — chunk lớn gửi cho LLM (1 mục/khái niệm đầy đủ)
+  child_chunk_size: 300     # ký tự — chunk nhỏ để embed + search
+  child_chunk_overlap: 30   # ký tự gối nhau giữa child chunks
+
+  # Alias cho backward-compat (= child_chunk_size)
+  chunk_size: 300
+  chunk_overlap: 30
+
   top_k: 5
   bm25_weight: 0.4
   vector_weight: 0.6
+  # search_mode: hybrid | semantic | bm25
+  # hybrid  = BM25 + Vector với RRF fusion (mặc định, tốt nhất cho tiếng Việt kỹ thuật)
+  # semantic = chỉ Vector search (embedding similarity)
+  # bm25     = chỉ BM25 keyword search
+  search_mode: hybrid
+  hyde:
+    enabled: false
+    temperature: 0.3
 
 sandbox:
   timeout_seconds: 5

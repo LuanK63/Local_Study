@@ -166,19 +166,19 @@ class SetupWizard(QDialog):
 
         # Title
         title = QLabel("🚀 Chào mừng đến với Local Study RAG Agent")
-        title.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
+        title.setFont(QFont("Inter", 13, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
         subtitle = QLabel("Đang thiết lập môi trường lần đầu. Vui lòng chờ...")
-        subtitle.setFont(QFont("Segoe UI", 10))
+        subtitle.setFont(QFont("Inter", 10))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setObjectName("PlaceholderInfo")
         layout.addWidget(subtitle)
 
         # Current step label
         self.step_label = QLabel("Đang kiểm tra hệ thống...")
-        self.step_label.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        self.step_label.setFont(QFont("Inter", 11, QFont.Weight.Bold))
         layout.addWidget(self.step_label)
 
         # Download progress bar
@@ -200,7 +200,7 @@ class SetupWizard(QDialog):
             "⚠️  Lần đầu tiên sẽ cần tải ~5 GB dữ liệu (model AI).\n"
             "Từ lần sau sẽ khởi động ngay lập tức."
         )
-        note.setFont(QFont("Segoe UI", 9))
+        note.setFont(QFont("Inter", 9))
         note.setObjectName("PlaceholderInfo")
         note.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(note)
@@ -208,7 +208,7 @@ class SetupWizard(QDialog):
         # Continue button (hidden until done)
         self.btn_continue = QPushButton("✅  Bắt đầu sử dụng")
         self.btn_continue.setFixedHeight(40)
-        self.btn_continue.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        self.btn_continue.setFont(QFont("Inter", 11, QFont.Weight.Bold))
         self.btn_continue.setVisible(False)
         self.btn_continue.clicked.connect(self._on_continue)
         layout.addWidget(self.btn_continue)

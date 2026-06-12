@@ -12,7 +12,7 @@ DEFAULT_TOP_K = 5   # number of chunks retrieved per query
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QLineEdit, QPushButton, QLabel,
+    QLineEdit, QPushButton, QLabel, QComboBox,
     QFrame, QScrollArea, QFileDialog,
 )
 from PyQt6.QtCore import Qt, pyqtSlot, QPoint, QObject
@@ -47,7 +47,7 @@ class ExplainTab(QWidget):
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.setHandleWidth(1)
-        splitter.setStyleSheet("QSplitter::handle { background: #313244; }")
+        splitter.setStyleSheet("QSplitter::handle { background: #2a2b3d; }")
 
         # ── Left: Sources panel ──────────────────────────────────────────
         self.sources_panel = SourcesPanel()
@@ -57,7 +57,7 @@ class ExplainTab(QWidget):
 
         # ── Right: Chat area ─────────────────────────────────────────────
         chat_widget = QWidget()
-        chat_widget.setStyleSheet("background: #1e1e2e;")
+        chat_widget.setStyleSheet("background: #1a1b2e;")
         chat_layout = QVBoxLayout(chat_widget)
         chat_layout.setContentsMargins(0, 0, 0, 0)
         chat_layout.setSpacing(0)
@@ -65,110 +65,144 @@ class ExplainTab(QWidget):
         # Top bar
         top_bar = QFrame()
         top_bar.setObjectName("ChatTopBar")
-        top_bar.setFixedHeight(52)
+        top_bar.setFixedHeight(48)
         top_bar.setStyleSheet("""
             QFrame#ChatTopBar {
-                background: #11111b;
-                border-bottom: 1px solid #313244;
+                background: #0e0f1e;
+                border-bottom: 1px solid #2a2b3d;
             }
         """)
         top_row = QHBoxLayout(top_bar)
-        top_row.setContentsMargins(16, 0, 16, 0)
+        top_row.setContentsMargins(20, 0, 20, 0)
         top_row.setSpacing(12)
 
         title_lbl = QLabel("💬 Cuộc trò chuyện")
-        title_lbl.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        title_lbl.setFont(QFont("Inter", 11, QFont.Weight.Bold))
         title_lbl.setStyleSheet("color:#cba6f7; background:transparent;")
         top_row.addWidget(title_lbl)
         top_row.addStretch()
 
 
-        clear_btn = QPushButton("🗑 Xóa")
-        clear_btn.setFixedSize(80, 32)
-        clear_btn.setFont(QFont("Segoe UI", 9))
+        # Clear chat button — icon only, clean
+        clear_btn = QPushButton("🗑")
+        clear_btn.setFixedSize(32, 32)
+        clear_btn.setFont(QFont("Inter", 12))
+        clear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         clear_btn.setToolTip("Xóa cuộc trò chuyện")
+        clear_btn.setStyleSheet("""
+            QPushButton {
+                background: transparent;
+                border: 1px solid #3a3c52;
+                border-radius: 8px;
+                padding: 0;
+                color: #5a5d78;
+            }
+            QPushButton:hover {
+                background: #2a2b3d;
+                color: #f38ba8;
+                border-color: #f38ba8;
+            }
+        """)
         clear_btn.clicked.connect(self._clear_chat)
         top_row.addWidget(clear_btn)
         chat_layout.addWidget(top_bar)
 
         # Status bar
         self.status = StatusLabel()
-        self.status.setContentsMargins(16, 4, 16, 0)
+        self.status.setContentsMargins(20, 6, 20, 0)
         chat_layout.addWidget(self.status)
 
         # Chat scroll area
         self._chat_scroll = QScrollArea()
         self._chat_scroll.setWidgetResizable(True)
         self._chat_scroll.setStyleSheet(
-            "QScrollArea{background:#1e1e2e;border:none;}"
+            "QScrollArea{background:#1a1b2e;border:none;}"
         )
 
         self._chat_container = QWidget()
-        self._chat_container.setStyleSheet("background:#1e1e2e;")
+        self._chat_container.setStyleSheet("background:#1a1b2e;")
         self._chat_vbox = QVBoxLayout(self._chat_container)
-        self._chat_vbox.setContentsMargins(20, 16, 20, 16)
-        self._chat_vbox.setSpacing(16)
+        self._chat_vbox.setContentsMargins(24, 20, 24, 20)
+        self._chat_vbox.setSpacing(20)
         self._chat_vbox.addStretch()
 
         self._chat_scroll.setWidget(self._chat_container)
         chat_layout.addWidget(self._chat_scroll, 1)
 
-        # Input area
+        # ── Input area (full-width, send button inside) ──────────────────
         input_frame = QFrame()
         input_frame.setObjectName("InputFrame")
         input_frame.setStyleSheet("""
             QFrame#InputFrame {
-                background: #11111b;
-                border-top: 1px solid #313244;
+                background: #0e0f1e;
+                border-top: 1px solid #2a2b3d;
             }
         """)
-        input_frame.setFixedHeight(68)
+        input_frame.setFixedHeight(64)
         inp_row = QHBoxLayout(input_frame)
-        inp_row.setContentsMargins(16, 12, 16, 12)
-        inp_row.setSpacing(10)
+        inp_row.setContentsMargins(16, 10, 16, 10)
+        inp_row.setSpacing(0)
+
+        # Container for input + send button overlay
+        input_container = QFrame()
+        input_container.setStyleSheet("""
+            QFrame {
+                background: #2a2b3d;
+                border: 1.5px solid #3a3c52;
+                border-radius: 14px;
+            }
+            QFrame:focus-within {
+                border-color: #89b4fa;
+            }
+        """)
+        container_layout = QHBoxLayout(input_container)
+        container_layout.setContentsMargins(4, 4, 4, 4)
+        container_layout.setSpacing(8)
 
         self.query_input = QLineEdit()
         self.query_input.setPlaceholderText("Đặt câu hỏi về tài liệu của bạn...")
-        self.query_input.setFont(QFont("Segoe UI", 10))
-        self.query_input.setFixedHeight(42)
+        self.query_input.setFont(QFont("Inter", 10))
+        self.query_input.setFixedHeight(36)
         self.query_input.setStyleSheet("""
             QLineEdit {
-                background: #313244;
-                border: 1px solid #45475a;
-                border-radius: 10px;
+                background: transparent;
+                border: none;
                 color: #cdd6f4;
-                padding: 4px 16px;
+                padding: 4px 12px;
             }
             QLineEdit:focus {
-                border-color: #89b4fa;
-                background: #383850;
+                border: none;
+                background: transparent;
             }
         """)
         self.query_input.returnPressed.connect(self._on_ask)
-        inp_row.addWidget(self.query_input)
+        container_layout.addWidget(self.query_input)
 
         self.ask_btn = QPushButton("↑")
-        self.ask_btn.setFixedSize(42, 42)
-        self.ask_btn.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        self.ask_btn.setFixedSize(36, 36)
+        self.ask_btn.setFont(QFont("Inter", 14, QFont.Weight.Bold))
+        self.ask_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.ask_btn.setStyleSheet("""
             QPushButton {
                 background: #cba6f7;
-                color: #1e1e2e;
+                color: #1a1b2e;
                 border: none;
-                border-radius: 10px;
+                border-radius: 12px;
                 text-align: center;
                 padding: 0;
             }
             QPushButton:hover { background: #d4b5ff; }
             QPushButton:pressed { background: #b09ae0; }
-            QPushButton:disabled { background: #45475a; color: #6c7086; }
+            QPushButton:disabled { background: #3a3c52; color: #5a5d78; }
         """)
         self.ask_btn.clicked.connect(self._on_ask)
-        inp_row.addWidget(self.ask_btn)
+        container_layout.addWidget(self.ask_btn)
+
+        inp_row.addWidget(input_container)
         chat_layout.addWidget(input_frame)
 
         splitter.addWidget(chat_widget)
-        splitter.setSizes([280, 900])
+        splitter.setSizes([260, 900])
         root.addWidget(splitter)
 
         # Load existing sources on startup
@@ -322,25 +356,34 @@ class ExplainTab(QWidget):
         user_bubble.set_text(query)
         self._scroll_to_bottom()
 
-        # Retrieve chunks
-        self.status.set_loading("Đang tìm kiếm tài liệu...")
-        from core.retrieval.hybrid_retriever import hybrid_search
-        self._current_chunks = hybrid_search(query, self.subject_id, top_k=top_k)
-
         # Add assistant bubble (empty, will be filled by stream)
         asst_bubble = self._add_bubble("assistant")
         asst_bubble.begin_streaming()           # ← prepare for incoming tokens
         self._current_assistant_bubble = asst_bubble
         self._scroll_to_bottom()
 
-        # Stream answer
-        self.status.set_loading("Đang tạo câu trả lời...")
-        hint = self.subject_cfg.prompt_hints.get("explain", "")
-        chunks = self._current_chunks
+        # Thread-safe status and chunk updates via a PyQt bridge QObject
+        class _StatusBridge(QObject):
+            status_changed = Signal(str)
+            chunks_received = Signal(object)
+
+        self._status_bridge = _StatusBridge()
+        self._status_bridge.status_changed.connect(self.status.set_loading)
+        self._status_bridge.chunks_received.connect(self._on_chunks_received)
+
+        # Stream answer via Agentic RAG (forcing hybrid search)
+        selected_mode = "hybrid"
 
         def _stream():
-            from core.pipeline.answer_generator import generate_with_context
-            return generate_with_context(query, chunks, system_hint=hint, stream=True)
+            from core.pipeline.agentic_rag import generate_agentic_response
+            return generate_agentic_response(
+                query,
+                self.subject_id,
+                self.subject_cfg,
+                status_cb=self._status_bridge.status_changed.emit,
+                chunks_cb=self._status_bridge.chunks_received.emit,
+                search_mode=selected_mode,
+            )
 
         self._worker = StreamWorker(_stream)
         self._worker.token.connect(asst_bubble.append_token)
@@ -360,6 +403,11 @@ class ExplainTab(QWidget):
             f"Tìm thấy {len(self._current_chunks)} đoạn liên quan"
         )
         self._scroll_to_bottom()
+
+    @pyqtSlot(object)
+    def _on_chunks_received(self, chunks):
+        print(f"[DEBUG UI] Chunks received in PyQt slot: {len(chunks)}")
+        self._current_chunks = chunks
 
     # ── Citation clicked ──────────────────────────────────────────────────────
     @pyqtSlot(int)

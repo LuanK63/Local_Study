@@ -84,6 +84,23 @@ def init_db():
             passed_cases    INTEGER DEFAULT 0,
             total_cases     INTEGER DEFAULT 0
         );
+
+        -- Parent chunks store (Parent-Child Chunking — RAG)
+        -- Lưu parent text bền vững để không cần re-ingest sau khi restart.
+        CREATE TABLE IF NOT EXISTS parent_chunks (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject_id      TEXT    NOT NULL,
+            parent_id       TEXT    NOT NULL,   -- "{doc_name}_p{page}_parent{idx}"
+            parent_text     TEXT    NOT NULL,
+            file_path       TEXT    NOT NULL,
+            page_num        INTEGER NOT NULL,
+            doc_name        TEXT    NOT NULL,
+            UNIQUE(subject_id, parent_id)       -- upsert an toàn
+        );
+        CREATE INDEX IF NOT EXISTS idx_parent_chunks_lookup
+            ON parent_chunks(subject_id, parent_id);
+        CREATE INDEX IF NOT EXISTS idx_parent_chunks_doc
+            ON parent_chunks(subject_id, doc_name);
     """)
 
     conn.commit()
