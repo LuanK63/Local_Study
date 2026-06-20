@@ -557,6 +557,8 @@ def generate_agentic_response(
                     relevant_chunks = evaluate_chunks(rewritten, chunks_l2)
                 else:
                     relevant_chunks = chunks_l2
+                if state:
+                    state.filtered_chunk_count_l2 = len(relevant_chunks)
             else:
                 # Không cần rewrite
                 use_crag = rag_cfg.get("enable_crag", True)
@@ -564,6 +566,8 @@ def generate_agentic_response(
                     relevant_chunks = evaluate_chunks(query, chunks)
                 else:
                     relevant_chunks = chunks
+                if state:
+                    state.filtered_chunk_count_l1 = len(relevant_chunks)
         else:
             # pure_rag hoặc rag_grader
             if not chunks:
@@ -576,6 +580,8 @@ def generate_agentic_response(
                 relevant_chunks = evaluate_chunks(query, chunks)
             else:
                 relevant_chunks = chunks
+            if state:
+                state.filtered_chunk_count_l1 = len(relevant_chunks)
 
         if not relevant_chunks:
             yield "❌ Không tìm thấy tài liệu liên quan trong môn học này sau khi xử lý."
@@ -594,12 +600,54 @@ def generate_agentic_response(
         hint = subject_cfg.prompt_hints.get("explain", "") if hasattr(subject_cfg, "prompt_hints") else ""
 
         try:
+            import time
+            start_gen = time.time()
             ans_gen = generate_with_context(query, relevant_chunks, system_hint=hint, stream=True)
+            full_ans = []
             if isinstance(ans_gen, Generator):
                 for token in ans_gen:
+                    full_ans.append(token)
                     yield token
             else:
+                full_ans.append(ans_gen)
                 yield ans_gen
+            gen_duration = (time.time() - start_gen) * 1000
+            
+            if state:
+                state.final_answer = "".join(full_ans)
+                state.final_answer_length = len(state.final_answer)
+                state.generation_time_ms = gen_duration
+                state.total_time_ms = (
+                    state.retrieval_time_ms +
+                    state.grading_time_ms +
+                    state.rewrite_time_ms +
+                    state.generation_time_ms
+                )
+                
+                # Cập nhật context chunks metadata
+                state.context_chunk_count = len(relevant_chunks)
+                state.context_char_count = sum(len(c.get("text", "")) for c in relevant_chunks)
+                
+                # Ghi nhận final_chunks_json
+                import json
+                state.final_chunks_json = json.dumps([
+                    {
+                        "rank": idx,
+                        "similarity": c.get("score", 0.0),
+                        "document": c.get("doc_name", "unknown"),
+                        "page": c.get("page_num", 0),
+                        "chunk_id": c.get("id", "")
+                    }
+                    for idx, c in enumerate(relevant_chunks, 1)
+                ], ensure_ascii=False)
+                
+                # Gọi logger bọc trong try/except để không làm crash pipeline
+                try:
+                    from utils.experiment_logger import log_benchmark_run
+                    log_benchmark_run(state)
+                except Exception as log_err:
+                    print(f"[WARN] Benchmark logging failed: {log_err}")
+                    
         except Exception as e:
             import traceback
             print(f"[ERROR] generate_with_context failed: {traceback.format_exc()}")
