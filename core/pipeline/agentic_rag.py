@@ -484,8 +484,18 @@ def generate_agentic_response(
         if status_cb:
             status_cb("🔍 Đang tìm kiếm tài liệu...")
 
-        # 1. Search (dispatcher theo mode)
+        # 1. Search L1 (dispatcher theo mode)
         top_k = subject_cfg.prompt_hints.get("top_k", 5) if hasattr(subject_cfg, "prompt_hints") else 5
+        
+        # Đọc cấu hình chế độ RAG và kiểm soát CRAG
+        rag_cfg = get_config().get("rag", {})
+        rag_mode = rag_cfg.get("mode", "pure_rag")
+        
+        if state:
+            state.rag_mode = rag_mode
+            state.attempts = 1
+            state.rewrite_activated = 0
+
         try:
             import time
             start_retrieval = time.time()
@@ -500,36 +510,113 @@ def generate_agentic_response(
             yield f"❌ Lỗi tìm kiếm tài liệu: {e}\n\nVui lòng kiểm tra kết nối Ollama (chạy `ollama serve`) và thử lại."
             return
 
-        if not chunks:
-            print(f"[DEBUG AGENT] search({mode_used}) returned 0 chunks for query='{query}' subject='{subject_id}'")
-            yield "❌ Không tìm thấy tài liệu liên quan trong môn học này. Hãy đảm bảo bạn đã nạp tài liệu vào hệ thống."
-            return
-
-        # 2. Populate Retrieval Metrics
+        # 2. Populate Retrieval Metrics cho L1
         if state:
             _populate_retrieval_metrics(state, chunks, level=1, gt_docs=gt_docs, gt_pages=gt_pages)
 
-        # 2. Đọc cấu hình chế độ RAG và kiểm soát CRAG
-        rag_cfg = get_config().get("rag", {})
-        rag_mode = rag_cfg.get("mode", "pure_rag")
-        
-        if rag_mode == "pure_rag":
-            use_crag = False  # Khóa cứng vô hiệu hóa CRAG trong chế độ pure_rag
-        else:
-            use_crag = rag_cfg.get("enable_crag", True)
+        # 3. Chạy Grader Observer cho L1 (chỉ trong chế độ rag_grader hoặc agentic_light)
+        if rag_mode in ("rag_grader", "agentic_light"):
+            if status_cb:
+                status_cb("👁️ Đang đánh giá tài liệu L1...")
+            from core.pipeline.retrieval_grader import grade_documents
+            start_grade = time.time()
+            grader_res = grade_documents(query, chunks)
+            grade_duration = (time.time() - start_grade) * 1000
+            if state:
+                state.grader_score_l1 = grader_res["score"]
+                state.grader_explanation_l1 = grader_res["explanation"]
+                state.retrieval_success_grader_l1 = 1 if grader_res["score"] >= 3 else 0
+                state.grading_time_ms = grade_duration
 
-        # 3. Lọc CRAG Filter (chỉ khi được kích hoạt)
-        if use_crag:
-            relevant_chunks = evaluate_chunks(query, chunks)
-        else:
-            relevant_chunks = chunks  # Chế độ pure_rag sử dụng trực tiếp các chunks thô truy xuất được
+        # 4. Điều phối Mode RAG & Lọc CRAG
+        rewrite_triggered = False
+        relevant_chunks = []
 
-        # 3. Save relevant chunks to UI
+        if rag_mode == "agentic_light":
+            best_sim_l1 = state.best_similarity_l1 if state else (max([c.get("score", 0.0) for c in chunks]) if chunks else 0.0)
+            threshold = rag_cfg.get("rewrite_similarity_threshold", 0.40)
+            
+            # Điều kiện Rewrite: len(chunks) == 0 HOẶC best_similarity_l1 < threshold
+            if len(chunks) == 0 or best_sim_l1 < threshold:
+                rewrite_triggered = True
+                if status_cb:
+                    status_cb("📝 Độ tương đồng thấp. Đang viết lại câu truy vấn...")
+                
+                # Viết lại câu hỏi
+                start_rewrite = time.time()
+                rewritten = rewrite_query(query)
+                rewrite_duration = (time.time() - start_rewrite) * 1000
+                
+                if state:
+                    state.rewritten_query = rewritten
+                    state.rewrite_activated = 1
+                    state.attempts = 2
+                    state.rewrite_time_ms = rewrite_duration
+                
+                # Tìm kiếm Lượt 2 (L2)
+                if status_cb:
+                    status_cb("🔍 Đang tìm kiếm tài liệu L2...")
+                try:
+                    start_retrieval_l2 = time.time()
+                    chunks_l2, mode_used_l2 = retrieval_search(rewritten, subject_id, top_k=top_k, mode=search_mode)
+                    retrieval_duration_l2 = (time.time() - start_retrieval_l2) * 1000
+                    if state:
+                        state.retrieval_time_ms += retrieval_duration_l2
+                        _populate_retrieval_metrics(state, chunks_l2, level=2, gt_docs=gt_docs, gt_pages=gt_pages)
+                except Exception as e:
+                    import traceback
+                    print(f"[ERROR] search L2 failed: {traceback.format_exc()}")
+                    yield f"❌ Lỗi tìm kiếm tài liệu lượt 2: {e}"
+                    return
+                
+                # Grade L2 chunks
+                if status_cb:
+                    status_cb("👁️ Đang đánh giá tài liệu L2...")
+                start_grade_l2 = time.time()
+                grader_res_l2 = grade_documents(rewritten, chunks_l2)
+                grade_duration_l2 = (time.time() - start_grade_l2) * 1000
+                if state:
+                    state.grader_score_l2 = grader_res_l2["score"]
+                    state.grader_explanation_l2 = grader_res_l2["explanation"]
+                    state.retrieval_success_grader_l2 = 1 if grader_res_l2["score"] >= 3 else 0
+                    state.grading_time_ms += grade_duration_l2
+
+                # CRAG lọc L2
+                use_crag = rag_cfg.get("enable_crag", True)
+                if use_crag:
+                    relevant_chunks = evaluate_chunks(rewritten, chunks_l2)
+                else:
+                    relevant_chunks = chunks_l2
+            else:
+                # Không cần rewrite
+                use_crag = rag_cfg.get("enable_crag", True)
+                if use_crag:
+                    relevant_chunks = evaluate_chunks(query, chunks)
+                else:
+                    relevant_chunks = chunks
+        else:
+            # pure_rag hoặc rag_grader
+            if not chunks:
+                print(f"[DEBUG AGENT] search({mode_used}) returned 0 chunks for query='{query}' subject='{subject_id}'")
+                yield "❌ Không tìm thấy tài liệu liên quan trong môn học này. Hãy đảm bảo bạn đã nạp tài liệu vào hệ thống."
+                return
+                
+            use_crag = False if rag_mode == "pure_rag" else rag_cfg.get("enable_crag", True)
+            if use_crag:
+                relevant_chunks = evaluate_chunks(query, chunks)
+            else:
+                relevant_chunks = chunks
+
+        if not relevant_chunks:
+            yield "❌ Không tìm thấy tài liệu liên quan trong môn học này sau khi xử lý."
+            return
+
+        # 5. Lưu relevant chunks để hiển thị UI
         print(f"[DEBUG AGENT] Sending {len(relevant_chunks)} chunks to generator")
         if chunks_cb:
             chunks_cb(relevant_chunks)
 
-        # 4. Generate response
+        # 6. Sinh câu trả lời
         if status_cb:
             status_cb("✍️ Đang sinh câu trả lời...")
 
