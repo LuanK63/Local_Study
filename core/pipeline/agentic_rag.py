@@ -28,12 +28,23 @@ class AgentState:
         self.chunk_overlap = None      # Thiết lập động từ cấu hình tương ứng với chiến lược chunking (INTEGER)
         
         # Metadata môi trường thực thi (Phục vụ tái lập nghiên cứu)
-        self.git_commit_hash = ""      # Commit hash hiện tại của code benchmark
-        self.machine_name = ""         # Tên máy chạy thực nghiệm (ví dụ: PC-LUAN)
-        self.gpu_name = ""             # Tên GPU xử lý (ví dụ: RTX 4060)
-        self.ram_gb = 0                # Dung lượng RAM hệ thống (GB)
-        self.ollama_version = ""       # Phiên bản Ollama (ví dụ: 0.1.48)
-        self.os_version = ""           # Phiên bản hệ điều hành (ví dụ: Windows 11)
+        try:
+            from utils.system_info import collect_system_metadata
+            sys_meta = collect_system_metadata()
+            self.git_commit_hash = sys_meta.get("git_commit_hash", "")
+            self.machine_name = sys_meta.get("machine_name", "")
+            self.gpu_name = sys_meta.get("gpu_name", "")
+            self.ram_gb = sys_meta.get("ram_gb", 0)
+            self.ollama_version = sys_meta.get("ollama_version", "")
+            self.os_version = sys_meta.get("os_version", "")
+        except Exception as e:
+            print(f"[WARN] Failed to collect system metadata: {e}")
+            self.git_commit_hash = ""
+            self.machine_name = ""
+            self.gpu_name = ""
+            self.ram_gb = 0
+            self.ollama_version = ""
+            self.os_version = ""
         
         # Danh sách chunk lưu trong runtime phục vụ debug (Không ghi text thô vào SQLite)
         self.retrieved_chunks_l1 = []
