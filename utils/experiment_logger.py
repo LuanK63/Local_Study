@@ -257,17 +257,54 @@ def export_benchmark_to_csv(run_id: int):
         conn.close()
         return
         
-    columns = [description[0] for description in cur.description]
-    file_exists = os.path.exists(csv_path)
+    db_columns = [description[0] for description in cur.description]
+    row_dict = dict(row)
     
+    file_exists = os.path.exists(csv_path)
+    existing_headers = []
+    existing_rows = []
+    
+    if file_exists:
+        try:
+            with open(csv_path, mode="r", newline="", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                rows = list(reader)
+                if rows:
+                    existing_headers = rows[0]
+                    existing_rows = rows[1:]
+        except Exception as e:
+            print(f"[WARN] Error reading existing CSV: {e}")
+            file_exists = False
+            
+    needs_rewrite = False
+    if not file_exists or not existing_headers:
+        existing_headers = db_columns
+        needs_rewrite = True
+    else:
+        # Check for columns in the DB that are not in the CSV header
+        missing_cols = [col for col in db_columns if col not in existing_headers]
+        if missing_cols:
+            existing_headers.extend(missing_cols)
+            # Pad existing rows
+            for i in range(len(existing_rows)):
+                existing_rows[i].extend([""] * len(missing_cols))
+            needs_rewrite = True
+            
+    if needs_rewrite:
+        with open(csv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(existing_headers)
+            if existing_rows:
+                writer.writerows(existing_rows)
+                
+    new_row_values = [row_dict.get(col, "") for col in existing_headers]
     with open(csv_path, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(columns)
-        writer.writerow([row[col] for col in columns])
+        writer.writerow(new_row_values)
         
     conn.close()
     print(f"[ExperimentLogger] Exported benchmark run {run_id} to {csv_path}")
+
 
 
 def log_benchmark_run(state) -> int:
