@@ -11,7 +11,227 @@ from typing import Generator, Callable
 from utils.config import get_config
 from core.retrieval.hybrid_retriever import hybrid_search, search as retrieval_search
 from modules.code_sandbox import run_python
+class AgentState:
+    def __init__(self, query: str, rag_mode: str, chunking_strategy: str, question_id: int):
+        # Metadata
+        self.question_id = question_id
+        self.query = query
+        self.rewritten_query = ""
+        self.rag_mode = rag_mode
+        self.chunking_strategy = chunking_strategy
+        self.chunking_version = "v1"   # Version của chunking để tránh benchmark cũ bị mất ý nghĩa khi tinh chỉnh tham số
+        self.attempts = 1
+        self.experiment_seed = 42
+        self.dataset_version = "ds_v1"
+        self.prompt_template_version = "prompt_v1"
+        self.chunk_size = None         # Thiết lập động từ cấu hình tương ứng với chiến lược chunking (INTEGER)
+        self.chunk_overlap = None      # Thiết lập động từ cấu hình tương ứng với chiến lược chunking (INTEGER)
+        
+        # Metadata môi trường thực thi (Phục vụ tái lập nghiên cứu)
+        self.git_commit_hash = ""      # Commit hash hiện tại của code benchmark
+        self.machine_name = ""         # Tên máy chạy thực nghiệm (ví dụ: PC-LUAN)
+        self.gpu_name = ""             # Tên GPU xử lý (ví dụ: RTX 4060)
+        self.ram_gb = 0                # Dung lượng RAM hệ thống (GB)
+        self.ollama_version = ""       # Phiên bản Ollama (ví dụ: 0.1.48)
+        self.os_version = ""           # Phiên bản hệ điều hành (ví dụ: Windows 11)
+        
+        # Danh sách chunk lưu trong runtime phục vụ debug (Không ghi text thô vào SQLite)
+        self.retrieved_chunks_l1 = []
+        self.retrieved_chunks_l2 = []
+        self.final_chunks = []
+        
+        # Thống kê số lượng chunk phân tách theo Lượt 1 và Lượt 2
+        self.raw_retrieved_count_l1 = 0
+        self.raw_retrieved_count_l2 = 0
+        self.filtered_chunk_count_l1 = 0
+        self.filtered_chunk_count_l2 = 0
+        self.context_chunk_count = 0  
+        self.context_char_count = 0
+        
+        # Cấu trúc JSON chi tiết lưu vào SQLite phục vụ debug/tái lập (mỗi đối tượng lưu đầy đủ: rank, similarity, document, page, chunk_id)
+        self.retrieved_chunks_json_l1 = "[]"
+        self.retrieved_chunks_json_l2 = "[]"
+        self.final_chunks_json = "[]"
+        
+        # Chỉ số vị trí trích xuất đúng đầu tiên (phục vụ MRR)
+        self.first_relevant_rank_l1 = 999
+        self.first_relevant_rank_l2 = 999
+        
+        # Chỉ số Hit@k và Recall@k lưu trực tiếp (k = 1, 3, 5)
+        self.hit_at_1_l1 = 0
+        self.hit_at_3_l1 = 0
+        self.hit_at_5_l1 = 0
+        self.recall_at_1_l1 = 0.0
+        self.recall_at_3_l1 = 0.0
+        self.recall_at_5_l1 = 0.0
+        
+        self.hit_at_1_l2 = 0
+        self.hit_at_3_l2 = 0
+        self.hit_at_5_l2 = 0
+        self.recall_at_1_l2 = 0.0
+        self.recall_at_3_l2 = 0.0
+        self.recall_at_5_l2 = 0.0
+        
+        # Điểm tương đồng cosine tốt nhất của Lượt 1 và Lượt 2
+        self.best_similarity_l1 = 0.0
+        self.best_similarity_l2 = 0.0
+        
+        # Kết quả đánh giá
+        self.grader_score_l1 = 0
+        self.grader_score_l2 = 0
+        self.grader_explanation_l1 = "" # Chỉ giữ ở runtime phục vụ in log debug, không ghi vào SQLite
+        self.grader_explanation_l2 = "" # Chỉ giữ ở runtime phục vụ in log debug, không ghi vào SQLite
+        self.retrieval_success_grader_l1 = 0  # 1 nếu grader_score_l1 >= 3, ngược lại 0
+        self.retrieval_success_grader_l2 = 0  # 1 nếu grader_score_l2 >= 3, ngược lại 0
+        
+        self.rewrite_activated = 0     # 0: No, 1: Yes
+        self.final_answer = ""         # Lưu văn bản câu trả lời để chấm điểm accuracy thủ công
+        
+        # Chỉ số Tokens (Ollama metadata)
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.total_tokens = 0
+        
+        # Latency Metrics (ms)
+        self.retrieval_time_ms = 0.0
+        self.grading_time_ms = 0.0
+        self.rewrite_time_ms = 0.0
+        self.generation_time_ms = 0.0
+        self.total_time_ms = 0.0
+        
+        self.final_answer_length = 0
+def _compute_retrieval_metrics(chunks: list[dict], gt_docs: list[str], gt_pages: list[int]):
+    """
+    Computes Hit@k, Recall@k, and first_relevant_rank for k = 1, 3, 5.
+    Returns:
+        hit_at_1, hit_at_3, hit_at_5,
+        recall_at_1, recall_at_3, recall_at_5,
+        first_relevant_rank
+    """
+    import os
+    if not gt_docs:
+        return 0, 0, 0, 0.0, 0.0, 0.0, 999
 
+    # Normalize gt docs and create target pairs
+    gt_docs_norm = [os.path.splitext(d.lower())[0] for d in gt_docs]
+    gt_pairs = set()
+    
+    # If gt_pages exists and is of same length, zip. Otherwise, cross product.
+    if gt_pages and len(gt_docs) == len(gt_pages):
+        for d, p in zip(gt_docs_norm, gt_pages):
+            gt_pairs.add((d, p))
+    else:
+        for d in gt_docs_norm:
+            if gt_pages:
+                for p in gt_pages:
+                    gt_pairs.add((d, p))
+            else:
+                gt_pairs.add((d, None))
+
+    first_relevant_rank = 999
+    
+    # Calculate values at k = 1, 3, 5
+    metrics = {}
+    for k in (1, 3, 5):
+        sub_chunks = chunks[:k]
+        found_pairs = set()
+        for idx, c in enumerate(sub_chunks, 1):
+            c_doc = os.path.splitext(c.get("doc_name", "").lower())[0]
+            try:
+                c_page = int(c.get("page_num"))
+            except (ValueError, TypeError):
+                c_page = None
+                
+            is_match = False
+            if (c_doc, c_page) in gt_pairs or (c_doc, None) in gt_pairs:
+                is_match = True
+            
+            if is_match:
+                found_pairs.add((c_doc, c_page) if c_page is not None else (c_doc, None))
+                if first_relevant_rank == 999 or idx < first_relevant_rank:
+                    first_relevant_rank = idx
+                    
+        hit = 1 if len(found_pairs) > 0 else 0
+        recall = len(found_pairs) / len(gt_pairs) if len(gt_pairs) > 0 else 0.0
+        metrics[f"hit_at_{k}"] = hit
+        metrics[f"recall_at_{k}"] = recall
+
+    # Adjust first_relevant_rank if it wasn't found in top 5, but might be in overall chunks
+    if first_relevant_rank == 999:
+        for idx, c in enumerate(chunks, 1):
+            c_doc = os.path.splitext(c.get("doc_name", "").lower())[0]
+            try:
+                c_page = int(c.get("page_num"))
+            except (ValueError, TypeError):
+                c_page = None
+            if (c_doc, c_page) in gt_pairs or (c_doc, None) in gt_pairs:
+                first_relevant_rank = idx
+                break
+
+    return (
+        metrics["hit_at_1"], metrics["hit_at_3"], metrics["hit_at_5"],
+        metrics["recall_at_1"], metrics["recall_at_3"], metrics["recall_at_5"],
+        first_relevant_rank
+    )
+
+
+def _populate_retrieval_metrics(state, chunks: list[dict], level: int, gt_docs: list[str] = None, gt_pages: list[int] = None):
+    """
+    Populates retrieval metrics into AgentState for Lượt 1 or Lượt 2.
+    level: 1 or 2
+    """
+    import json
+    if not state:
+        return
+        
+    # Ghi nhận raw count
+    if level == 1:
+        state.raw_retrieved_count_l1 = len(chunks)
+    else:
+        state.raw_retrieved_count_l2 = len(chunks)
+        
+    # Ghi nhận JSON danh sách các chunks được truy xuất
+    chunks_json = []
+    for rank, c in enumerate(chunks, 1):
+        chunks_json.append({
+            "rank": rank,
+            "similarity": c.get("score", 0.0),
+            "document": c.get("doc_name", "unknown"),
+            "page": c.get("page_num", 0),
+            "chunk_id": c.get("id", "")
+        })
+    chunks_json_str = json.dumps(chunks_json, ensure_ascii=False)
+    if level == 1:
+        state.retrieved_chunks_json_l1 = chunks_json_str
+    else:
+        state.retrieved_chunks_json_l2 = chunks_json_str
+        
+    # Ghi nhận cosine similarity tốt nhất
+    best_sim = max([c.get("score", 0.0) for c in chunks]) if chunks else 0.0
+    if level == 1:
+        state.best_similarity_l1 = best_sim
+    else:
+        state.best_similarity_l2 = best_sim
+        
+    # Tính toán Retrieval Metrics
+    if gt_docs:
+        hit_1, hit_3, hit_5, recall_1, recall_3, recall_5, mrr = _compute_retrieval_metrics(chunks, gt_docs, gt_pages)
+        if level == 1:
+            state.hit_at_1_l1 = hit_1
+            state.hit_at_3_l1 = hit_3
+            state.hit_at_5_l1 = hit_5
+            state.recall_at_1_l1 = recall_1
+            state.recall_at_3_l1 = recall_3
+            state.recall_at_5_l1 = recall_5
+            state.first_relevant_rank_l1 = mrr
+        else:
+            state.hit_at_1_l2 = hit_1
+            state.hit_at_3_l2 = hit_3
+            state.hit_at_5_l2 = hit_5
+            state.recall_at_1_l2 = recall_1
+            state.recall_at_3_l2 = recall_3
+            state.recall_at_5_l2 = recall_5
+            state.first_relevant_rank_l2 = mrr
 # ── SYSTEM PROMPTS ────────────────────────────────────────────────────────────
 
 SYSTEM_CODE_AGENT_PROMPT = """Bạn là trợ lý học tập chuyên lập trình và toán học.
@@ -185,6 +405,9 @@ def generate_agentic_response(
     status_cb: Callable[[str], None] = None,
     chunks_cb: Callable[[list[dict]], None] = None,
     search_mode: str | None = None,   # None = đọc từ global_config
+    state: AgentState | None = None,
+    gt_docs: list[str] | None = None,
+    gt_pages: list[int] | None = None,
 ) -> Generator[str, None, None]:
     """
     Main entry point for Agentic RAG.
@@ -253,7 +476,12 @@ def generate_agentic_response(
         # 1. Search (dispatcher theo mode)
         top_k = subject_cfg.prompt_hints.get("top_k", 5) if hasattr(subject_cfg, "prompt_hints") else 5
         try:
+            import time
+            start_retrieval = time.time()
             chunks, mode_used = retrieval_search(query, subject_id, top_k=top_k, mode=search_mode)
+            retrieval_duration = (time.time() - start_retrieval) * 1000
+            if state:
+                state.retrieval_time_ms = retrieval_duration
         except Exception as e:
             import traceback
             err_msg = traceback.format_exc()
@@ -266,8 +494,24 @@ def generate_agentic_response(
             yield "❌ Không tìm thấy tài liệu liên quan trong môn học này. Hãy đảm bảo bạn đã nạp tài liệu vào hệ thống."
             return
 
-        # 2. Filter by RRF score (fast, deterministic — no LLM call needed)
-        relevant_chunks = evaluate_chunks(query, chunks)  # never returns empty
+        # 2. Populate Retrieval Metrics
+        if state:
+            _populate_retrieval_metrics(state, chunks, level=1, gt_docs=gt_docs, gt_pages=gt_pages)
+
+        # 2. Đọc cấu hình chế độ RAG và kiểm soát CRAG
+        rag_cfg = get_config().get("rag", {})
+        rag_mode = rag_cfg.get("mode", "pure_rag")
+        
+        if rag_mode == "pure_rag":
+            use_crag = False  # Khóa cứng vô hiệu hóa CRAG trong chế độ pure_rag
+        else:
+            use_crag = rag_cfg.get("enable_crag", True)
+
+        # 3. Lọc CRAG Filter (chỉ khi được kích hoạt)
+        if use_crag:
+            relevant_chunks = evaluate_chunks(query, chunks)
+        else:
+            relevant_chunks = chunks  # Chế độ pure_rag sử dụng trực tiếp các chunks thô truy xuất được
 
         # 3. Save relevant chunks to UI
         print(f"[DEBUG AGENT] Sending {len(relevant_chunks)} chunks to generator")
