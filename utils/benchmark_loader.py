@@ -46,3 +46,21 @@ def load_benchmark_questions(filepath: str = "data/experiments/benchmark_questio
     random.seed(seed)
     random.shuffle(questions)
     return questions
+
+
+def get_ground_truth_mapping(filepath: str = "data/experiments/benchmark_questions.csv") -> dict[int, dict]:
+    """
+    Loads benchmark questions and returns a dictionary mapping question_id -> {
+        "ground_truth_docs": list[str],
+        "ground_truth_pages": list[int]
+    }
+    """
+    questions = load_benchmark_questions(filepath)
+    return {
+        q["id"]: {
+            "ground_truth_docs": q["ground_truth_docs"],
+            "ground_truth_pages": q["ground_truth_pages"]
+        }
+        for q in questions
+    }
+

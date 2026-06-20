@@ -111,81 +111,6 @@ class AgentState:
         self.total_time_ms = 0.0
         
         self.final_answer_length = 0
-def _compute_retrieval_metrics(chunks: list[dict], gt_docs: list[str], gt_pages: list[int]):
-    """
-    Computes Hit@k, Recall@k, and first_relevant_rank for k = 1, 3, 5.
-    Returns:
-        hit_at_1, hit_at_3, hit_at_5,
-        recall_at_1, recall_at_3, recall_at_5,
-        first_relevant_rank
-    """
-    import os
-    if not gt_docs:
-        return 0, 0, 0, 0.0, 0.0, 0.0, 999
-
-    # Normalize gt docs and create target pairs
-    gt_docs_norm = [os.path.splitext(d.lower())[0] for d in gt_docs]
-    gt_pairs = set()
-    
-    # If gt_pages exists and is of same length, zip. Otherwise, cross product.
-    if gt_pages and len(gt_docs) == len(gt_pages):
-        for d, p in zip(gt_docs_norm, gt_pages):
-            gt_pairs.add((d, p))
-    else:
-        for d in gt_docs_norm:
-            if gt_pages:
-                for p in gt_pages:
-                    gt_pairs.add((d, p))
-            else:
-                gt_pairs.add((d, None))
-
-    first_relevant_rank = 999
-    
-    # Calculate values at k = 1, 3, 5
-    metrics = {}
-    for k in (1, 3, 5):
-        sub_chunks = chunks[:k]
-        found_pairs = set()
-        for idx, c in enumerate(sub_chunks, 1):
-            c_doc = os.path.splitext(c.get("doc_name", "").lower())[0]
-            try:
-                c_page = int(c.get("page_num"))
-            except (ValueError, TypeError):
-                c_page = None
-                
-            is_match = False
-            if (c_doc, c_page) in gt_pairs or (c_doc, None) in gt_pairs:
-                is_match = True
-            
-            if is_match:
-                found_pairs.add((c_doc, c_page) if c_page is not None else (c_doc, None))
-                if first_relevant_rank == 999 or idx < first_relevant_rank:
-                    first_relevant_rank = idx
-                    
-        hit = 1 if len(found_pairs) > 0 else 0
-        recall = len(found_pairs) / len(gt_pairs) if len(gt_pairs) > 0 else 0.0
-        metrics[f"hit_at_{k}"] = hit
-        metrics[f"recall_at_{k}"] = recall
-
-    # Adjust first_relevant_rank if it wasn't found in top 5, but might be in overall chunks
-    if first_relevant_rank == 999:
-        for idx, c in enumerate(chunks, 1):
-            c_doc = os.path.splitext(c.get("doc_name", "").lower())[0]
-            try:
-                c_page = int(c.get("page_num"))
-            except (ValueError, TypeError):
-                c_page = None
-            if (c_doc, c_page) in gt_pairs or (c_doc, None) in gt_pairs:
-                first_relevant_rank = idx
-                break
-
-    return (
-        metrics["hit_at_1"], metrics["hit_at_3"], metrics["hit_at_5"],
-        metrics["recall_at_1"], metrics["recall_at_3"], metrics["recall_at_5"],
-        first_relevant_rank
-    )
-
-
 def _populate_retrieval_metrics(state, chunks: list[dict], level: int, gt_docs: list[str] = None, gt_pages: list[int] = None):
     """
     Populates retrieval metrics into AgentState for Lượt 1 or Lượt 2.
@@ -226,23 +151,24 @@ def _populate_retrieval_metrics(state, chunks: list[dict], level: int, gt_docs: 
         
     # Tính toán Retrieval Metrics
     if gt_docs:
-        hit_1, hit_3, hit_5, recall_1, recall_3, recall_5, mrr = _compute_retrieval_metrics(chunks, gt_docs, gt_pages)
+        from utils.retrieval_metrics import compute_retrieval_metrics
+        res = compute_retrieval_metrics(chunks, gt_docs, gt_pages)
         if level == 1:
-            state.hit_at_1_l1 = hit_1
-            state.hit_at_3_l1 = hit_3
-            state.hit_at_5_l1 = hit_5
-            state.recall_at_1_l1 = recall_1
-            state.recall_at_3_l1 = recall_3
-            state.recall_at_5_l1 = recall_5
-            state.first_relevant_rank_l1 = mrr
+            state.hit_at_1_l1 = res["hit_at_1"]
+            state.hit_at_3_l1 = res["hit_at_3"]
+            state.hit_at_5_l1 = res["hit_at_5"]
+            state.recall_at_1_l1 = res["recall_at_1"]
+            state.recall_at_3_l1 = res["recall_at_3"]
+            state.recall_at_5_l1 = res["recall_at_5"]
+            state.first_relevant_rank_l1 = res["first_relevant_rank"]
         else:
-            state.hit_at_1_l2 = hit_1
-            state.hit_at_3_l2 = hit_3
-            state.hit_at_5_l2 = hit_5
-            state.recall_at_1_l2 = recall_1
-            state.recall_at_3_l2 = recall_3
-            state.recall_at_5_l2 = recall_5
-            state.first_relevant_rank_l2 = mrr
+            state.hit_at_1_l2 = res["hit_at_1"]
+            state.hit_at_3_l2 = res["hit_at_3"]
+            state.hit_at_5_l2 = res["hit_at_5"]
+            state.recall_at_1_l2 = res["recall_at_1"]
+            state.recall_at_3_l2 = res["recall_at_3"]
+            state.recall_at_5_l2 = res["recall_at_5"]
+            state.first_relevant_rank_l2 = res["first_relevant_rank"]
 # ── SYSTEM PROMPTS ────────────────────────────────────────────────────────────
 
 SYSTEM_CODE_AGENT_PROMPT = """Bạn là trợ lý học tập chuyên lập trình và toán học.
@@ -491,10 +417,54 @@ def generate_agentic_response(
         rag_cfg = get_config().get("rag", {})
         rag_mode = rag_cfg.get("mode", "pure_rag")
         
+        # Tự động nạp Ground Truth từ benchmark_loader nếu chưa có
+        if gt_docs is None or gt_pages is None:
+            try:
+                from utils.benchmark_loader import get_ground_truth_mapping
+                mapping = get_ground_truth_mapping()
+                resolved = False
+                if state and state.question_id in mapping:
+                    gt_info = mapping[state.question_id]
+                    if gt_docs is None:
+                        gt_docs = gt_info["ground_truth_docs"]
+                    if gt_pages is None:
+                        gt_pages = gt_info["ground_truth_pages"]
+                    resolved = True
+                
+                if not resolved:
+                    from utils.benchmark_loader import load_benchmark_questions
+                    questions = load_benchmark_questions()
+                    q_clean = query.strip().lower()
+                    for q in questions:
+                        if q["question"].strip().lower() == q_clean:
+                            if gt_docs is None:
+                                gt_docs = q["ground_truth_docs"]
+                            if gt_pages is None:
+                                gt_pages = q["ground_truth_pages"]
+                            break
+            except Exception as e:
+                print(f"[WARN] Failed to auto-resolve ground truth: {e}")
+        
         if state:
             state.rag_mode = rag_mode
             state.attempts = 1
             state.rewrite_activated = 0
+            
+            # Đồng bộ cấu hình chiến lược chunking động từ config
+            ret_cfg = get_config().get("retrieval", {})
+            state.chunking_strategy = ret_cfg.get("chunking_strategy", "fixed")
+            if state.chunking_strategy == "fixed":
+                state.chunk_size = ret_cfg.get("fixed_chunk_size", 300)
+                state.chunk_overlap = ret_cfg.get("fixed_chunk_overlap", 30)
+            elif state.chunking_strategy == "recursive":
+                state.chunk_size = ret_cfg.get("recursive_chunk_size", 300)
+                state.chunk_overlap = ret_cfg.get("recursive_chunk_overlap", 30)
+            elif state.chunking_strategy == "parent_child":
+                state.chunk_size = ret_cfg.get("child_chunk_size", 300)
+                state.chunk_overlap = ret_cfg.get("child_chunk_overlap", 30)
+            elif state.chunking_strategy == "semantic":
+                state.chunk_size = None
+                state.chunk_overlap = None
 
         try:
             import time
