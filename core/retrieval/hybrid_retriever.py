@@ -10,11 +10,14 @@ Parent-Child Chunking:
   - _parent_cache là L1 in-memory cache để tránh query SQLite lặp lại trong 1 session.
 """
 from pathlib import Path
+import time
 import unicodedata
 from utils.config import get_config
 from core.document_processor.pdf_reader import read_pdf
 from core.document_processor.docx_reader import read_docx
-from core.document_processor.chunker import chunk_pages_hierarchical, ParentChunk
+from core.document_processor.chunker import ParentChunk
+from core.document_processor.chunking.factory import get_chunker
+from utils.experiment_logger import log_ingestion
 from core.retrieval.vector_search import (
     index_parent_chunks, vector_search, collection_count, delete_chunks_by_doc
 )
@@ -162,6 +165,7 @@ def ingest_document(
     file_path: str | Path,
     subject_id: str,
     progress_cb=None,
+    max_pages: int | None = None,
 ) -> int:
     """
     Full pipeline: read → hierarchical chunk → embed (child) → store.
@@ -186,7 +190,7 @@ def ingest_document(
 
     # ── Read ──────────────────────────────────────────────────────────────────
     if ext == ".pdf":
-        pages = read_pdf(path, progress_cb=_read_progress)
+        pages = read_pdf(path, progress_cb=_read_progress, max_pages=max_pages)
     elif ext in (".docx", ".doc"):
         pages = read_docx(path)
         if progress_cb:
@@ -194,16 +198,16 @@ def ingest_document(
     else:
         raise ValueError(f"Unsupported file type: {ext}")
 
-    # ── Hierarchical Chunk ────────────────────────────────────────────────────
-    parent_chunks: list[ParentChunk] = chunk_pages_hierarchical(
-        pages,
-        parent_size=cfg.get("parent_chunk_size", 1200),
-        child_size=cfg.get("child_chunk_size", 300),
-        child_overlap=cfg.get("child_chunk_overlap", 30),
-    )
+    # ── Chunking ──────────────────────────────────────────────────────────────
+    start_time = time.time()
+    
+    chunker = get_chunker()
+    parent_chunks = chunker.split_documents(pages)
 
     if not parent_chunks:
         return 0
+        
+    indexing_time_s = time.time() - start_time
 
     # ── Index child chunks vào ChromaDB ──────────────────────────────────────
     index_parent_chunks(parent_chunks, subject_id, progress_cb=_index_progress)
@@ -232,6 +236,36 @@ def ingest_document(
     build_bm25_index(updated, subject_id)
 
     total_children = sum(len(p.children) for p in parent_chunks)
+    
+    # ── Log Ingestion to DB & CSV ─────────────────────────────────────────────
+    try:
+        strategy_name = type(chunker).__name__.replace("Chunker", "").lower()
+        if hasattr(chunker, "child_size"):
+            c_size = chunker.child_size
+            c_overlap = chunker.child_overlap
+        elif hasattr(chunker, "chunk_size"):
+            c_size = chunker.chunk_size
+            c_overlap = chunker.chunk_overlap
+        else:
+            c_size = 0
+            c_overlap = 0
+            
+        chunk_lengths = [int(len(child["text"].split()) * 1.3) for child in child_dicts]
+        total_tokens = sum(chunk_lengths)
+        
+        log_ingestion(
+            subject_id=subject_id,
+            strategy=strategy_name,
+            chunk_size=c_size,
+            chunk_overlap=c_overlap,
+            num_chunks=total_children,
+            chunk_lengths=chunk_lengths,
+            total_tokens=total_tokens,
+            indexing_time_s=indexing_time_s
+        )
+    except Exception as log_err:
+        print(f"[WARN] Failed to log ingestion metrics: {log_err}")
+
     print(
         f"[Ingest] '{subject_id}': {len(parent_chunks)} parents saved to SQLite, "
         f"{total_children} child chunks indexed"

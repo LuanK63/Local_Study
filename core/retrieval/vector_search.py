@@ -18,8 +18,6 @@ if "onnxruntime" not in sys.modules:
     sys.modules["onnxruntime"] = _DummyModule("onnxruntime")
 if "tokenizers" not in sys.modules:
     sys.modules["tokenizers"] = _DummyModule("tokenizers")
-if "tqdm" not in sys.modules:
-    sys.modules["tqdm"] = _DummyModule("tqdm")
 # ──────────────────────────────────────────────────────────────────────────────
 
 import chromadb
@@ -37,7 +35,11 @@ def _get_client() -> chromadb.PersistentClient:
     if _client is None:
         db_path = get_config()["chromadb"]["path"]
         Path(db_path).mkdir(parents=True, exist_ok=True)
-        _client = chromadb.PersistentClient(path=db_path)
+        from chromadb.config import Settings
+        _client = chromadb.PersistentClient(
+            path=db_path,
+            settings=Settings(anonymized_telemetry=False)
+        )
     return _client
 
 

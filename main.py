@@ -28,7 +28,7 @@ class _DummyModule(types.ModuleType):
     def __iter__(self):
         return iter([])
 
-for _mod in ("onnxruntime", "tokenizers", "tqdm"):
+for _mod in ("onnxruntime", "tokenizers"):
     if _mod not in sys.modules:
         sys.modules[_mod] = _DummyModule(_mod)
 # ─────────────────────────────────────────────────────────────────────────────

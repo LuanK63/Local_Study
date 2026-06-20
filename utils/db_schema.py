@@ -233,6 +233,20 @@ def init_db():
             total_time_ms               REAL NOT NULL,
             final_answer_length         INTEGER NOT NULL
         );
+        -- Bảng 2: evaluation_results (Human Evaluation Layer)
+        -- Chỉ ghi kết quả chấm điểm thủ công, tách biệt khỏi runtime.
+        CREATE TABLE IF NOT EXISTS evaluation_results (
+            id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+            run_id                  INTEGER NOT NULL,
+            evaluator               TEXT DEFAULT 'student',
+            answer_accuracy         INTEGER NOT NULL,
+            citation_accuracy       REAL NOT NULL,
+            notes                   TEXT,
+            evaluated_at            TEXT NOT NULL,
+            FOREIGN KEY(run_id) REFERENCES benchmark_runs(id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_eval_results_run_id
+            ON evaluation_results(run_id);
     """)
 
     # ── Idempotent Migration for experiment_runs ──────────────────────────────
@@ -332,6 +346,18 @@ def init_db():
                     alter_def = alter_def.replace("NOT NULL", "")
                 cur.execute(f"ALTER TABLE benchmark_runs ADD COLUMN {col_name} {alter_def}")
                 print(f"[DB Migration] Added column '{col_name}' to 'benchmark_runs'")
+
+    # ── Idempotent Migration for evaluation_results ──────────────────────────
+    cur.execute("PRAGMA table_info(evaluation_results)")
+    existing_eval_columns = [row[1] for row in cur.fetchall()]
+    expected_eval_cols = {
+        "evaluated_at": "TEXT",
+        "notes":        "TEXT",
+    }
+    for col_name, col_type in expected_eval_cols.items():
+        if col_name not in existing_eval_columns:
+            cur.execute(f"ALTER TABLE evaluation_results ADD COLUMN {col_name} {col_type}")
+            print(f"[DB Migration] Added column '{col_name}' to 'evaluation_results'")
 
     conn.commit()
     conn.close()

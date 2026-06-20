@@ -596,22 +596,29 @@ def generate_agentic_response(
         if status_cb:
             status_cb("✍️ Đang sinh câu trả lời...")
 
-        from core.pipeline.answer_generator import generate_with_context
+        from core.pipeline.answer_generator import generate_with_token_metadata
         hint = subject_cfg.prompt_hints.get("explain", "") if hasattr(subject_cfg, "prompt_hints") else ""
 
         try:
             import time
             start_gen = time.time()
-            ans_gen = generate_with_context(query, relevant_chunks, system_hint=hint, stream=True)
+            ans_gen, token_meta_holder = generate_with_token_metadata(query, relevant_chunks, system_hint=hint)
             full_ans = []
-            if isinstance(ans_gen, Generator):
-                for token in ans_gen:
-                    full_ans.append(token)
-                    yield token
-            else:
-                full_ans.append(ans_gen)
-                yield ans_gen
+            for token in ans_gen:
+                full_ans.append(token)
+                yield token
             gen_duration = (time.time() - start_gen) * 1000
+            
+            # Ánh xạ Token Metadata từ Ollama → AgentState
+            # Ollama field: prompt_eval_count → prompt_tokens
+            # Ollama field: eval_count        → completion_tokens
+            if state:
+                state.prompt_tokens    = token_meta_holder.get("prompt_eval_count", 0) or 0
+                state.completion_tokens = token_meta_holder.get("eval_count", 0) or 0
+                state.total_tokens     = state.prompt_tokens + state.completion_tokens
+                if state.total_tokens == 0:
+                    print("[WARN] Token metadata not returned by Ollama (prompt_eval_count/eval_count = 0)")
+
             
             if state:
                 state.final_answer = "".join(full_ans)

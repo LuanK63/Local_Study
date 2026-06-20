@@ -25,7 +25,11 @@ def generate(
     user_prompt: str,
     stream: bool = False,
     temperature: float = None,
-) -> str | Generator[str, None, None]:
+) -> str | Generator:
+    """
+    Legacy wrapper — returns only text (str) for non-stream, or token Generator for stream.
+    Use generate_with_token_metadata() when token metrics are needed.
+    """
     cfg = _get_llm_cfg()
     payload = {
         "model":   cfg["model"],
@@ -37,17 +41,36 @@ def generate(
     if stream:
         return _stream(url, payload, cfg["timeout"])
     else:
-        return _blocking(url, payload, cfg["timeout"])
+        text, _meta = _blocking(url, payload, cfg["timeout"])
+        return text
 
 
-def _blocking(url: str, payload: dict, timeout: int) -> str:
+def _blocking(url: str, payload: dict, timeout: int) -> tuple[str, dict]:
+    """
+    Returns (text, token_meta) where token_meta has keys:
+        prompt_eval_count  (= prompt_tokens)
+        eval_count         (= completion_tokens)
+    Both default to 0 if Ollama does not return them.
+    """
     with httpx.Client(timeout=timeout) as client:
         resp = client.post(url, json={**payload, "stream": False})
         resp.raise_for_status()
-        return resp.json()["message"]["content"]
+        body = resp.json()
+        text = body.get("message", {}).get("content", "")
+        token_meta = {
+            "prompt_eval_count": body.get("prompt_eval_count", 0) or 0,
+            "eval_count":        body.get("eval_count", 0) or 0,
+        }
+        return text, token_meta
 
 
-def _stream(url: str, payload: dict, timeout: int) -> Generator[str, None, None]:
+def _stream(url: str, payload: dict, timeout: int) -> Generator[str | dict, None, None]:
+    """
+    Yields text tokens, then at the end yields a single sentinel dict:
+        {"__token_meta__": True, "prompt_eval_count": N, "eval_count": M}
+    so callers can capture Ollama usage metadata.
+    """
+    token_meta = {"prompt_eval_count": 0, "eval_count": 0}
     with httpx.Client(timeout=timeout) as client:
         with client.stream("POST", url, json={**payload, "stream": True}) as resp:
             resp.raise_for_status()
@@ -59,9 +82,14 @@ def _stream(url: str, payload: dict, timeout: int) -> Generator[str, None, None]
                         if token:
                             yield token
                         if data.get("done"):
+                            # Capture token metadata from the final "done" chunk
+                            token_meta["prompt_eval_count"] = data.get("prompt_eval_count", 0) or 0
+                            token_meta["eval_count"]        = data.get("eval_count", 0) or 0
                             break
                     except json.JSONDecodeError:
                         continue
+    # Yield sentinel so callers can extract token metadata
+    yield {"__token_meta__": True, **token_meta}
 
 
 # ── System Prompt ──────────────────────────────────────────────────────────────
@@ -174,3 +202,96 @@ def generate_with_context(
         if not is_no_info and "**Nguồn:**" not in result:
             result += sources_block
         return result
+
+
+def generate_with_token_metadata(
+    query: str,
+    context_chunks: list[dict],
+    system_hint: str = "",
+) -> tuple[Generator, dict]:
+    """
+    Sinh câu trả lời có thu thập Token Metadata từ Ollama.
+
+    Pipeline chính dùng hàm này thay vì generate_with_context() để nhận token info.
+
+    Returns:
+        (stream_gen, token_meta_holder)
+        - stream_gen: Generator yield từng text token (không bao gồm sentinel)
+        - token_meta_holder: dict {"prompt_eval_count": 0, "eval_count": 0}
+          Được cập nhật IN-PLACE khi stream kết thúc.
+
+    Mapping Ollama → AgentState:
+        prompt_eval_count  →  state.prompt_tokens
+        eval_count         →  state.completion_tokens
+    """
+    if not context_chunks:
+        no_ctx = (
+            "Không tìm thấy thông tin trong tài liệu đã cung cấp.\n\n"
+            "---\n**Nguồn:** (không có đoạn nào được tìm thấy)"
+        )
+        token_meta_holder = {"prompt_eval_count": 0, "eval_count": 0}
+
+        def _empty_gen():
+            yield no_ctx
+
+        return _empty_gen(), token_meta_holder
+
+    # Build context
+    context_parts = []
+    source_lines  = []
+    seen_sources: set[str] = set()
+
+    for i, chunk in enumerate(context_chunks, 1):
+        doc  = chunk.get("doc_name", "unknown")
+        page = chunk.get("page_num", "?")
+        text = chunk.get("text", "").strip()
+        context_parts.append(f"[{i}] (Tài liệu: {doc}, Trang {page})\n{text}")
+
+        src_key = f"{doc}:{page}"
+        if src_key not in seen_sources:
+            seen_sources.add(src_key)
+            source_lines.append(f"[{i}] {doc} — Trang {page}")
+
+    context_str   = "\n\n---\n\n".join(context_parts)
+    sources_block = _build_sources_block(source_lines)
+
+    system = _SYSTEM_PROMPT + (f"\n\nGợi ý môn học: {system_hint}" if system_hint else "")
+    user = (
+        f"TÀI LIỆU THAM KHẢO:\n\n{context_str}\n\n"
+        f"---\n"
+        f"CÂU HỎI: {query}\n\n"
+        f"LƯU Ý QUAN TRỌNG: Hãy kiểm tra kỹ xem tài liệu tham khảo có chứa thông tin để trả lời câu hỏi hay không. "
+        f"Nếu không có thông tin chính xác hoặc không đủ dữ liệu để trả lời, bạn bắt buộc phải trả lời đúng một câu: "
+        f"\"Không tìm thấy thông tin trong tài liệu đã cung cấp.\". Tuyệt đối không tự suy luận hoặc sử dụng kiến thức bên ngoài."
+    )
+
+    cfg = _get_llm_cfg()
+    payload = {
+        "model":    cfg["model"],
+        "messages": _build_prompt(system, user),
+        "options":  {"temperature": 0.0},
+        "stream":   True,
+    }
+    url = f"{cfg['base_url']}/api/chat"
+
+    # Shared mutable holder — updated in-place by generator
+    token_meta_holder = {"prompt_eval_count": 0, "eval_count": 0}
+
+    def _stream_with_meta() -> Generator[str, None, None]:
+        llm_text = ""
+        for item in _stream(url, payload, cfg["timeout"]):
+            if isinstance(item, dict) and item.get("__token_meta__"):
+                # Sentinel: capture and update holder in-place
+                token_meta_holder["prompt_eval_count"] = item.get("prompt_eval_count", 0)
+                token_meta_holder["eval_count"]        = item.get("eval_count", 0)
+            else:
+                llm_text += item
+                yield item
+
+        # Append sources block deterministically
+        is_no_info = "không tìm thấy thông tin" in llm_text.lower()
+        if not is_no_info and "**Nguồn:**" not in llm_text:
+            yield sources_block
+
+    return _stream_with_meta(), token_meta_holder
+

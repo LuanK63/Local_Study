@@ -19,13 +19,13 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QSlider, QLineEdit, QFrame, QSplitter, QScrollArea,
     QSizePolicy, QStackedWidget, QButtonGroup, QRadioButton,
-    QGroupBox, QListWidget, QListWidgetItem,
+    QGroupBox, QListWidget, QListWidgetItem, QComboBox, QCheckBox,
 )
 
 from modules.visualizer.render_engine import RenderEngine
 from modules.visualizer.tracers import (
     ChartTracer, Array1DTracer, LogTracer,
-    GridTracer, CodeTracer,
+    GridTracer, CodeTracer, LinkedListTracer,
 )
 from modules.visualizer.algo_library import ALGO_LIBRARY, get_categories
 from modules.visualizer.command_interpreter import CommandInterpreter
@@ -91,6 +91,28 @@ class VisualizerController(QWidget):
         self._grid_cols = 30
         self._grid_interact_mode = "wall"  # "wall" | "start" | "end"
 
+        # Khởi tạo các trường thống kê
+        self._stats_step = 0
+        self._stats_compares = 0
+        self._stats_swaps = 0
+        self._stats_visited = 0
+        self._stats_queue_size = 0
+        self._stats_frontier_size = 0
+        self._stats_path_length = 0
+        self._stats_current_distance = 0.0
+        self._stats_list_size = 0
+        self._stats_current_node = "—"
+        self._stats_current_value = "—"
+        self._stats_current_index = "—"
+        self._start_time = 0.0
+        self._accumulated_time = 0.0
+        self._total_steps = None
+        
+        # Khởi tạo timer cập nhật thời gian trôi qua
+        self._elapsed_update_timer = QTimer(self)
+        self._elapsed_update_timer.setInterval(100) # Cập nhật mỗi 100ms
+        self._elapsed_update_timer.timeout.connect(self._update_elapsed_time_ui)
+
         # RenderEngine (shared)
         self._engine = RenderEngine(
             speed_fn=lambda: self._speed_slider.value(),
@@ -109,6 +131,7 @@ class VisualizerController(QWidget):
         self._chart_tracer  = ChartTracer("Biểu đồ Sắp xếp")
         self._array_tracer  = Array1DTracer("Mảng Tìm kiếm")
         self._grid_tracer   = GridTracer("Lưới Pathfinding", self._grid_rows, self._grid_cols)
+        self._linked_list_tracer = LinkedListTracer("Danh sách liên kết")
         self._log_tracer    = LogTracer("Nhật ký thực thi")
         self._code_tracer   = CodeTracer("Pseudocode")
 
@@ -133,19 +156,20 @@ class VisualizerController(QWidget):
         root.addWidget(self._build_topbar())
 
         # ── MAIN SPLITTER (left | center | right) ─────────────────────────────
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-        splitter.setHandleWidth(2)
+        self._main_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self._main_splitter.setHandleWidth(2)
 
-        splitter.addWidget(self._build_sidebar())
-        splitter.addWidget(self._build_center())
-        splitter.addWidget(self._build_right_panel())
+        self._sidebar_widget = self._build_sidebar()
+        self._main_splitter.addWidget(self._sidebar_widget)
+        self._main_splitter.addWidget(self._build_center())
+        self._main_splitter.addWidget(self._build_right_panel())
 
-        splitter.setStretchFactor(0, 0)   # sidebar: fixed
-        splitter.setStretchFactor(1, 3)   # center: flex
-        splitter.setStretchFactor(2, 1)   # right: fixed
-        splitter.setSizes([210, 700, 340])
+        self._main_splitter.setStretchFactor(0, 0)   # sidebar: fixed
+        self._main_splitter.setStretchFactor(1, 3)   # center: flex
+        self._main_splitter.setStretchFactor(2, 1)   # right: fixed
+        self._main_splitter.setSizes([210, 700, 340])
 
-        root.addWidget(splitter)
+        root.addWidget(self._main_splitter)
 
     # ── TOP BAR ───────────────────────────────────────────────────────────────
 
@@ -167,7 +191,13 @@ class VisualizerController(QWidget):
         title.setStyleSheet("color:#cba6f7;")
         layout.addWidget(title)
 
-        layout.addSpacing(20)
+        # Sidebar toggle button for Tablet
+        self._sidebar_toggle_btn = _btn("◀ Sidebar", "#313244", "#cdd6f4", "#45475a", h=30, bold=False)
+        self._sidebar_toggle_btn.setToolTip("Thu gọn / Mở rộng Sidebar danh sách thuật toán")
+        self._sidebar_toggle_btn.clicked.connect(self._toggle_sidebar)
+        layout.addWidget(self._sidebar_toggle_btn)
+
+        layout.addSpacing(10)
 
         # Complexity badges
         self._time_badge  = self._make_badge("Time: —", "#313244")
@@ -187,10 +217,17 @@ class VisualizerController(QWidget):
         layout.addWidget(self._mode_custom)
 
         # Controls
-        self._run_btn    = _btn("▶  Run",    "#a6e3a1", "#1e1e2e", "#94d3a2", h=36)
-        self._pause_btn  = _btn("⏸  Pause",  "#f9e2af", "#1e1e2e", "#e6d09f", h=36)
-        self._step_btn   = _btn("⏭  Step",   "#89b4fa", "#1e1e2e", "#7ba6f2", h=36)
-        self._reset_btn  = _btn("↺  Reset",  "#45475a", "#cdd6f4", "#585b70", h=36)
+        self._run_btn    = _btn("▶  Run",    "#a6e3a1", "#11111b", "#b4f4af", h=38) # Nút chính nổi bật
+        self._run_btn.setToolTip("Chạy thuật toán trực quan hóa")
+        
+        self._pause_btn  = _btn("⏸  Pause",  "#313244", "#cdd6f4", "#45475a", h=34, bold=False) # Nút phụ
+        self._pause_btn.setToolTip("Tạm dừng / Tiếp tục thuật toán")
+        
+        self._step_btn   = _btn("⏭  Step",   "#313244", "#cdd6f4", "#45475a", h=34, bold=False)
+        self._step_btn.setToolTip("Chạy từng bước tiếp theo")
+        
+        self._reset_btn  = _btn("↺  Reset",  "#313244", "#cdd6f4", "#45475a", h=34, bold=False)
+        self._reset_btn.setToolTip("Đặt lại thuật toán về trạng thái ban đầu")
 
         self._pause_btn.setEnabled(False)
         for b in (self._run_btn, self._pause_btn, self._step_btn, self._reset_btn):
@@ -219,10 +256,19 @@ class VisualizerController(QWidget):
 
         layout.addSpacing(20)
 
-        self._return_btn = _btn("✕  Đóng", "#f38ba8", "#1e1e2e", "#eb6f92", h=36)
+        self._return_btn = _btn("✕  Đóng", "#313244", "#f38ba8", "#45475a", h=34, bold=False)
+        self._return_btn.setToolTip("Đóng visualizer và trở lại màn hình chính")
         layout.addWidget(self._return_btn)
 
         return bar
+
+    def _toggle_sidebar(self):
+        if self._sidebar_widget.isVisible():
+            self._sidebar_widget.setVisible(False)
+            self._sidebar_toggle_btn.setText("▶ Sidebar")
+        else:
+            self._sidebar_widget.setVisible(True)
+            self._sidebar_toggle_btn.setText("◀ Sidebar")
 
     def _make_badge(self, text: str, bg: str) -> QLabel:
         lbl = QLabel(text)
@@ -408,8 +454,51 @@ for i in range(len(arr)):
         clear_walls_btn.clicked.connect(self._clear_walls)
         gm_layout.addWidget(clear_walls_btn)
 
+        # Maze button
+        self._maze_btn = _btn("🎲  Mê cung", "#313244", "#cdd6f4", "#45475a", h=26, bold=False)
+        self._maze_btn.setToolTip("Sinh mê cung ngẫu nhiên liên thông Start-End")
+        self._maze_btn.clicked.connect(self._generate_random_maze)
+        gm_layout.addWidget(self._maze_btn)
+
+        # Zoom layout & combobox
+        zoom_layout = QHBoxLayout()
+        zoom_layout.setSpacing(4)
+        zoom_label = QLabel("🔍 Zoom:")
+        zoom_label.setStyleSheet("color:#a6adc8; font-size:9px;")
+        zoom_layout.addWidget(zoom_label)
+        
+        self._zoom_combo = QComboBox()
+        self._zoom_combo.setFont(QFont("Segoe UI", 8))
+        self._zoom_combo.setStyleSheet("""
+            QComboBox {
+                background: #313244;
+                color: #cdd6f4;
+                border: 1px solid #45475a;
+                border-radius: 4px;
+                padding: 2px 4px;
+                min-width: 80px;
+            }
+        """)
+        self._zoom_combo.addItem("Fit Window", "fit")
+        self._zoom_combo.addItem("Small (0.75x)", "0.75")
+        self._zoom_combo.addItem("Medium (1.0x)", "1.0")
+        self._zoom_combo.addItem("Large (1.5x)", "1.5")
+        self._zoom_combo.setCurrentIndex(0) # Default to Fit Window
+        self._zoom_combo.currentIndexChanged.connect(self._on_zoom_changed)
+        zoom_layout.addWidget(self._zoom_combo)
+        
+        gm_layout.addLayout(zoom_layout)
+
         self._grid_mode_group.setVisible(False)
         layout.addWidget(self._grid_mode_group)
+
+        # Checkbox "Hiện Chỉ Số (Index)"
+        self._show_index_cb = QCheckBox("Hiện Chỉ Số (Index)")
+        self._show_index_cb.setChecked(False)
+        self._show_index_cb.setStyleSheet("color: #cdd6f4; font-family: 'Segoe UI'; font-size: 10pt; margin-top: 6px;")
+        self._show_index_cb.toggled.connect(self._on_show_index_toggled)
+        self._show_index_cb.setVisible(False)
+        layout.addWidget(self._show_index_cb)
 
         return frame
 
@@ -428,11 +517,35 @@ for i in range(len(arr)):
         self._algo_title_lbl.setStyleSheet("color:#cba6f7;")
         self._center_layout.addWidget(self._algo_title_lbl)
 
-        # Stacked: chart / array / grid
+        # Visual Status Panel ngay trên tracer stack
+        from PyQt6.QtWidgets import QFrame
+        self._visual_status_panel = QFrame()
+        self._visual_status_panel.setFixedHeight(32)
+        self._visual_status_panel.setStyleSheet("""
+            QFrame {
+                background: #181825;
+                border: 1px solid #313244;
+                border-radius: 6px;
+            }
+            QLabel {
+                color: #f9e2af;
+                font-size: 11px;
+                font-weight: bold;
+                font-family: 'Segoe UI';
+            }
+        """)
+        vsp_layout = QHBoxLayout(self._visual_status_panel)
+        vsp_layout.setContentsMargins(12, 0, 12, 0)
+        self._visual_status_lbl = QLabel("Sẵn sàng chạy thuật toán...")
+        vsp_layout.addWidget(self._visual_status_lbl)
+        self._center_layout.addWidget(self._visual_status_panel)
+
+        # Stacked: chart / array / grid / linked_list
         self._tracer_stack = QStackedWidget()
         self._tracer_stack.addWidget(self._chart_tracer)   # index 0
         self._tracer_stack.addWidget(self._array_tracer)   # index 1
         self._tracer_stack.addWidget(self._grid_tracer)    # index 2
+        self._tracer_stack.addWidget(self._linked_list_tracer) # index 3
         self._center_layout.addWidget(self._tracer_stack, stretch=1)
 
         # Log tracer
@@ -451,12 +564,61 @@ for i in range(len(arr)):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # CodeTracer chiếm phần lớn
+        # Tab widget ở cột bên phải
+        from PyQt6.QtWidgets import QTabWidget
+        self._right_tabs = QTabWidget()
+        self._right_tabs.setStyleSheet("""
+            QTabWidget::panel {
+                border: none;
+                background: #181825;
+            }
+            QTabBar::tab {
+                background: #1e1e2e;
+                color: #a6adc8;
+                border: 1px solid #313244;
+                border-bottom: none;
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
+                padding: 6px 12px;
+                margin-right: 2px;
+                font-family: 'Segoe UI';
+                font-size: 11px;
+                font-weight: bold;
+            }
+            QTabBar::tab:selected {
+                background: #181825;
+                color: #cba6f7;
+                border-color: #45475a;
+            }
+            QTabBar::tab:hover {
+                background: #313244;
+            }
+        """)
+
+        # Tab 1: Pseudocode & Stats
+        tab1 = QWidget()
+        t1_layout = QVBoxLayout(tab1)
+        t1_layout.setContentsMargins(0, 0, 0, 0)
+        t1_layout.setSpacing(0)
+
         self._code_tracer.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        layout.addWidget(self._code_tracer, stretch=1)
+        t1_layout.addWidget(self._code_tracer, stretch=1)
 
+        # Thêm StatisticsPanel dưới CodeTracer
+        from modules.visualizer.tracers import StatisticsPanel
+        self._stats_panel = StatisticsPanel(parent=self)
+        t1_layout.addWidget(self._stats_panel, stretch=0)
+
+        # Tab 2: Explanation
+        from modules.visualizer.tracers import ExplanationPanel
+        self._explanation_panel = ExplanationPanel(parent=self)
+
+        self._right_tabs.addTab(tab1, "💻 Code & Stats")
+        self._right_tabs.addTab(self._explanation_panel, "📖 Explanation")
+
+        layout.addWidget(self._right_tabs)
         return right
 
     # ── Connect Signals ───────────────────────────────────────────────────────
@@ -479,6 +641,7 @@ for i in range(len(arr)):
             lambda: setattr(self, "_grid_interact_mode", "start"))
         self._mode_end.toggled.connect(
             lambda: setattr(self, "_grid_interact_mode", "end"))
+        self._speed_slider.valueChanged.connect(self._linked_list_tracer.canvas.update_animation_speeds)
 
     # ── Algo Selection ────────────────────────────────────────────────────────
 
@@ -491,8 +654,30 @@ for i in range(len(arr)):
             return   # category header
 
         self._engine.stop()
+        self._elapsed_update_timer.stop()
         self._current_algo_id = algo_id
         info = ALGO_LIBRARY[algo_id]
+
+        # Reset statistics & status variables
+        self._stats_step = 0
+        self._stats_compares = 0
+        self._stats_swaps = 0
+        self._stats_visited = 0
+        self._stats_queue_size = 0
+        self._stats_frontier_size = 0
+        self._stats_path_length = 0
+        self._stats_current_distance = 0.0
+        self._stats_list_size = 0
+        self._stats_current_node = "—"
+        self._stats_current_value = "—"
+        self._stats_current_index = "—"
+        self._start_time = 0.0
+        self._accumulated_time = 0.0
+        self._total_steps = None
+
+        # Update UI panels
+        self._stats_panel.reset()
+        self._visual_status_lbl.setText("Sẵn sàng chạy thuật toán...")
 
         # Update title + badges
         self._algo_title_lbl.setText(f"{info['name']}")
@@ -508,30 +693,48 @@ for i in range(len(arr)):
             self._tracer_stack.setCurrentIndex(1)
         elif "grid" in tracers:
             self._tracer_stack.setCurrentIndex(2)
+        elif "linked_list" in tracers:
+            self._tracer_stack.setCurrentIndex(3)
 
         # Show/hide grid mode panel
         is_grid = info.get("input_type") == "grid"
         self._grid_mode_group.setVisible(is_grid)
         self._array_input.setVisible(not is_grid)
-        self._target_input.setVisible(info.get("input_type") == "array_target")
 
-        # Load code
+        # Show/hide show index checkbox
+        is_ll = "linked_list" in tracers
+        self._show_index_cb.setVisible(is_ll)
+        
+        input_type = info.get("input_type")
+        self._target_input.setVisible(input_type in ("array_target", "ll_insert_idx"))
+        if input_type == "ll_insert_idx":
+            self._target_input.setValidator(None)
+            self._target_input.setPlaceholderText("Vị trí, Giá trị (VD: 2, 9)")
+        else:
+            self._target_input.setValidator(QIntValidator(-9999, 9999))
+            self._target_input.setPlaceholderText("Target (tìm kiếm/xóa)")
+
+        # Load code & Explanation
         self._code_tracer.set_code(info.get("code", "# no pseudocode"))
+        self._explanation_panel.set_explanation(info)
         self._log_tracer.reset()
 
         # Reset tracers
         self._chart_tracer.reset()
         self._array_tracer.reset()
         self._grid_tracer.reset_overlay()
+        self._linked_list_tracer.reset()
 
         # Preview data
-        if info.get("input_type") in ("array", "array_target"):
+        if info.get("input_type") in ("array", "array_target", "ll_insert_idx"):
             try:
                 data = self._parse_array()
                 if "chart" in tracers:
-                    self._chart_tracer.set_state(data=data)
+                    self._chart_tracer.canvas.set_state(data=data)
                 elif "array1d" in tracers:
-                    self._array_tracer.set_state(data=data)
+                    self._array_tracer.canvas.set_state(data=data)
+                elif "linked_list" in tracers:
+                    self._linked_list_tracer.show_initial(data=data)
             except Exception:
                 pass
 
@@ -546,9 +749,42 @@ for i in range(len(arr)):
         if not self._current_algo_id:
             return
         self._engine.stop()
+        
+        # Reset counters & timer
+        self._stats_step = 0
+        self._stats_compares = 0
+        self._stats_swaps = 0
+        self._stats_visited = 0
+        self._stats_queue_size = 0
+        self._stats_frontier_size = 0
+        self._stats_path_length = 0
+        self._stats_current_distance = 0.0
+        self._stats_list_size = 0
+        self._stats_current_node = "—"
+        self._stats_current_value = "—"
+        self._stats_current_index = "—"
+        import time
+        self._start_time = time.monotonic()
+        self._accumulated_time = 0.0
+        self._total_steps = None  # Built-in chạy real-time trong Thread nên không tính trước Total Steps
+        
+        self._stats_panel.reset()
+        self._visual_status_lbl.setText("Đang khởi chạy thuật toán...")
         self._log_tracer.reset()
         self._code_tracer.reset()
+        
+        self._elapsed_update_timer.start()
+
         info = ALGO_LIBRARY[self._current_algo_id]
+
+        if info.get("mode") == "linked_list":
+            data = self._parse_array()
+            current_canvas_vals = [nd["val"] for nd in self._linked_list_tracer.canvas._nodes]
+            if current_canvas_vals != data:
+                self._linked_list_tracer.show_initial(data)
+            node_ids = list(self._linked_list_tracer.canvas.get_node_ids())
+        else:
+            node_ids = None
 
         try:
             run_fn = info["run"]
@@ -556,19 +792,45 @@ for i in range(len(arr)):
 
             if input_type == "array":
                 data = self._parse_array()
-                target_fn = lambda: run_fn(self._engine, data)
+                if info.get("mode") == "linked_list":
+                    target_fn = lambda: run_fn(self._engine, data, node_ids=node_ids)
+                else:
+                    target_fn = lambda: run_fn(self._engine, data)
 
             elif input_type == "array_target":
                 data = self._parse_array()
+                target_text = self._target_input.text().strip()
+                if not target_text:
+                    raise ValueError("Giá trị cần tìm kiếm/xóa/chèn không được để trống!")
                 try:
-                    target = int(self._target_input.text().strip())
+                    target = int(target_text)
                 except ValueError:
-                    target = data[0] if data else 0
-                target_fn = lambda: run_fn(self._engine, data, target)
+                    raise ValueError("Giá trị cần tìm kiếm/xóa/chèn phải là một số nguyên!")
+                if info.get("mode") == "linked_list":
+                    target_fn = lambda: run_fn(self._engine, data, target, node_ids=node_ids)
+                else:
+                    target_fn = lambda: run_fn(self._engine, data, target)
 
             elif input_type == "grid":
                 grid_copy = [row[:] for row in self._grid_tracer.canvas._grid]
                 target_fn = lambda: run_fn(self._engine, grid_copy, self._grid_rows, self._grid_cols)
+
+            elif input_type == "ll_insert_idx":
+                data = self._parse_array()
+                target_str = self._target_input.text().strip()
+                if not target_str:
+                    raise ValueError("Chỉ số chèn và giá trị chèn không được để trống! Định dạng: index, value (ví dụ: 2, 9)")
+                if "," not in target_str:
+                    raise ValueError("Thiếu dấu phẩy! Định dạng chèn vị trí yêu cầu: index, value (ví dụ: 2, 9)")
+                parts = target_str.split(",")
+                if len(parts) != 2:
+                    raise ValueError("Định dạng không hợp lệ! Vui lòng nhập: index, value (ví dụ: 2, 9)")
+                try:
+                    idx = int(parts[0].strip())
+                    val = int(parts[1].strip())
+                except ValueError:
+                    raise ValueError("Chỉ số index và giá trị value phải là số nguyên!")
+                target_fn = lambda: run_fn(self._engine, data, idx, val, node_ids=node_ids)
 
             else:
                 return
@@ -579,30 +841,57 @@ for i in range(len(arr)):
             self._log_tracer.log(f"❌ Lỗi: {e}")
 
     def _on_pause_resume(self):
+        import time
         if self._engine.is_paused():
+            self._start_time = time.monotonic()
             self._engine.resume()
             self._pause_btn.setText("⏸  Pause")
+            self._stats_panel.lbl_status.setText("Running")
         else:
+            if self._start_time > 0:
+                self._accumulated_time += (time.monotonic() - self._start_time)
+            self._start_time = 0.0
             self._engine.pause()
             self._pause_btn.setText("▶  Resume")
+            self._stats_panel.lbl_status.setText("Paused")
 
     def _on_step(self):
         """Chế độ Step: pause rồi resume ngay để chạy 1 frame."""
         if not self._engine.is_running():
-            # Khởi chạy và pause ngay
             self._on_run()
             self._engine.pause()
             self._pause_btn.setText("▶  Resume")
         else:
-            # Resume 1 frame rồi pause lại
             self._engine.resume()
             QTimer.singleShot(self._speed_slider.value() + 50, self._engine.pause)
 
     def _on_reset(self):
         self._engine.stop()
+        self._elapsed_update_timer.stop()
+        
+        self._stats_step = 0
+        self._stats_compares = 0
+        self._stats_swaps = 0
+        self._stats_visited = 0
+        self._stats_queue_size = 0
+        self._stats_frontier_size = 0
+        self._stats_path_length = 0
+        self._stats_current_distance = 0.0
+        self._stats_list_size = 0
+        self._stats_current_node = "—"
+        self._stats_current_value = "—"
+        self._stats_current_index = "—"
+        self._start_time = 0.0
+        self._accumulated_time = 0.0
+        self._total_steps = None
+        
+        self._stats_panel.reset()
+        self._visual_status_lbl.setText("Sẵn sàng chạy thuật toán...")
+        
         self._chart_tracer.reset()
         self._array_tracer.reset()
         self._grid_tracer.reset_overlay()
+        self._linked_list_tracer.reset()
         self._log_tracer.reset()
         self._code_tracer.reset()
         self._run_btn.setEnabled(True)
@@ -610,59 +899,179 @@ for i in range(len(arr)):
         self._pause_btn.setText("⏸  Pause")
         if self._current_algo_id:
             info = ALGO_LIBRARY[self._current_algo_id]
-            if info.get("input_type") in ("array", "array_target"):
+            tracers = info.get("tracers", [])
+            if info.get("input_type") in ("array", "array_target", "ll_insert_idx"):
                 try:
                     data = self._parse_array()
-                    if "chart" in info.get("tracers", []):
-                        self._chart_tracer.set_state(data=data)
-                    elif "array1d" in info.get("tracers", []):
-                        self._array_tracer.set_state(data=data)
+                    if "chart" in tracers:
+                        self._chart_tracer.canvas.set_state(data=data)
+                    elif "array1d" in tracers:
+                        self._array_tracer.canvas.set_state(data=data)
+                    elif "linked_list" in tracers:
+                        self._linked_list_tracer.show_initial(data=data)
                 except Exception:
                     pass
 
     # ── Frame Handler ─────────────────────────────────────────────────────────
 
     def _on_frame(self, payload: dict):
-        """Nhận frame từ RenderEngine hoặc CommandInterpreter và dispatch đến đúng tracer."""
+        """Nhận frame chuẩn hóa và dispatch đến các thành phần."""
         # Check if it's a command payload
         if 'method' in payload and 'key' in payload:
-            # Command-based payload
             self._handle_command_payload(payload)
             return
 
-        # Original payload-based handling
         algo = payload.get("algo", "")
         info = ALGO_LIBRARY.get(algo, {})
         tracers = info.get("tracers", [])
 
-        # Chart / Array
-        if "chart" in tracers and "array" in payload:
-            self._chart_tracer.set_state(
-                data=payload["array"],
-                selected=payload.get("selected", []),
-                patched=payload.get("patched", []),
-                sorted_=payload.get("sorted", []),
-                pivot=payload.get("pivot"),
-            )
-        elif "array1d" in tracers and "array" in payload:
-            self._array_tracer.set_state(
-                data=payload["array"],
-                selected=payload.get("selected", []),
-                patched=payload.get("patched", []),
-                sorted_=payload.get("sorted", []),
-            )
+        # Tăng bước chạy
+        self._stats_step += 1
 
-        # Grid
-        if "grid" in tracers:
+        # Trích xuất dữ liệu frame chuẩn hóa
+        data = payload.get("data", payload.get("array"))
+        message = payload.get("message", payload.get("log", ""))
+        current_line = payload.get("current_line", payload.get("line"))
+        
+        compare_indices = payload.get("compare_indices", payload.get("selected", []))
+        swap_indices = payload.get("swap_indices", payload.get("patched", []))
+        sorted_indices = payload.get("sorted_indices", payload.get("sorted", []))
+        visited_indices = payload.get("visited_indices", [])
+
+        # Cập nhật Visual Status Panel & Log
+        if message:
+            self._visual_status_lbl.setText(message)
+            self._log_tracer.log(message)
+
+        # Cập nhật code highlight
+        if current_line is not None:
+            self._code_tracer.highlight_line(current_line)
+
+        # Cập nhật Canvas tương ứng
+        if "chart" in tracers and data is not None:
+            self._chart_tracer.canvas.set_state(
+                data=data,
+                compare_indices=compare_indices,
+                swap_indices=swap_indices,
+                sorted_indices=sorted_indices,
+                pivot=payload.get("pivot")
+            )
+        elif "array1d" in tracers and data is not None:
+            self._array_tracer.canvas.set_state(
+                data=data,
+                compare_indices=compare_indices,
+                swap_indices=swap_indices,
+                sorted_indices=sorted_indices,
+                visited_indices=visited_indices
+            )
+        elif "grid" in tracers:
             self._grid_tracer.update_from_frame(payload)
+        elif "linked_list" in tracers or payload.get("mode") == "linked_list":
+            self._linked_list_tracer.on_frame_received(payload)
 
-        # Log
-        if "log" in payload:
-            self._log_tracer.log(payload["log"])
+        # Đọc stats từ payload
+        stats_payload = payload.get("stats", {})
+        if stats_payload:
+            self._stats_compares = stats_payload.get("comparisons", 0)
+            self._stats_swaps = stats_payload.get("swaps", 0)
+            self._stats_visited = stats_payload.get("visited_nodes", 0)
+        
+        # Fallback tính toán cơ bản và trích xuất stats động cho các visualizer
+        if algo in ("bubble_sort", "selection_sort", "insertion_sort", "merge_sort", "quick_sort", "heap_sort"):
+            if not stats_payload:
+                if compare_indices:
+                    self._stats_compares += 1
+                if swap_indices:
+                    self._stats_swaps += 1
+        elif algo in ("linear_search", "binary_search"):
+            if not stats_payload:
+                if compare_indices:
+                    self._stats_compares += 1
+            # Lấy current index
+            if compare_indices:
+                self._stats_current_index = str(compare_indices[0])
+            else:
+                self._stats_current_index = "—"
+        elif "grid" in tracers:
+            if algo == "bfs":
+                self._stats_queue_size = payload.get("queue_size", len(payload.get("frontier_nodes", [])))
+                self._stats_visited = len(payload.get("visited_nodes", []))
+                self._stats_path_length = max(0, len(payload.get("path_nodes", [])) - 1)
+            elif algo == "dijkstra":
+                self._stats_frontier_size = payload.get("frontier_size", len(payload.get("frontier_nodes", [])))
+                self._stats_visited = len(payload.get("visited_nodes", []))
+                self._stats_current_distance = payload.get("current_distance", 0.0)
+                self._stats_path_length = max(0, len(payload.get("path_nodes", [])) - 1)
+            else:
+                self._stats_visited = len(payload.get("visited", []))
+        elif payload.get("mode") == "linked_list":
+            nodes = payload.get("nodes", [])
+            self._stats_list_size = len(nodes)
+            self._stats_current_node = str(nodes[0]["val"]) if nodes else "—"
+            self._stats_current_value = str(nodes[-1]["val"]) if nodes else "—"
+            
+            op = payload.get("operation")
+            insert_idx_val = payload.get("insert_index")
+            new_node_val = payload.get("new_node_val")
+            
+            if op == "insert_head":
+                self._stats_current_index = f"Chèn Đầu ({new_node_val})" if new_node_val is not None else "Chèn Đầu"
+            elif op == "insert_tail":
+                self._stats_current_index = f"Chèn Cuối ({new_node_val})" if new_node_val is not None else "Chèn Cuối"
+            elif op == "insert_idx":
+                idx_str = str(insert_idx_val) if insert_idx_val is not None else "?"
+                val_str = f" ({new_node_val})" if new_node_val is not None else ""
+                self._stats_current_index = f"Chèn vị trí {idx_str}{val_str}"
+            elif op == "delete":
+                self._stats_current_index = "Xóa Node"
+            elif op == "search":
+                self._stats_current_index = "Tìm kiếm"
+            else:
+                self._stats_current_index = "—"
 
-        # Code highlight
-        if "line" in payload:
-            self._code_tracer.highlight_line(payload["line"])
+        # Cập nhật stats panel
+        self._update_elapsed_time_ui()
+
+    def _update_elapsed_time_ui(self):
+        import time
+        elapsed = 0.0
+        if self._start_time > 0:
+            if self._engine.is_running() and not self._engine.is_paused():
+                elapsed = self._accumulated_time + (time.monotonic() - self._start_time)
+            else:
+                elapsed = self._accumulated_time
+        else:
+            elapsed = self._accumulated_time
+
+        algo_name = "Custom Code"
+        if self._current_algo_id:
+            algo_name = ALGO_LIBRARY[self._current_algo_id].get("name", "Thuật toán")
+
+        status_str = "Running"
+        if self._engine.is_paused():
+            status_str = "Paused"
+        elif not self._engine.is_running():
+            status_str = "Finished"
+
+        self._stats_panel.update_stats(
+            algo_name=algo_name,
+            status=status_str,
+            step=self._stats_step,
+            total_steps=self._total_steps,
+            compares=self._stats_compares,
+            swaps=self._stats_swaps,
+            visited=self._stats_visited,
+            elapsed_time=elapsed,
+            algo_id=self._current_algo_id or "",
+            queue_size=self._stats_queue_size,
+            frontier_size=self._stats_frontier_size,
+            path_length=self._stats_path_length,
+            current_distance=self._stats_current_distance,
+            list_size=self._stats_list_size,
+            current_node=self._stats_current_node,
+            current_value=self._stats_current_value,
+            current_index=self._stats_current_index
+        )
 
     def _handle_command_payload(self, payload: dict):
         """Handle command-based payload from custom code."""
@@ -674,15 +1083,17 @@ for i in range(len(arr)):
         if method == 'set' and len(args) > 0:
             data = args[0]
             if isinstance(data, list):
-                self._array_tracer.set_state(data=data)
+                self._array_tracer.canvas.set_state(data=data)
         elif method == 'patch' and len(args) >= 2:
             index, value = args[0], args[1]
-            self._array_tracer.set_state(patched=[(index, value)])
+            self._array_tracer.canvas.set_state(data=self._array_tracer.canvas._data, swap_indices=[index])
+            self._stats_swaps += 1
         elif method == 'select' and len(args) >= 1:
             indices = args if len(args) > 1 else [args[0]]
-            self._array_tracer.set_state(selected=indices)
+            self._array_tracer.canvas.set_state(data=self._array_tracer.canvas._data, compare_indices=indices)
+            self._stats_compares += 1
         elif method == 'deselect':
-            self._array_tracer.set_state(selected=[])
+            self._array_tracer.canvas.set_state(data=self._array_tracer.canvas._data, compare_indices=[])
         elif method == 'print' and len(args) > 0:
             self._log_tracer.log(str(args[0]))
         elif method == 'println' and len(args) > 0:
@@ -695,19 +1106,40 @@ for i in range(len(arr)):
                 self._log_tracer.log(message)
             except:
                 self._log_tracer.log(format_str + str(values))
-        # Add more command handlers as needed
 
     def _on_started(self):
         self._run_btn.setEnabled(False)
         self._pause_btn.setEnabled(True)
         self._pause_btn.setText("⏸  Pause")
+        self._stats_panel.lbl_status.setText("Running")
 
     def _on_finished(self, msg: str):
         self._run_btn.setEnabled(True)
         self._pause_btn.setEnabled(False)
         self._pause_btn.setText("⏸  Pause")
+        
+        # Dừng timer
+        import time
+        if self._start_time > 0:
+            self._accumulated_time += (time.monotonic() - self._start_time)
+        self._start_time = 0.0
+        self._elapsed_update_timer.stop()
+
         icon = "✅" if msg == "done" else "⏹"
-        self._log_tracer.log(f"\n{icon} {msg}")
+        self._log_tracer.log(f"{icon} {msg}")
+
+        algo_name = "Thuật toán"
+        if self._current_algo_id:
+            algo_name = ALGO_LIBRARY[self._current_algo_id].get("name", "Thuật toán")
+
+        if msg == "done":
+            self._visual_status_lbl.setText(f"✅ Thuật toán {algo_name} đã hoàn tất thành công!")
+            self._stats_panel.lbl_status.setText("Finished")
+        else:
+            self._visual_status_lbl.setText(f"⏹ Thuật toán đã dừng: {msg}")
+            self._stats_panel.lbl_status.setText("Stopped")
+            
+        self._update_elapsed_time_ui()
 
     # ── Grid Interaction ──────────────────────────────────────────────────────
 
@@ -741,15 +1173,98 @@ for i in range(len(arr)):
             for c in range(self._grid_cols):
                 if grid[r][c] == "wall":
                     grid[r][c] = "empty"
-        self._grid_tracer.canvas.update()
+        self._grid_tracer.canvas.reset_overlay()
+
+    def _on_zoom_changed(self, index: int):
+        val = self._zoom_combo.currentData()
+        if val == "fit":
+            self._grid_tracer.canvas.set_zoom("fit", 1.0)
+        else:
+            factor = float(val)
+            self._grid_tracer.canvas.set_zoom("fixed", factor)
+
+    def _on_show_index_toggled(self, checked: bool):
+        self._linked_list_tracer.canvas.show_index = checked
+
+    def _generate_random_maze(self):
+        if self._engine.is_running():
+            return
+            
+        def is_solvable(g: list[list[str]], rows: int, cols: int) -> bool:
+            sr = sc = er = ec = 0
+            found_s = found_e = False
+            for r in range(rows):
+                for c in range(cols):
+                    if g[r][c] == "start":
+                        sr, sc = r, c
+                        found_s = True
+                    elif g[r][c] == "end":
+                        er, ec = r, c
+                        found_e = True
+            if not found_s or not found_e:
+                return False
+                
+            from collections import deque
+            q = deque([(sr, sc)])
+            visited = {(sr, sc)}
+            while q:
+                curr_r, curr_c = q.popleft()
+                if (curr_r, curr_c) == (er, ec):
+                    return True
+                for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    nr, nc = curr_r + dr, curr_c + dc
+                    if 0 <= nr < rows and 0 <= nc < cols:
+                        if g[nr][nc] != "wall" and (nr, nc) not in visited:
+                            visited.add((nr, nc))
+                            q.append((nr, nc))
+            return False
+
+        grid = self._grid_tracer.canvas._grid
+        rows = self._grid_rows
+        cols = self._grid_cols
+        
+        # 1. Thử tối đa 20 lần với mật độ 30%
+        solvable = False
+        for attempt in range(20):
+            for r in range(rows):
+                for c in range(cols):
+                    if grid[r][c] not in ("start", "end"):
+                        grid[r][c] = "wall" if random.random() < 0.3 else "empty"
+            if is_solvable(grid, rows, cols):
+                solvable = True
+                break
+                
+        # 2. Fallback nếu sau 20 lần vẫn thất bại: sinh mật độ tường 10%
+        if not solvable:
+            for attempt in range(5):
+                for r in range(rows):
+                    for c in range(cols):
+                        if grid[r][c] not in ("start", "end"):
+                            grid[r][c] = "wall" if random.random() < 0.1 else "empty"
+                if is_solvable(grid, rows, cols):
+                    solvable = True
+                    break
+            # Nếu vẫn không được, xóa hết tường
+            if not solvable:
+                for r in range(rows):
+                    for c in range(cols):
+                        if grid[r][c] not in ("start", "end"):
+                            grid[r][c] = "empty"
+                            
+        self._grid_tracer.canvas.reset_overlay()
 
     # ── Input helpers ─────────────────────────────────────────────────────────
 
     def _parse_array(self) -> list[int]:
         text = self._array_input.text().strip()
-        vals = [int(x.strip()) for x in text.split(",") if x.strip()]
+        if not text:
+            raise ValueError("Mảng dữ liệu không được để trống!")
+        try:
+            vals = [int(x.strip()) for x in text.split(",") if x.strip()]
+        except ValueError:
+            raise ValueError("Mảng dữ liệu chỉ được chứa các số nguyên cách nhau bằng dấu phẩy!")
         if not vals:
-            raise ValueError("Mảng trống!")
+            raise ValueError("Mảng dữ liệu trống!")
         return vals
 
     def _randomize_input(self):
@@ -786,8 +1301,19 @@ for i in range(len(arr)):
         if not code.strip():
             return
 
-        # Reset interpreter
+        # Reset interpreter & stats
         self._cmd_interpreter.reset()
+        
+        self._stats_step = 0
+        self._stats_compares = 0
+        self._stats_swaps = 0
+        self._stats_visited = 0
+        import time
+        self._start_time = time.monotonic()
+        self._accumulated_time = 0.0
+        self._total_steps = None
+        self._stats_panel.reset()
+        self._elapsed_update_timer.start()
 
         # Execute code in a safe way
         try:
@@ -820,13 +1346,29 @@ for i in range(len(arr)):
 
             exec(code, restricted_globals)
 
+            # Get total steps from built commands list
+            self._total_steps = len(algorithm_visualizer.Commander.commands)
+
             # Interpret commands
             self._cmd_interpreter.interpret_commands(algorithm_visualizer.Commander.commands)
 
+            # Done
+            self._elapsed_update_timer.stop()
+            if self._start_time > 0:
+                self._accumulated_time += (time.monotonic() - self._start_time)
+            self._start_time = 0.0
+            self._update_elapsed_time_ui()
+            self._visual_status_lbl.setText("✅ Chạy Custom Code hoàn tất!")
+            self._stats_panel.lbl_status.setText("Finished")
+
         except Exception as e:
+            self._elapsed_update_timer.stop()
+            self._start_time = 0.0
             self._log_tracer.log(f"Lỗi thực thi code: {e}")
             import traceback
             self._log_tracer.log(traceback.format_exc())
+            self._visual_status_lbl.setText("❌ Lỗi Custom Code!")
+            self._stats_panel.lbl_status.setText("Error")
 
     def _on_delay_request(self, delay: int):
         """Handle delay from command interpreter."""

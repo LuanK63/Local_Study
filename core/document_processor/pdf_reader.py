@@ -216,6 +216,7 @@ def _extract_page_as_markdown(page: fitz.Page) -> str:
 def read_pdf(
     file_path: str | Path,
     progress_cb: Callable[[int, int], None] | None = None,
+    max_pages: int | None = None,
 ) -> list[PageContent]:
     """
     Extract all pages from a PDF. No page limit.
@@ -232,7 +233,8 @@ def read_pdf(
     try:
         doc = fitz.open(str(path))
         total = doc.page_count
-        for i in range(total):
+        limit = min(total, max_pages) if max_pages is not None else total
+        for i in range(limit):
             page = doc[i]
             raw_text = page.get_text("text")
             if not raw_text.strip():
@@ -277,7 +279,10 @@ def read_pdf(
         import pdfplumber
         with pdfplumber.open(path) as pdf:
             total = len(pdf.pages)
-            for i, page in enumerate(pdf.pages, start=1):
+            limit = min(total, max_pages) if max_pages is not None else total
+            for idx in range(limit):
+                page = pdf.pages[idx]
+                i = idx + 1
                 text = page.extract_text() or ""
                 if text.strip():
                     import unicodedata

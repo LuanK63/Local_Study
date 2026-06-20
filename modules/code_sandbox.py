@@ -52,7 +52,7 @@ def run_c(code: str, stdin: str = "", lang: str = "cpp") -> RunResult:
         # Compile
         compile_result = subprocess.run(
             [compiler, src, "-o", exe, "-Wall", "-O2", "-lm"],
-            capture_output=True, text=True, timeout=30, cwd=tmpdir
+            capture_output=True, encoding="utf-8", errors="replace", timeout=30, cwd=tmpdir
         )
         if compile_result.returncode != 0:
             return RunResult(
@@ -65,7 +65,7 @@ def run_c(code: str, stdin: str = "", lang: str = "cpp") -> RunResult:
         try:
             run_result = subprocess.run(
                 [exe],
-                input=stdin, capture_output=True, text=True,
+                input=stdin, capture_output=True, encoding="utf-8", errors="replace",
                 timeout=timeout, cwd=tmpdir
             )
             elapsed = (time.perf_counter() - start) * 1000
@@ -102,10 +102,12 @@ def run_python(code: str, stdin: str = "") -> RunResult:
 
         start = time.perf_counter()
         try:
+            import sys
+            env = {**os.environ, "PYTHONUTF8": "1"}
             result = subprocess.run(
-                ["python", src],
-                input=stdin, capture_output=True, text=True,
-                timeout=timeout, cwd=tmpdir
+                [sys.executable or "python", src],
+                input=stdin, capture_output=True, encoding="utf-8", errors="replace",
+                env=env, timeout=timeout, cwd=tmpdir
             )
             elapsed = (time.perf_counter() - start) * 1000
             return RunResult(

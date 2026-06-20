@@ -286,13 +286,13 @@ QSlider::sub-page:horizontal {
 /* ── Scrollbar ───────────────────────────────────────────────────── */
 QScrollBar:vertical {
     background: transparent;
-    width: 6px;
-    border-radius: 3px;
-    margin: 4px 2px;
+    width: 10px;
+    border-radius: 5px;
+    margin: 4px 1px;
 }
 QScrollBar::handle:vertical {
     background: #3a3c52;
-    border-radius: 3px;
+    border-radius: 5px;
     min-height: 32px;
 }
 QScrollBar::handle:vertical:hover {
@@ -304,13 +304,13 @@ QScrollBar::sub-line:vertical {
 }
 QScrollBar:horizontal {
     background: transparent;
-    height: 6px;
-    border-radius: 3px;
-    margin: 2px 4px;
+    height: 10px;
+    border-radius: 5px;
+    margin: 1px 4px;
 }
 QScrollBar::handle:horizontal {
     background: #3a3c52;
-    border-radius: 3px;
+    border-radius: 5px;
     min-width: 32px;
 }
 QScrollBar::handle:horizontal:hover {

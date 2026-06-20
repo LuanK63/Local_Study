@@ -1,0 +1,50 @@
+
+--- Searching for: stack / ngăn xếp ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 56 | Text: ] 56 ^ Chuyên đề ĐHSPHN 199-204 Bài 1 Viết một hàm đệ quy tí
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 57 | Text: Cấu trúc dữ liệu và giải thuật ] 57 ^ Lê Minh Hoàng end; pro
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 64 | Text: ] 64 ^ Chuyên đề ĐHSPHN 199-204 §5.NGĂN XẾP VÀ HÀNG ĐỢI ## 5
+
+--- Searching for: queue / hàng đợi ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 66 | Text: ] 6 ^ Chuyên đề ĐHSPHN 199-204 ## 5.2.HÀNG ĐỢI (QUEUE) Hàng 
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 67 | Text: Cấu trúc dữ liệu và giải thuật ] 67 ^ Lê Minh Hoàng ## 5.2.2
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 68 | Text: ] 68 ^ Chuyên đề ĐHSPHN 199-204 Inc(n); end; end; function P
+
+--- Searching for: linked list / danh sách liên kết ---
+Doc: Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press | Page: 17 | Text: Preface xv Tothestudent We hope that this textbook provides 
+Doc: Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press | Page: 20 | Text: xviii Preface rences was adresed more rigorously. The second
+Doc: Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press | Page: 179 | Text: Introduction ## This part presents several algorithms that s
+
+--- Searching for: tree / cây ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 13 | Text: Bài toán liệt kê ] 13 ^ Lê Minh Hoàng ## InputFile = 'BSTR.I
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 22 | Text: ] 2 ^ Chuyên đề ĐHSPHN 199-204 begin for j := 1 to n do if a
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 24 | Text: ] 24 ^ Chuyên đề ĐHSPHN 199-204 §4.KỸ THUẬT NHÁNH CẬN ## 4.1
+
+--- Searching for: quick sort / sắp xếp nhanh ---
+
+--- Searching for: binary search / tìm kiếm nhị phân ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 9 | Text: Bài toán liệt kê ] 9 ^ Lê Minh Hoàng đủ lớn nên ta sẽ tìm bi
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 92 | Text: ] 92 ^ Chuyên đề ĐHSPHN 199-204 procedure InsertionSort; var
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 115 | Text: Cấu trúc dữ liệu và giải thuật ] 15 ^ Lê Minh Hoàng 'D. Disp
+
+--- Searching for: complexity / độ phức tạp ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 40 | Text: ] 40 ^ Chuyên đề ĐHSPHN 199-204 §2.PHÂN TÍCH THỜI GIAN THỰC 
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 41 | Text: Cấu trúc dữ liệu và giải thuật ] 41 ^ Lê Minh Hoàng Hình 5 l
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 42 | Text: ] 42 ^ Chuyên đề ĐHSPHN 199-204 f(n) = Θ(g(n)) nếu và chỉ nế
+
+--- Searching for: danh sách & liên kết ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 59 | Text: Cấu trúc dữ liệu và giải thuật ] 59 ^ Lê Minh Hoàng A B C D E F H I J K L p Giảm n đi 1 A B C D E F 
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 60 | Text: ] 60 ^ Chuyên đề ĐHSPHN 199-204 Tạo ra một nút mới NewNode chứa giá trị V: V Tìm nút q là nút đứng t
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 61 | Text: Cấu trúc dữ liệu và giải thuật ] 61 ^ Lê Minh Hoàng Trường thứ nhất chứa giá trị lưu trong nút đó Tr
+
+--- Searching for: sắp xếp & nhanh ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 40 | Text: ] 40 ^ Chuyên đề ĐHSPHN 199-204 §2.PHÂN TÍCH THỜI GIAN THỰC HIỆN GIẢI THUẬT ## 2.1.GIỚI THIỆU Với mộ
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 55 | Text: Cấu trúc dữ liệu và giải thuật ] 5 ^ Lê Minh Hoàng ## 3.4.HIỆU LỰC CỦA ĐỆ QUY Qua các ví dụ trên, ta
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 92 | Text: ] 92 ^ Chuyên đề ĐHSPHN 199-204 procedure InsertionSort; var i, j: Integer; tmp: TKey; {Biến giữ lại
+
+--- Searching for: nhị phân & tìm kiếm ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 9 | Text: Bài toán liệt kê ] 9 ^ Lê Minh Hoàng đủ lớn nên ta sẽ tìm biểu diễn nhỏ nhất của 4 số này gán cho x[
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 13 | Text: Bài toán liệt kê ] 13 ^ Lê Minh Hoàng ## InputFile = 'BSTR.INP'; OutputFile = 'BSTR.OUT'; max = 10; 
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 22 | Text: ] 2 ^ Chuyên đề ĐHSPHN 199-204 begin for j := 1 to n do if a[j] and b[i + j] and c[i - j] then {Chỉ 
+
+--- Searching for: độ phức tạp & Big-O ---
+Doc: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org) | Page: 40 | Text: ] 40 ^ Chuyên đề ĐHSPHN 199-204 §2.PHÂN TÍCH THỜI GIAN THỰC HIỆN GIẢI THUẬT ## 2.1.GIỚI THIỆU Với mộ
