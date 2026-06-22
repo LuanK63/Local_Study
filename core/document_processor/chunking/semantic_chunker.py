@@ -13,7 +13,7 @@ class SemanticChunker(BaseChunker):
     Replaces embedding-based cosine distance with structural text splitting (paragraphs).
     Fast, deterministic, and highly efficient for technical PDFs.
     """
-    def __init__(self, threshold_factor: float = None):
+    def __init__(self):
         # threshold_factor is ignored in heuristic mode, kept for factory backward compatibility.
         cfg = get_config().get("retrieval", {})
         self.target_chunk_tokens = cfg.get("recursive_chunk_size", 400)

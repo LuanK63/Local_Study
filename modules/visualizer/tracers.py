@@ -18,7 +18,7 @@ from typing import Any
 from PyQt6.QtCore import Qt, QRect, QRectF, QPointF, pyqtSignal, QTimer, QParallelAnimationGroup, QEasingCurve, QPropertyAnimation
 from PyQt6.QtGui import (
     QColor, QFont, QPainter, QPen, QBrush,
-    QPainterPath, QFontMetrics, QTextCursor, QPolygonF,
+    QPainterPath, QTextCursor,
 )
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QTextBrowser,

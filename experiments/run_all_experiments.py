@@ -9,7 +9,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from experiments.chunking_comparison import run_experiment
 from experiments.result_exporter import export_results_to_markdown
 from experiments.chart_generator import generate_comparison_charts
-from utils.ollama_check import check_ollama_status
 
 def load_results_for_strategies(run_ids: dict) -> dict:
     db_path = "data/study_agent.db"
@@ -67,9 +66,6 @@ def main():
     parser.add_argument("--questions", type=str, default="data/evaluation/questions.json", help="Path to evaluation questions JSON file")
     args = parser.parse_args()
 
-    # Check Ollama connection and model status before running experiments
-    check_ollama_status()
-    
     print("======================================================================")
     print("STARTING ALL COMPARATIVE CHUNKING EXPERIMENTS")
     print("======================================================================")

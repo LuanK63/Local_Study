@@ -9,12 +9,9 @@ from tabulate import tabulate
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from experiments.chunking_comparison import run_experiment
-from utils.ollama_check import check_ollama_status
 
 def run_ablation_study():
-    # Check Ollama connection and model status
-    check_ollama_status()
-    
+
     # Define configurations for parameter sweep
     # We choose 4 configurations to survey the impact of size, overlap, and parent-child ratio
     ablation_configs = [

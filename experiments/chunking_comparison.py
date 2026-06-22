@@ -11,7 +11,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.config import get_config
 from core.retrieval.hybrid_retriever import delete_document, ingest_document, warm_up_bm25
 from core.evaluation.ragas_eval import evaluate_pipeline
-from utils.ollama_check import check_ollama_status
 
 def reset_subject_index(subject_id: str):
     import sqlite3
@@ -39,9 +38,6 @@ def reset_subject_index(subject_id: str):
     _parent_cache.pop(subject_id, None)
 
 def run_experiment(strategy_name: str, chunk_size: int, chunk_overlap: int, parent_size: int = 1200, max_pages: int = 120, max_questions: int = None, questions_path: str = "data/evaluation/questions.json") -> int:
-    # Check Ollama connection and model status
-    check_ollama_status()
-    
     subject_id = "dsa"
     file_path = "subjects/dsa/documents/Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
     

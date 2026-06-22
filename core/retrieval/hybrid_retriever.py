@@ -19,10 +19,10 @@ from core.document_processor.chunker import ParentChunk
 from core.document_processor.chunking.factory import get_chunker
 from utils.experiment_logger import log_ingestion
 from core.retrieval.vector_search import (
-    index_parent_chunks, vector_search, collection_count, delete_chunks_by_doc
+    index_parent_chunks, vector_search, delete_chunks_by_doc
 )
 from core.retrieval.bm25_search import (
-    build_bm25_index, bm25_search, has_index
+    build_bm25_index, bm25_search
 )
 
 # ── In-memory stores ──────────────────────────────────────────────────────────
@@ -521,7 +521,6 @@ def search(
     subject_id: str,
     top_k: int = 5,
     mode: str | None = None,
-    use_hyde: bool | None = None,
 ) -> tuple[list[dict], str]:
     """
     Dispatch tới đúng search function theo mode.
