@@ -22,7 +22,7 @@ embedding:
 
 retrieval:
   # Active chunking strategy (fixed | recursive | semantic | parent_child)
-  chunking_strategy: "semantic"
+  chunking_strategy: "recursive"
 
   # Parent-Child Chunking
   parent_chunk_size: 1200   # ký tự — chunk lớn gửi cho LLM (1 mục/khái niệm đầy đủ)
@@ -30,19 +30,19 @@ retrieval:
   child_chunk_overlap: 30   # ký tự gối nhau giữa child chunks
 
   # Fixed Chunker
-  fixed_chunk_size: 300
-  fixed_chunk_overlap: 30
+  fixed_chunk_size: 512
+  fixed_chunk_overlap: 102
 
   # Recursive Chunker
-  recursive_chunk_size: 300
-  recursive_chunk_overlap: 30
+  recursive_chunk_size: 512
+  recursive_chunk_overlap: 102
 
   # Semantic Chunker
   semantic_threshold_factor: 1.2
 
-  # Alias cho backward-compat (= child_chunk_size)
-  chunk_size: 300
-  chunk_overlap: 30
+  # Alias cho backward-compat
+  chunk_size: 512
+  chunk_overlap: 102
 
   top_k: 5
   bm25_weight: 0.4
