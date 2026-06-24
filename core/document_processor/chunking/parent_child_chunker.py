@@ -1,6 +1,6 @@
 from pathlib import Path
 from core.document_processor.chunker import Chunk, ParentChunk, PageContent
-from core.document_processor.chunking.base_chunker import BaseChunker
+from core.document_processor.chunking.base_chunker import BaseChunker, BenchmarkChunk
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 from utils.config import get_config
 
@@ -90,3 +90,26 @@ class ParentChildChunker(BaseChunker):
                     ))
 
         return all_parents
+
+    def chunk(self, pages: list[PageContent]) -> list[BenchmarkChunk]:
+        """
+        Override Benchmark interface.
+        Voi Parent-Child, Benchmark dung CHILD chunks (nho) de retrieval,
+        khong phai parent chunks (lon).
+        """
+        parent_chunks = self.split_documents(pages)
+        result: list[BenchmarkChunk] = []
+        for pc in parent_chunks:
+            for child in pc.children:
+                result.append(BenchmarkChunk(
+                    text=child.text,
+                    chunk_id=f"{child.doc_name}_c{child.chunk_idx}",
+                    parent_id=child.parent_id,
+                    metadata={
+                        "doc_name": child.doc_name,
+                        "file_path": child.file_path,
+                        "page_num": child.page_num,
+                        "parent_text": pc.text,  # Giu nguyen parent text de expand context
+                    }
+                ))
+        return result

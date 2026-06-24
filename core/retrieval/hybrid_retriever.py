@@ -385,7 +385,7 @@ def hybrid_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     bm25_results = bm25_search(query, subject_id, top_k=fetch_k)
 
     # Logging trung gian số lượng kết quả thô thu được
-    print(f"[RAG DEBUG] -> Hybrid Search: Vector thu được {len(vec_results)} chunks, BM25 thu được {len(bm25_results)} chunks.")
+    print(f"[RAG DEBUG] -> Hybrid Search: Vector retrieved {len(vec_results)} chunks, BM25 retrieved {len(bm25_results)} chunks.")
 
     # RRF score map: key = (file_path:page_num:text[:40])
     scores: dict[str, dict] = {}
@@ -586,41 +586,54 @@ def search(
             scores[key] = {**hit, "fused": 0.0}
         scores[key]["fused"] += bm25_w * _rrf_score(rank)
 
-    # ── Keyword Match Boost ──
-    # Tách các từ khóa chính từ query đã mở rộng (để hỗ trợ cả từ khóa tiếng Anh đã expand như 'stack')
-    from core.retrieval.query_expander import expand_query
-    expanded_q = expand_query(query_norm)
-    q_words = [w.lower() for w in re.findall(r'\w+', expanded_q) if len(w) >= 2]
-    stopwords = {"là", "gì", "và", "hay", "hoặc", "của", "trong", "với", "các", "một", "cho", "theo", "tại", "này", "đó"}
-    keywords = [w for w in q_words if w not in stopwords]
-
-    for key, item in scores.items():
-        # Lưu lại điểm RRF gốc trước khi boost để tránh lạm phát ngưỡng CRAG
-        item["fused_raw"] = item["fused"]
-        text_lower = item["text"].lower()
-        match_count = sum(1 for kw in keywords if kw in text_lower)
-        if match_count > 0:
-            # Mỗi keyword khớp cộng thêm 0.05 vào fused score để đẩy thứ hạng lên cao
-            item["fused"] += 0.05 * match_count
-
     # Sắp xếp và lấy top 20 của RRF Fusion
     hybrid_top = sorted(scores.values(), key=lambda x: x["fused"], reverse=True)[:20]
     
-    print("Hybrid Top 20:")
+    print("Hybrid Top 20 (before rerank):")
     for idx, hit in enumerate(hybrid_top, 1):
-        print(f"- [{idx}] Fused={hit['fused']:.4f} | Page={hit['page_num']} | Doc={hit['doc_name']}")
+        print(f"- [{idx}] RRF={hit['fused']:.4f} | Page={hit['page_num']} | Doc={hit['doc_name']}")
     print()
 
-    # 4. Resolve child -> parent text từ SQLite
+    # 3. Resolve child -> parent text từ SQLite (chuan bi cho Reranker)
     resolved = _resolve_parents(hybrid_top, subject_id)
+    
+    # 4. MiniLM Reranker (Top 20 -> Top 4)
+    # -------------------------------------------------------------------------
+    try:
+        from sentence_transformers import CrossEncoder
+        # Lay model path tu config hoac su dung default
+        cfg_retrieval = get_config().get("retrieval", {})
+        # Doc them section models trong TH benchmark ghi de
+        cfg_models = get_config().get("models", {})
+        reranker_model = cfg_models.get("reranker_model", "cross-encoder/ms-marco-MiniLM-L-6-v2")
+        
+        print(f"[Reranker] Loading CrossEncoder: {reranker_model}...")
+        reranker = CrossEncoder(reranker_model)
+        
+        pairs = [[query_norm, chunk["text"]] for chunk in resolved]
+        rerank_scores = reranker.predict(pairs)
+        
+        for idx, chunk in enumerate(resolved):
+            chunk["rerank_score"] = float(rerank_scores[idx])
+            chunk["fused"] = chunk["rerank_score"] # Thay score chinh bang rerank score
+            
+        # Sort lai theo rerank score
+        resolved = sorted(resolved, key=lambda x: x["rerank_score"], reverse=True)
+        print("[Reranker] Reranking thanh cong.")
+    except Exception as e:
+        print(f"[WARNING] Loi chay MiniLM Reranker, fallback ve RRF: {e}")
+    # -------------------------------------------------------------------------
+    
     final_top = resolved[:top_k]
 
-    print(f"Final Top {len(final_top)}:")
+    print(f"Final Top {len(final_top)} (after Rerank):")
     for idx, hit in enumerate(final_top, 1):
-        print(f"- [{idx}] Fused={hit['fused']:.4f} | Page={hit['page_num']} | Doc={hit['doc_name']}")
-        print(f"    Text: {hit['text'].strip()[:180]}...")
+        print(f"- [{idx}] Score={hit['fused']:.4f} | Page={hit['page_num']} | Doc={hit['doc_name']}")
+        safe_text = hit['text'].strip()[:180].encode('ascii', 'ignore').decode('ascii')
+        print(f"    Text: {safe_text}...")
     print("="*80 + "\n")
 
     return final_top, mode
+
 
 

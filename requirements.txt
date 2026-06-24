@@ -11,6 +11,7 @@ ragas==0.4.3
 # Vector DB & Retrieval
 chromadb==0.6.3
 rank-bm25==0.2.2
+sentence-transformers==3.3.1
 
 # Document processing
 pdfplumber==0.11.4

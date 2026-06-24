@@ -1,0 +1,147 @@
+{
+  "version": "1.0",
+  "description": "DSA Benchmark Dataset v1 — Bộ câu hỏi mẫu về Cấu trúc Dữ liệu và Giải thuật phục vụ đánh giá hệ thống RAG.",
+  "created": "2026-06-23",
+  "questions": [
+    {
+      "id": "q001",
+      "question": "Mảng (Array) là gì và ưu nhược điểm của nó?",
+      "ground_truth": "Mảng là cấu trúc dữ liệu lưu trữ các phần tử có cùng kiểu dữ liệu trong các ô nhớ liên tiếp nhau. Ưu điểm: truy cập ngẫu nhiên O(1) theo chỉ số, đơn giản, cache-friendly. Nhược điểm: kích thước cố định (với static array), chèn/xóa tốn O(n) vì phải dịch chuyển phần tử.",
+      "question_type": "fact",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q002",
+      "question": "Danh sách liên kết đơn (Singly Linked List) khác mảng ở điểm nào?",
+      "ground_truth": "Danh sách liên kết đơn lưu các nút (node) không liên tiếp trong bộ nhớ, mỗi nút chứa giá trị và con trỏ trỏ đến nút tiếp theo. Khác mảng: chèn/xóa đầu/giữa O(1) nếu biết vị trí, kích thước động. Nhược điểm: truy cập ngẫu nhiên O(n), tốn thêm bộ nhớ cho con trỏ, không cache-friendly.",
+      "question_type": "fact",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q003",
+      "question": "Stack hoạt động theo nguyên tắc nào? Cho ví dụ ứng dụng thực tế.",
+      "ground_truth": "Stack (Ngăn xếp) hoạt động theo nguyên tắc LIFO (Last In First Out — vào sau ra trước). Phần tử được thêm vào đỉnh (push) và lấy ra từ đỉnh (pop). Ứng dụng thực tế: quản lý lời gọi hàm (call stack), kiểm tra ngoặc hợp lệ, thuật toán undo/redo trong trình soạn thảo, chuyển đổi biểu thức infix sang postfix.",
+      "question_type": "reasoning",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q004",
+      "question": "Queue khác Stack như thế nào và được dùng ở đâu?",
+      "ground_truth": "Queue (Hàng đợi) hoạt động theo nguyên tắc FIFO (First In First Out — vào trước ra trước), khác với Stack (LIFO). Phần tử được thêm vào cuối (enqueue) và lấy ra từ đầu (dequeue). Ứng dụng: lập lịch CPU, hàng đợi in ấn, xử lý yêu cầu web server, thuật toán BFS trong đồ thị.",
+      "question_type": "fact",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q005",
+      "question": "Cây nhị phân tìm kiếm (BST) có tính chất gì?",
+      "ground_truth": "Cây nhị phân tìm kiếm (Binary Search Tree) là cây nhị phân mà với mỗi nút: tất cả giá trị trong cây con trái đều nhỏ hơn nút đó, và tất cả giá trị trong cây con phải đều lớn hơn hoặc bằng nút đó. Tính chất này giúp tìm kiếm, chèn, xóa đều có độ phức tạp O(log n) trong trường hợp trung bình và O(n) trong trường hợp xấu nhất (cây suy biến).",
+      "question_type": "fact",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q006",
+      "question": "BFS và DFS khác nhau như thế nào? Khi nào dùng BFS, khi nào dùng DFS?",
+      "ground_truth": "BFS (Breadth-First Search) duyệt theo chiều rộng, sử dụng hàng đợi (Queue), tìm đường ngắn nhất trong đồ thị không trọng số. DFS (Depth-First Search) duyệt theo chiều sâu, sử dụng ngăn xếp (Stack hoặc đệ quy), phù hợp với bài toán tìm đường, phát hiện chu trình, tô màu đồ thị. Dùng BFS khi cần đường đi ngắn nhất; dùng DFS khi cần khám phá toàn bộ đồ thị hoặc kiểm tra liên thông.",
+      "question_type": "reasoning",
+      "source_doc": "chuong_7_graph.pdf"
+    },
+    {
+      "id": "q007",
+      "question": "Thuật toán sắp xếp nhanh (Quick Sort) hoạt động như thế nào?",
+      "ground_truth": "Quick Sort chọn một phần tử làm chốt (pivot), chia mảng thành hai phần: phần tử nhỏ hơn pivot ở bên trái và lớn hơn ở bên phải, sau đó đệ quy sắp xếp từng phần. Độ phức tạp trung bình O(n log n), trường hợp xấu nhất O(n²) khi pivot luôn là min hoặc max. Thực tế thường nhanh hơn Merge Sort do cache-friendly và in-place.",
+      "question_type": "fact",
+      "source_doc": "chuong_8_sorting.pdf"
+    },
+    {
+      "id": "q008",
+      "question": "Merge Sort khác Quick Sort ở những điểm nào?",
+      "ground_truth": "Merge Sort chia mảng thành hai nửa, sắp xếp đệ quy từng nửa rồi trộn lại. Độ phức tạp luôn O(n log n) trong mọi trường hợp, ổn định (stable), nhưng cần O(n) bộ nhớ phụ. Quick Sort không ổn định, dùng in-place, trường hợp tốt O(n log n) nhưng xấu nhất O(n²). Merge Sort phù hợp khi cần kết quả ổn định hoặc sắp xếp danh sách liên kết.",
+      "question_type": "reasoning",
+      "source_doc": "chuong_8_sorting.pdf"
+    },
+    {
+      "id": "q009",
+      "question": "Bảng băm (Hash Table) là gì và xung đột băm được giải quyết như thế nào?",
+      "ground_truth": "Bảng băm là cấu trúc dữ liệu lưu trữ cặp khóa-giá trị, sử dụng hàm băm (hash function) để ánh xạ khóa sang chỉ số trong mảng, cho phép tìm kiếm/chèn/xóa O(1) trung bình. Xung đột băm (khi hai khóa có cùng chỉ số) được giải quyết bằng: Chaining (dùng danh sách liên kết tại mỗi ô) hoặc Open Addressing (tìm ô trống kế tiếp — linear probing, quadratic probing, double hashing).",
+      "question_type": "fact",
+      "source_doc": "chuong_6_hashing.pdf"
+    },
+    {
+      "id": "q010",
+      "question": "Độ phức tạp thời gian của Binary Search là bao nhiêu và điều kiện áp dụng?",
+      "ground_truth": "Binary Search có độ phức tạp thời gian O(log n). Điều kiện bắt buộc: mảng phải được sắp xếp. Thuật toán so sánh phần tử giữa với giá trị cần tìm, nếu nhỏ hơn thì tìm ở nửa phải, lớn hơn thì tìm ở nửa trái, đệ quy cho đến khi tìm thấy hoặc không còn phần tử nào.",
+      "question_type": "fact",
+      "source_doc": "chuong_9_searching.pdf"
+    },
+    {
+      "id": "q011",
+      "question": "Cây AVL là gì và tại sao nó tốt hơn BST thông thường?",
+      "ground_truth": "Cây AVL là BST tự cân bằng (self-balancing), đảm bảo chiều cao cây con trái và phải của mỗi nút chênh lệch tối đa 1 (hệ số cân bằng ∈ {-1, 0, 1}). Khi mất cân bằng sau chèn/xóa, cây tự động xoay (rotation) để phục hồi. Tốt hơn BST vì tránh trường hợp suy biến, đảm bảo tìm kiếm, chèn, xóa luôn O(log n).",
+      "question_type": "reasoning",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q012",
+      "question": "Đồ thị có hướng và đồ thị vô hướng khác nhau như thế nào?",
+      "ground_truth": "Đồ thị vô hướng (undirected graph) có các cạnh không có hướng, nghĩa là nếu có cạnh (u,v) thì có thể đi từ u đến v và ngược lại. Đồ thị có hướng (directed graph/digraph) có cạnh mang hướng cụ thể, (u,v) chỉ cho phép đi từ u đến v. Đồ thị có hướng dùng để biểu diễn quan hệ một chiều như phụ thuộc công việc, mạng xã hội follower.",
+      "question_type": "fact",
+      "source_doc": "chuong_7_graph.pdf"
+    },
+    {
+      "id": "q013",
+      "question": "Heap là gì? Min-Heap và Max-Heap khác nhau như thế nào?",
+      "ground_truth": "Heap là cây nhị phân hoàn chỉnh (complete binary tree) thỏa mãn tính chất heap: Max-Heap — nút cha luôn lớn hơn hoặc bằng các nút con; Min-Heap — nút cha luôn nhỏ hơn hoặc bằng các nút con. Heap thường được cài đặt bằng mảng. Ứng dụng: Priority Queue, Heap Sort, thuật toán Dijkstra.",
+      "question_type": "fact",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q014",
+      "question": "Quy hoạch động (Dynamic Programming) là gì? Khi nào bài toán có thể giải bằng DP?",
+      "ground_truth": "Quy hoạch động (DP) là kỹ thuật giải bài toán bằng cách chia nhỏ thành bài toán con chồng lặp (overlapping subproblems) và lưu kết quả để tránh tính lại (memoization hoặc tabulation). Bài toán có thể giải bằng DP khi thỏa: (1) Bài toán con chồng lặp — các bài toán con giống nhau xuất hiện nhiều lần; (2) Cấu trúc con tối ưu — nghiệm tối ưu chứa nghiệm tối ưu của bài toán con. Ví dụ: Fibonacci, Knapsack, Longest Common Subsequence.",
+      "question_type": "reasoning",
+      "source_doc": "chuong_10_dp.pdf"
+    },
+    {
+      "id": "q015",
+      "question": "Bubble Sort hoạt động như thế nào và độ phức tạp là bao nhiêu?",
+      "ground_truth": "Bubble Sort so sánh từng cặp phần tử liền kề và hoán đổi nếu thứ tự sai, lặp lại nhiều lần cho đến khi mảng được sắp xếp. Sau mỗi lần lặp, phần tử lớn nhất 'nổi bọt' lên cuối mảng. Độ phức tạp thời gian: O(n²) trường hợp trung bình và xấu nhất, O(n) tốt nhất (mảng đã sắp xếp với tối ưu hóa). Không hiệu quả với mảng lớn.",
+      "question_type": "fact",
+      "source_doc": "chuong_8_sorting.pdf"
+    },
+    {
+      "id": "q016",
+      "question": "Thuật toán Dijkstra tìm đường đi ngắn nhất như thế nào?",
+      "ground_truth": "Dijkstra tìm đường đi ngắn nhất từ một đỉnh nguồn đến tất cả đỉnh còn lại trong đồ thị có trọng số không âm. Thuật toán dùng Priority Queue (Min-Heap), ban đầu đặt khoảng cách nguồn = 0 và các đỉnh khác = vô cùng. Lặp lại: lấy đỉnh có khoảng cách nhỏ nhất chưa xử lý, cập nhật khoảng cách các đỉnh kề. Độ phức tạp O((V+E) log V) với heap.",
+      "question_type": "fact",
+      "source_doc": "chuong_7_graph.pdf"
+    },
+    {
+      "id": "q017",
+      "question": "Danh sách liên kết đôi (Doubly Linked List) có ưu điểm gì so với danh sách liên kết đơn?",
+      "ground_truth": "Danh sách liên kết đôi mỗi nút có hai con trỏ: trỏ đến nút trước (prev) và nút sau (next). Ưu điểm so với liên kết đơn: có thể duyệt theo cả hai chiều, xóa nút O(1) nếu biết con trỏ đến nút đó (liên kết đơn cần O(n) để tìm nút trước), cài đặt deque dễ hơn. Nhược điểm: tốn thêm bộ nhớ cho con trỏ prev.",
+      "question_type": "reasoning",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q018",
+      "question": "Trie (Prefix Tree) là gì và ứng dụng của nó?",
+      "ground_truth": "Trie là cây đa nhánh dùng để lưu trữ tập hợp các chuỗi, mỗi nút đại diện cho một ký tự, đường đi từ gốc đến một nút lá biểu diễn một từ. Ứng dụng: gợi ý từ (autocomplete) trong công cụ tìm kiếm, kiểm tra chính tả, tìm kiếm tiền tố O(m) với m là độ dài chuỗi, bài toán liên quan đến từ điển. Tiết kiệm bộ nhớ khi nhiều chuỗi có chung tiền tố.",
+      "question_type": "synthesis",
+      "source_doc": "Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by Lê Minh Hoàng (z-lib.org).pdf"
+    },
+    {
+      "id": "q019",
+      "question": "So sánh độ phức tạp của các thuật toán sắp xếp: Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort.",
+      "ground_truth": "Bubble Sort: O(n²) TB/xấu, O(n) tốt nhất, ổn định. Selection Sort: O(n²) mọi trường hợp, không ổn định. Insertion Sort: O(n²) TB/xấu, O(n) tốt nhất (mảng gần sắp xếp), ổn định, tốt với mảng nhỏ. Merge Sort: O(n log n) mọi trường hợp, ổn định, cần O(n) bộ nhớ phụ. Quick Sort: O(n log n) TB, O(n²) xấu nhất, in-place, không ổn định. Trong thực tế Quick Sort nhanh nhất do cache-friendly.",
+      "question_type": "synthesis",
+      "source_doc": "chuong_8_sorting.pdf"
+    },
+    {
+      "id": "q020",
+      "question": "Chu trình Euler và chu trình Hamilton trong đồ thị khác nhau như thế nào?",
+      "ground_truth": "Chu trình Euler là chu trình đi qua tất cả các cạnh của đồ thị đúng một lần và quay về đỉnh xuất phát. Điều kiện tồn tại: đồ thị liên thông và mọi đỉnh có bậc chẵn. Chu trình Hamilton là chu trình đi qua tất cả các đỉnh đúng một lần và quay về đỉnh xuất phát. Bài toán Hamilton NP-Complete (không có thuật toán đa thức tổng quát), còn bài toán Euler có thể giải O(E) bằng thuật toán Fleury hoặc Hierholzer.",
+      "question_type": "reasoning",
+      "source_doc": "chuong_7_graph.pdf"
+    }
+  ]
+}

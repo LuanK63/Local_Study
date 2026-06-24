@@ -166,8 +166,9 @@ def generate_with_context(
 
     # ── [RAG DEBUG] LOGGING CONTEXT GỬI LLM ──────────────────────────────────
     print("\n" + "="*80)
-    print(f"[RAG DEBUG] 4. Context được gửi vào LLM ({len(context_chunks)} chunks):")
-    print(context_str)
+    print(f"[RAG DEBUG] 4. Context sent to LLM ({len(context_chunks)} chunks):")
+    safe_context = context_str.encode('ascii', 'ignore').decode('ascii')
+    print(safe_context)
     print("="*80 + "\n")
 
     system = _SYSTEM_PROMPT + (f"\n\nGợi ý môn học: {system_hint}" if system_hint else "")

@@ -162,7 +162,7 @@ def vector_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     q_vec = embed_text(query)
     
     # Logging chiều dữ liệu vector embedding để debug
-    print(f"[RAG DEBUG] Chiều dữ liệu (Dimension) của query embedding: {len(q_vec)}")
+    print(f"[RAG DEBUG] Query embedding dimension: {len(q_vec)}")
 
     results = col.query(
         query_embeddings=[q_vec],
