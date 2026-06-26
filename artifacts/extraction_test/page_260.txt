@@ -1,0 +1,19 @@
+Lý thuyết đồ thị 
+] 247 ^ 
+ 
+Lê Minh Hoàng 
+Giải thích tại sao đối với đồ thị sau, cần tìm đường đi dài nhất từ đỉnh 1 tới đỉnh 4 lại không 
+thể dùng thuật toán Dijkstra được, cứ thử áp dụng thuật toán Dijkstra theo từng bước xem sao: 
+1
+2
+3
+4
+2
+2
+2
+4
+ 
+Bài 2 
+Trên mặt phẳng cho n đường tròn (n ≤ 2000), đường tròn thứ i được cho bởi bộ ba số thực 
+(x[i], y[i], R[i]), (x[i], y[i]) là toạ độ tâm và R[i] là bán kính. Chi phí di chuyển trên mỗi 
+đường tròn bằng 0. Chi phí di chuyển giữa hai đường tr

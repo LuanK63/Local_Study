@@ -16,10 +16,10 @@ if sys.platform.startswith('win'):
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 os.environ.setdefault("CHROMA_TELEMETRY", "False")
 
-# ── Bypass onnxruntime DLL lỗi trên Python 3.13 / Windows ────────────────────
-# ChromaDB cố tải onnxruntime + tokenizers khi import → DLL crash.
-# Inject dummy module TRƯỚC mọi import để chặn crash hoàn toàn.
-# Project dùng Ollama embed API thay thế, không cần onnxruntime thật.
+# ── Bypass native DLL issues for packages loaded by ChromaDB on Windows ────
+# ChromaDB may try to import onnxruntime, tokenizers, transformers, or torch.
+# We only need the backend client for delete/search operations, not model inference.
+# Inject dummy modules TRƯỚC mọi import để chặn crash hoàn toàn.
 class _DummyModule(types.ModuleType):
     def __getattr__(self, name: str):   # type: ignore[override]
         return _DummyModule(name)
@@ -28,7 +28,7 @@ class _DummyModule(types.ModuleType):
     def __iter__(self):
         return iter([])
 
-for _mod in ("onnxruntime", "tokenizers"):
+for _mod in ("onnxruntime", "tokenizers", "transformers", "torch"):
     if _mod not in sys.modules:
         sys.modules[_mod] = _DummyModule(_mod)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ def main():
     app.setApplicationName("Local Study RAG Agent")
     app.setApplicationVersion("1.0.0")
     app.setStyle("Fusion")
-    app.setFont(QFont("Inter", 10))
+    app.setFont(QFont("Inter", 12))
     load_stylesheet(app)
 
     # ── First-run setup ───────────────────────────────────────────────────────

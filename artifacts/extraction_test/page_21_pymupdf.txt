@@ -1,0 +1,54 @@
+] 8 ^ 
+Chuyên đề 
+ 
+ĐHSPHN 1999-2004 
+P_1_02_2.PAS * Thuật toán sinh liệt kê các tập con k phần tử 
+{$MODE DELPHI} (*This program uses 32-bit Integer [-231..231 - 1]*) 
+program Combination; 
+const 
+  InputFile  = 'SUBSET.INP'; 
+  OutputFile = 'SUBSET.OUT'; 
+  max = 100; 
+var 
+  x: array[1..max] of Integer; 
+  n, k, i, j: Integer; 
+  f: Text; 
+begin 
+  Assign(f, InputFile); Reset(f); 
+  ReadLn(f, n, k); 
+  Close(f); 
+  Assign(f, OutputFile); Rewrite(f); 
+  for i := 1 to k do x[i] := i; {Khởi tạo x := (1, 2, …, k)} 
+  repeat 
+    {In ra cấu hình hiện tại} 
+    Write(f, '{'); 
+    for i := 1 to k - 1 do Write(f, x[i], ', '); 
+    WriteLn(f, x[k], '}'); 
+    {Sinh tiếp} 
+    i := k; {Xét từ cuối dãy lên tìm x[i] chưa đạt giới hạn trên n - k + i} 
+    while (i > 0) and (x[i] = n - k + i) do Dec(i); 
+    if i > 0 then {Nếu chưa lùi đến 0 có nghĩa là chưa phải cấu hình kết thúc} 
+      begin 
+        Inc(x[i]); {Tăng x[i] lên 1, Đặt các phần tử đứng sau x[i] bằng giới hạn dưới của nó} 
+        for j := i + 1 to k do x[j] := x[j - 1] + 1;  
+      end; 
+  until i = 0; {Lùi đến tận 0 có nghĩa là tất cả các phần tử đã đạt giới hạn trên - hết cấu hình} 
+  Close(f); 
+end. 
+2.3. LIỆT KÊ CÁC HOÁN VỊ 
+Ta sẽ lập chương trình liệt kê các hoán vị của {1, 2, …, n} theo thứ tự từ điển. 
+Ví dụ với n = 4, ta phải liệt kê đủ 24 hoán vị:  
+ 1.1234  2.1243  3.1324  4.1342  5.1423  6.1432 
+ 7.2134  8.2143  9.2314 10.2341 11.2413 12.2431 
+13.3124 14.3142 15.3214 16.3241 17.3412 18.3421 
+19.4123 20.4132 21.4213 22.4231 23.4312 24.4321 
+Như vậy hoán vị đầu tiên sẽ là 〈1, 2, …, n〉. Hoán vị cuối cùng là 〈n, n-1, …, 1〉. 
+Hoán vị sẽ sinh ra phải lớn hơn hoán vị hiện tại, hơn thế nữa phải là hoán vị vừa đủ lớn hơn 
+hoán vị hiện tại theo nghĩa không thể có một hoán vị nào khác chen giữa chúng khi sắp thứ tự. 
+Giả sử hoán vị hiện tại là x = 〈3, 2, 6, 5, 4, 1〉, xét 4 phần tử cuối cùng, ta thấy chúng được xếp 
+giảm dần, điều đó có nghĩa là cho dù ta có hoán vị 4 phần tử này thế nào, ta cũng được một 
+hoán vị bé hơn hoán vị hiện tại. Như vậy ta phải xét đến x[2] = 2, thay nó bằng một giá trị 
+khác. Ta sẽ thay bằng giá trị nào?, không thể là 1 bởi nếu vậy sẽ được hoán vị nhỏ hơn, không 
+thể là 3 vì đã có x[1] = 3 rồi (phần tử sau không được chọn vào những giá trị mà phần tử trước 
+đã chọn). Còn lại các giá trị 4, 5, 6. Vì cần một hoán vị vừa đủ lớn hơn hiện tại nên ta chọn 
+x[2] = 4. Còn các giá trị (x[3], x[4], x[5], x[6]) sẽ lấy trong tập {2, 6, 5, 1}. Cũng vì tính vừa 

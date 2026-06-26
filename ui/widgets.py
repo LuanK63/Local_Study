@@ -60,12 +60,16 @@ class CitationTextEdit(QTextBrowser):
         self.setOpenLinks(False)
         self.setFont(QFont("Inter", 10))
         self.setObjectName("CitationDisplay")
+        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.setStyleSheet("""
             QTextBrowser#CitationDisplay {
-                background-color: #1a1b2e;
+                background-color: transparent;
                 border: none;
                 color: #cdd6f4;
-                padding: 8px 4px;
+                padding: 0;
                 selection-background-color: #3a3c52;
                 line-height: 1.6;
             }
@@ -112,10 +116,12 @@ class CitationTextEdit(QTextBrowser):
                 n = m.group(1)
                 return (
                     f'<a href="cite://{n}" style="'
-                    f'display:inline-block;color:#1a1b2e;background:#89b4fa;'
-                    f'border-radius:4px;padding:0px 6px;font-weight:bold;'
-                    f'font-size:8pt;text-decoration:none;margin:0 1px;">'
-                    f'[{n}]</a>'
+                    f'display:inline-flex;align-items:center;justify-content:center;'
+                    f'width:16px;height:16px;border-radius:50%;'
+                    f'background:#dbeafe;border:1px solid #93c5fd;'
+                    f'font-size:9px;font-weight:600;color:#1d4ed8;'
+                    f'margin:0 2px;vertical-align:middle;text-decoration:none;" '
+                    f'title="Trích dẫn {n}">{n}</a>'
                 )
             s = re.sub(r'\[(\d+)\]', _badge, s)
             return s
@@ -130,13 +136,31 @@ class CitationTextEdit(QTextBrowser):
         if m:
             answer_part = text[:m.start()].strip()
             sources_part = text[m.start():].strip()
+            sources_part_lines = [
+                line.strip()
+                for line in sources_part.splitlines()
+                if line.strip()
+                and line.strip() != "---"
+                and not re.match(r'^\*\*(Nguồn|Sources?)\s*:\*\*$', line.strip(), re.IGNORECASE)
+            ]
+            sources_part_html = ""
+            for i, src_line in enumerate(sources_part_lines, 1):
+                sources_part_html += (
+                    f'<div style="display:flex;align-items:center;gap:8px;'
+                    f'padding:4px 8px;background:#f8fafc;border:1px solid #e2e8f0;'
+                    f'border-radius:6px;font-size:9pt;color:#475569;margin:3px 0;">'
+                    f'<span style="width:14px;height:14px;border-radius:50%;'
+                    f'background:#dbeafe;color:#1d4ed8;font-size:8pt;font-weight:600;'
+                    f'display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">{i}</span>'
+                    f'{src_line}</div>'
+                )
             body = (
                 f'<div style="font-family:Inter,Segoe UI;font-size:10pt;'
                 f'line-height:1.8;color:#cdd6f4;">'
                 f'{_to_html(answer_part)}'
                 f'<hr style="border:none;border-top:1px solid #2a2b3d;margin:14px 0 8px 0;">'
                 f'<div style="color:#8a8daa;font-size:9pt;line-height:1.9;">'
-                f'{_to_html(sources_part)}'
+                f'{sources_part_html}'
                 f'</div></div>'
             )
         else:
@@ -204,7 +228,7 @@ class IngestProgressWidget(QFrame):
         layout.setSpacing(6)
 
         self._file_lbl = QLabel("Đang xử lý...")
-        self._file_lbl.setFont(QFont("Inter", 8, QFont.Weight.Bold))
+        self._file_lbl.setFont(QFont("Inter", 9, QFont.Weight.Bold))
         self._file_lbl.setStyleSheet("color:#cba6f7; background:transparent;")
         self._file_lbl.setWordWrap(True)
         layout.addWidget(self._file_lbl)
@@ -218,7 +242,7 @@ class IngestProgressWidget(QFrame):
             row = QHBoxLayout()
             row.setSpacing(8)
             lbl = QLabel({"read": "📄 Đọc", "embed": "🔢 Embed", "store": "💾 Lưu"}[stage])
-            lbl.setFont(QFont("Inter", 8))
+            lbl.setFont(QFont("Inter", 9))
             lbl.setFixedWidth(64)
             lbl.setStyleSheet("color:#8a8daa; background:transparent;")
             row.addWidget(lbl)
@@ -239,7 +263,7 @@ class IngestProgressWidget(QFrame):
             row.addWidget(bar)
 
             pct_lbl = QLabel("0%")
-            pct_lbl.setFont(QFont("Inter", 8))
+            pct_lbl.setFont(QFont("Inter", 9))
             pct_lbl.setFixedWidth(32)
             pct_lbl.setStyleSheet("color:#5a5d78; background:transparent;")
             row.addWidget(pct_lbl)
@@ -249,7 +273,7 @@ class IngestProgressWidget(QFrame):
             setattr(self, f"_{stage}_pct", pct_lbl)
 
         self._pages_lbl = QLabel("")
-        self._pages_lbl.setFont(QFont("Inter", 8))
+        self._pages_lbl.setFont(QFont("Inter", 9))
         self._pages_lbl.setStyleSheet("color:#5a5d78; background:transparent;")
         layout.addWidget(self._pages_lbl)
 
@@ -320,21 +344,21 @@ class SourceFileCard(QFrame):
         text_col = QVBoxLayout()
         text_col.setSpacing(2)
         name_lbl = QLabel(doc_name)
-        name_lbl.setFont(QFont("Inter", 9, QFont.Weight.Bold))
+        name_lbl.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         name_lbl.setStyleSheet("color:#cdd6f4; background:transparent; border:none;")
         name_lbl.setWordWrap(True)
         text_col.addWidget(name_lbl)
 
         info_lbl = QLabel(f"{chunks} đoạn văn bản")
-        info_lbl.setFont(QFont("Inter", 8))
+        info_lbl.setFont(QFont("Inter", 9))
         info_lbl.setStyleSheet("color:#5a5d78; background:transparent; border:none;")
         text_col.addWidget(info_lbl)
         layout.addLayout(text_col)
         layout.addStretch()
 
         del_btn = QPushButton("✕")
-        del_btn.setFixedSize(24, 24)
-        del_btn.setFont(QFont("Inter", 9))
+        del_btn.setFixedSize(26, 26)
+        del_btn.setFont(QFont("Inter", 10))
         del_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         del_btn.setToolTip("Xóa tài liệu này")
         del_btn.setStyleSheet(
@@ -542,7 +566,7 @@ class CitationPopup(QFrame):
         self._text_edit = QTextEdit()
         self._text_edit.setReadOnly(True)
         self._text_edit.setMaximumHeight(180)
-        self._text_edit.setFont(QFont("Inter", 9))
+        self._text_edit.setFont(QFont("Inter", 10))
         self._text_edit.setStyleSheet("""
             QTextEdit {
                 background:#14152a;
@@ -576,13 +600,36 @@ class ChatBubble(QFrame):
         super().__init__(parent)
         self.role = role
         self.setObjectName("ChatBubble")
+        if role == "assistant":
+            self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+            self.setMinimumWidth(320)
+            self.setStyleSheet("""
+                QFrame#ChatBubble {
+                    background: #24263a;
+                    border: 1px solid #34364d;
+                    border-radius: 14px;
+                }
+            """)
+        else:
+            self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+            self.setMaximumWidth(360)
+            self.setStyleSheet("""
+                QFrame#ChatBubble {
+                    background: transparent;
+                    border: none;
+                }
+            """)
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 4, 0, 4)
-        layout.setSpacing(6)
+        if role == "assistant":
+            layout.setContentsMargins(16, 12, 16, 14)
+            layout.setSpacing(8)
+        else:
+            layout.setContentsMargins(0, 4, 0, 4)
+            layout.setSpacing(6)
 
         # Role header
         role_lbl = QLabel("🧑 Bạn" if role == "user" else "🤖 Trợ lý")
-        role_lbl.setFont(QFont("Inter", 8, QFont.Weight.Bold))
+        role_lbl.setFont(QFont("Inter", 9, QFont.Weight.Bold))
         role_lbl.setStyleSheet(
             f"color:{'#89b4fa' if role == 'user' else '#a6e3a1'}; background:transparent;"
         )
@@ -598,6 +645,10 @@ class ChatBubble(QFrame):
             self._display = QTextEdit()
             self._display.setReadOnly(True)
             self._display.setFont(QFont("Inter", 10))
+            self._display.setFrameShape(QFrame.Shape.NoFrame)
+            self._display.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self._display.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self._display.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
             self._display.setMaximumHeight(200)
             self._display.setStyleSheet("""
                 QTextEdit {
@@ -613,13 +664,15 @@ class ChatBubble(QFrame):
 
     def _resize_display(self):
         doc_h = int(self._display.document().size().height())
-        self._display.setMinimumHeight(min(max(doc_h + 24, 40), 600))
+        self._display.setFixedHeight(min(max(doc_h + 28, 56), 520))
 
     def set_text(self, text: str):
         if self.role == "assistant":
             self._display.set_text_with_citations(text)
         else:
             self._display.setPlainText(text)
+            doc_h = int(self._display.document().size().height())
+            self._display.setFixedHeight(min(max(doc_h + 28, 48), 180))
 
     def begin_streaming(self):
         """Prepare display for incoming tokens."""
@@ -736,7 +789,7 @@ class SourcesWidget(QWidget):
 
         for s in sources:
             badge = QLabel(f"📄 {s['doc_name']} p.{s['page_num']}")
-            badge.setFont(QFont("Inter", 8))
+            badge.setFont(QFont("Inter", 9))
             badge.setStyleSheet(
                 "background:#2a2b3d; color:#cba6f7; border-radius:6px; padding:4px 10px;"
             )
@@ -757,7 +810,7 @@ class SectionHeader(QLabel):
 class StatusLabel(QLabel):
     def __init__(self, parent=None):
         super().__init__("", parent)
-        self.setFont(QFont("Inter", 9))
+        self.setFont(QFont("Inter", 10))
         self.setObjectName("PlaceholderInfo")
 
     def set_loading(self, msg: str = "Đang xử lý..."):

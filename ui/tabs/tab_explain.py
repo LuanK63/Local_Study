@@ -228,9 +228,13 @@ class ExplainTab(QWidget):
     def _add_bubble(self, role: str) -> ChatBubble:
         bubble = ChatBubble(role)
         bubble.citation_clicked.connect(self._on_citation_clicked)
-        # Insert before the trailing stretch
+
         idx = self._chat_vbox.count() - 1
-        self._chat_vbox.insertWidget(idx, bubble)
+        if role == "user":
+            self._chat_vbox.insertWidget(idx, bubble, alignment=Qt.AlignmentFlag.AlignRight)
+        else:
+            self._chat_vbox.insertWidget(idx, bubble)
+
         self._chat_bubbles.append(bubble)
         return bubble
 
@@ -407,7 +411,8 @@ class ExplainTab(QWidget):
     @pyqtSlot(object)
     def _on_chunks_received(self, chunks):
         print(f"[DEBUG UI] Chunks received in PyQt slot: {len(chunks)}")
-        self._current_chunks = chunks
+        #self._current_chunks = chunks
+        self._current_chunks = chunks[:1]
 
     # ── Citation clicked ──────────────────────────────────────────────────────
     @pyqtSlot(int)

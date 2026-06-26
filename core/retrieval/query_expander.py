@@ -96,6 +96,15 @@ def _normalize(text: str) -> str:
     return text.lower().strip()
 
 
+def _is_vietnamese(text: str) -> bool:
+    # Check for Vietnamese diacritical marks
+    vi_pattern = re.compile(
+        r'[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]',
+        re.IGNORECASE
+    )
+    return bool(vi_pattern.search(text))
+
+
 def expand_query(query: str) -> str:
     """
     Thêm thuật ngữ tương đương (Anh -> Việt và Việt -> Anh) vào query.
@@ -108,17 +117,18 @@ def expand_query(query: str) -> str:
     expansions: list[str] = []
     already_added: set[str] = set()
 
-    # 1. English -> Vietnamese expansion
-    sorted_terms = sorted(_TECH_DICT.keys(), key=lambda k: len(k), reverse=True)
-    for en_term in sorted_terms:
-        # Tìm EN term trong query (word boundary)
-        pattern = r'\b' + re.escape(en_term) + r'\b'
-        if re.search(pattern, q_lower):
-            for vi_term in _TECH_DICT[en_term]:
-                # Chỉ thêm nếu VI term chưa có trong query gốc và chưa được thêm
-                if _normalize(vi_term) not in q_lower and vi_term not in already_added:
-                    expansions.append(vi_term)
-                    already_added.add(vi_term)
+    # 1. English -> Vietnamese expansion (chỉ thực hiện nếu câu hỏi chứa tiếng Việt)
+    if _is_vietnamese(query):
+        sorted_terms = sorted(_TECH_DICT.keys(), key=lambda k: len(k), reverse=True)
+        for en_term in sorted_terms:
+            # Tìm EN term trong query (word boundary)
+            pattern = r'\b' + re.escape(en_term) + r'\b'
+            if re.search(pattern, q_lower):
+                for vi_term in _TECH_DICT[en_term]:
+                    # Chỉ thêm nếu VI term chưa có trong query gốc và chưa được thêm
+                    if _normalize(vi_term) not in q_lower and vi_term not in already_added:
+                        expansions.append(vi_term)
+                        already_added.add(vi_term)
 
     # 2. Vietnamese -> English expansion
     sorted_vi_terms = sorted(_REVERSE_TECH_DICT.keys(), key=lambda k: len(k), reverse=True)

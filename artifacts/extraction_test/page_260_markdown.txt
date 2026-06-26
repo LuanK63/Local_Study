@@ -1,0 +1,36 @@
+Lý thuyết đồ thị ] 247 ^
+Lê Minh Hoàng
+Giải thích tại sao đối với đồ thị sau, cần tìm đường đi dài nhất từ đỉnh 1 tới đỉnh 4 lại không thể dùng thuật toán Dijkstra được, cứ thử áp dụng thuật toán Dijkstra theo từng bước xem sao:
+1
+2
+3
+4
+2
+2
+2
+4
+Bài 2
+Trên mặt phẳng cho n đường tròn (n ≤ 2000), đường tròn thứ i được cho bởi bộ ba số thực
+(x[i], y[i], R[i]), (x[i], y[i]) là toạ độ tâm và R[i] là bán kính. Chi phí di chuyển trên mỗi đường tròn bằng 0. Chi phí di chuyển giữa hai đường tròn bằng khoảng cách giữa chúng. Hãy tìm phương án di chuyển giữa hai đường tròn s, f cho trước với chi phí ít nhất.
+Bài 3
+Cho một dãy n số nguyên a[1..n] (n ≤ 10000; 1 ≤ a[i] ≤ 10000). Hãy tìm một dãy con gồm
+nhiều nhất các phần tử của dãy đã cho mà tổng của hai phần tử liên tiếp là số nguyên tố.
+Hướng dẫn: Dựng đồ thị G = (V, E), V = {1, …, n}, (i, j) ∈ E nếu i < j và a[i] + a[j] là số
+nguyên tố, tìm đường đi dài nhất trên đồ thị G không có chu trình
+Bài 4
+Một công trình lớn được chia làm n công đoạn đánh số 1, 2, …, n. Công đoạn i phải thực hiện
+mất thời gian t[i]. Quan hệ giữa các công đoạn được cho bởi bảng a[i, j]: a[i, j] = TRUE ⇔
+công đoạn j chỉ được bắt đầu khi mà công việc i đã xong. Hai công đoạn độc lập nhau có thể tiến hành song song, hãy bố trí lịch thực hiện các công đoạn sao cho thời gian hoàn thành cả công trình là sớm nhất, cho biết thời gian sớm nhất đó.
+Hướng dẫn: Dựng đồ thị G = (V, E), trong đó:
+V = {0, 1, …, n}
+E = {(0, u)|1 ≤ u ≤ n} ∪ {(u, v)|a[u, v] = TRUE}. Trọng số mỗi cung (i, j) đặt bằng t[j]
+Tìm đường đi dài nhất trên đồ thị không có chu trình, thời điểm thích hợp để thực hiện công việc i chính là d[i] - t[i].
+Bài 5
+Cho một bảng các số tự nhiên kích thước mxn (1 ≤ m, n ≤ 100). Từ một ô có thể di chuyển
+sang một ô kề cạnh với nó. Hãy tìm một cách đi từ ô (x, y) ra một ô biên sao cho tổng các số ghi trên các ô đi qua là cực tiểu.
+Hướng dẫn: Dùng thuật toán Dijkstra với cấu trúc Heap
+Bài 6: Arbitrage
+Arbitrage là một cách sử dụng sự bất hợp lý trong hối đoái tiền tệ để kiếm lời.
+Ví dụ:
+Giả sử
+1$ mua được 0.7£

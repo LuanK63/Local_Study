@@ -9,16 +9,18 @@ class RecursiveChunker(BaseChunker):
     Recursive character-based chunker. Splits text using multiple separators.
     Each chunk behaves as both parent and child (flat chunking).
     """
-    def __init__(self, chunk_size: int = None, chunk_overlap: int = None):
+    def __init__(self, chunk_size: int = None, chunk_overlap: int = None, length_unit: str = None):
         cfg = get_config().get("retrieval", {})
         self.chunk_size = chunk_size or cfg.get("recursive_chunk_size", 300)
         self.chunk_overlap = chunk_overlap or cfg.get("recursive_chunk_overlap", 30)
+        self.length_unit = length_unit or cfg.get("length_unit", "char")
 
     def split_documents(self, pages: list[PageContent]) -> list[ParentChunk]:
+        length_fn = self.estimate_token_length if self.length_unit == "token" else len
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.chunk_size,
             chunk_overlap=self.chunk_overlap,
-            length_function=self.estimate_token_length,
+            length_function=length_fn,
             separators=["\n\n", "\n", ". ", " ", ""]
         )
 

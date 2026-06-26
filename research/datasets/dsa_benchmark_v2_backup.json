@@ -1,0 +1,502 @@
+[
+    {
+        "id": "Q1",
+        "question": "Cây nhị phân tìm kiếm (BST) là gì?",
+        "reference_contexts": [
+            "Cho n khoá k[1..n], trên các khoá có quan hệ thứ tự toàn phần. Cây nhị phân tìm kiếm ứng với dãy khoá đó là một cây nhị phân mà mỗi nút chứa giá trị một khoá trong n khoá đã cho, hai giá trị chứa trong hai nút bất kỳ là khác nhau. Đối với mọi nút trên cây, tính chất sau luôn được thoả mãn: Mọi khoá nằm trong cây con trái của nút đó đều nhỏ hơn khoá ứng với nút đó. Mọi khoá nằm trong cây con phải của nút đó đều lớn hơn khoá ứng với nút đó. Thuật toán tìm kiếm trên cây có thể mô tả chung như sau: Trước hết, khoá tìm kiếm X được so sánh với khoá ở gốc cây, và 4 tình huống có thể xảy ra: Không có gốc (cây rỗng): X không có trên cây, phép tìm kiếm thất bại; X trùng với khoá ở gốc: Phép tìm kiếm thành công; X nhỏ hơn khoá ở gốc, phép tìm kiếm được tiếp tục trong cây con trái của gốc với cách làm tương tự; X lớn hơn khoá ở gốc, phép tìm kiếm được tiếp tục trong cây con phải của gốc với cách làm tương tự."
+        ],
+        "reference_answer": "Cây nhị phân tìm kiếm là một cây nhị phân mà mỗi nút chứa một khóa duy nhất, thỏa mãn điều kiện: mọi khóa ở cây con bên trái đều nhỏ hơn khóa tại nút đó và mọi khóa ở cây con bên phải đều lớn hơn khóa tại nút đó",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q2",
+        "question": "What is the average-case time complexity of the QuickSort algorithm?",
+        "reference_contexts": [
+            "The quicksort algorithm has a worst-case running time of Θ(n2) on an input array of n numbers. Despite this slow worst-case running time, quicksort is often the best practical choice for sorting because it is remarkably efficient on average: its expected running time is Θ(nlgn) when all numbers are distinct, and the constant factors hidden in the Θ(nlgn) notation are small."
+        ],
+        "reference_answer": "The average-case time complexity of the QuickSort algorithm is Θ(nlgn) when all numbers are distinct.",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q3",
+        "question": "What is the main difference between a Queue and a Stack?",
+        "reference_contexts": [
+            "Stacks and queues are dynamic sets in which the element removed from the set by the DELETE operation is prespecified. In a stack, the element deleted from the set is the one most recently inserted: the stack implements a last-in, first-out, or LIFO, policy. Similarly, in a queue, the element deleted is always the one that has been in the set for the longest time: the queue implements a first-in, first-out, or FIFO, policy."
+        ],
+        "reference_answer": "Sự khác biệt chính nằm ở nguyên tắc loại bỏ phần tử: Stack áp dụng chính sách LIFO (vào sau ra trước), trong khi Queue áp dụng chính sách FIFO (vào trước ra trước)",
+        "question_type": "Comparison",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q4",
+        "question": "Why is the Red-Black Tree preferred over a standard Binary Search Tree (BST) in standard library implementations?",
+        "reference_contexts": [
+            "The get() method in red-black BSTs does not examine the node color, so the balancing mechanism adds no overhead; search is faster than in elementary BSTs because the tree is balanced. Each key is inserted just once, but may be involved in many, many search operations, so the end result is that we get search times that are close to optimal (because the trees are nearly balanced and no work for balancing is done during the searches) at relatively little cost (unlike binary search, insertions are guaranteed to be logarithmic). The inner loop of the search is a compare followed by updating a link, which is quite short, like the inner loop of binary search (compare and index arithmetic). This implementation is the first we have seen with logarithmic guarantees for both search and insert, and it has a tight inner loop, so its use is justified in a broad variety of applications, including library implementations."
+        ],
+        "reference_answer": "Vì cây Đỏ-Đen có khả năng tự cân bằng, đảm bảo chiều cao luôn là O(log N), tránh trường hợp suy biến thành danh sách liên kết O(N) như BST thông thường.",
+        "question_type": "Reasoning",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q5",
+        "question": "Thuật toán Dijkstra được sử dụng để làm gì?",
+        "reference_contexts": [
+            "Xét về độ phức tạp tính toán, nếu cài đặt như trên, thuật toán Ford-Bellman có độ phức tạp là O(n 3 ), thuật toán Dijkstra là O(n 2 ), thuật toán tối ưu nhãn theo thứ tự tôpô là O(n 2 ) còn thuật toán Floyd là O(n 3 ). Tuy nhiên nếu sử dụng danh sách kề, thuật toán tối ưu nhãn theo thứ tự tôpô sẽ có độ phức tạp tính toán là O(m). Thuật toán Dijkstra kết hợp với cấu trúc dữ liệu Heap có độ phức tạp O(max(n,m)⋅logn). Khác với một bài toán đại số hay hình học có nhiều cách giải thì chỉ cần nắm vững một cách cũng có thể coi là đạt yêu cầu, những thuật toán tìm đường đi ngắn nhất bộc lộ rất rõ ưu, nhược điểm trong từng trường hợp cụ thể (Ví dụ như số đỉnh của đồ thị quá lớn làm cho không thể biểu diễn bằng ma trận trọng số thì thuật toán Floyd sẽ gặp khó khăn, hay thuật toán Ford-Bellman làm việc khá chậm). Vì vậy yêu cầu trước tiên là phải hiểu bản chất và thành thạo trong việc cài đặt tất cả các thuật toán trên để có thể sử dụng chúng một cách uyển chuyển trong từng trường hợp cụ thể"
+        ],
+        "reference_answer": "Thuật toán Dijkstra dùng để tìm đường đi ngắn nhất từ một đỉnh nguồn đến các đỉnh còn lại trên đồ thị có trọng số không âm.",
+        "question_type": "Factual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q6",
+        "question": "Trong thuật toán DFS, cấu trúc dữ liệu nào thường được sử dụng để hỗ trợ việc duyệt đồ thị?",
+        "reference_contexts": [
+            "In a program, when we come to a point during a graph search where we have more than one edge to traverse, we choose one and save the others to be explored later. In DFS, we use a pushdown stack (that is managed by the system to support the recursive search method) for this purpose. Using the LIFO rule that characterizes the pushdown stack corresponds to exploring passages that are close by in a maze. We choose, of the passages yet to be explored, the one that was most recently encountered. In BFS, we want to explore the graph by fanning out from the source, so we explore the passages in the order in which we encounter them. For this purpose, we use a FIFO queue. The result of a graph search is a tree (the edges that lead us to discover new vertices) and a set of vertices that can be reached from the source vertex. The DFS and BFS algorithms differ only in the data structure used to store the edges that are to be explored."
+        ],
+        "reference_answer": "Ngăn xếp (Stack) thường được sử dụng trong DFS, hoặc có thể triển khai ngầm thông qua Call Stack khi dùng đệ quy.",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q7",
+        "question": "So sánh ưu và nhược điểm giữa Mảng (Array) và Danh sách liên kết (Linked List).",
+        "reference_contexts": [
+            "A linked list is a data structure in which the objects are arranged in a linear order. Unlike an array, however, in which the linear order is determined by the array indices, the order in a linked list is determined by a pointer in each object. Linked lists provide a simple, flexible representation for dynamic sets. Each element of a doubly linked list L is an object with an attribute key and two pointer attributes: next and prev. The object may also contain other satellite data. Given an element x in the list, x: next points to its successor in the linked list, and x: prev points to its predecessor. If x: prev = NIL, the element x has no predecessor and is therefore the first element, or head, of the list. If x: next = NIL, the element x has no successor and is therefore the last element, or tail, of the list. A list may have one of several forms. It may be either singly linked or doubly linked, it may be sorted or not, and it may be circular or not. If a list is singly linked, each element has a next pointer but not a prev pointer."
+        ],
+        "reference_answer": "Mảng truy cập nhanh O(1) nhưng chèn/xóa chậm O(N). Linked List truy cập chậm O(N) nhưng chèn/xóa nhanh O(1) nếu đã biết vị trí.",
+        "question_type": "Comparison",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q8",
+        "question": "Thế nào là hiện tượng Đụng độ (Collision) trong Bảng Băm (Hash Table) và cách giải quyết?",
+        "reference_contexts": [
+            "There is one hitch, namely that two keys may hash to the same slot. We call this situation a collision. Fortunately, there are effective techniques for resolving the conflict created by collisions. Although a well-designed, random-looking hash function can reduce the number of collisions, we still need a method for resolving the collisions that do occur. The simplest collision resolution technique is called chaining. In hashing with chaining, the input set of n elements is divided randomly into m subsets, each of approximate size n/m. A hash function determines which subset an element belongs to. Each nonempty slot in the hash table points to a linked list, and all the elements that hash to the same slot go into that slot’s linked list. Slot j contains a pointer to the head of the list of all stored elements with hash value j. If there are no such elements, then slot j contains NIL. An alternative method for resolving collisions is called open addressing, where all elements are stored in the hash table itself."
+        ],
+        "reference_answer": "Đụng độ là khi 2 khóa có cùng giá trị băm. Cách giải quyết phổ biến là Chaining (danh sách liên kết) hoặc Open Addressing (thăm dò tuyến tính).",
+        "question_type": "Conceptual",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q9",
+        "question": "Đồ thị có hướng phi trình (DAG) là gì?",
+        "reference_contexts": [
+            "Xét trường hợp đồ thị có hướng, không có chu trình (Directed Acyclic Graph - DAG), ta có một thuật toán hiệu quả dựa trên kỹ thuật sắp xếp Tô pô (Topological Sorting), cơ sở của thuật toán dựa vào định lý: Nếu G = (V, E) là một DAG thì các đỉnh của nó có thể đánh số sao cho mỗi cung của G chỉ nối từ đỉnh có chỉ số nhỏ hơn đến đỉnh có chỉ số lớn hơn. Để đánh số lại các đỉnh theo điều kiện trên, ta có thể dùng thuật toán tìm kiếm theo chiều sâu và đánh số ngược lại với thứ tự duyệt xong. Việc kiểm tra đồ thị không được có chu trình cũng rất đơn giản bằng cách thêm vào đoạn chương trình trên vài dòng lệnh, tôi sẽ không viết dài để tập trung vào thuật toán, các bạn có thể tham khảo các kỹ thuật trình bày trong thuật toán Tarjan (§4, 4.4.3)."
+        ],
+        "reference_answer": "DAG là đồ thị có hướng (Directed) và không có chu trình (Acyclic).",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q10",
+        "question": "Sắp xếp trộn (Merge Sort) khác gì Sắp xếp nhanh (Quick Sort)?",
+        "reference_contexts": [
+            "The quicksort algorithm has a worst-case running time of Θ(n 2 ) on an input array of n numbers. Despite this slow worst-case running time, quicksort is often the best practical choice for sorting because it is remarkably efficient on average: its expected running time is Θ(nlgn) when all numbers are distinct, and the constant factors hidden in the Θ(nlgn) notation are small. Unlike merge sort, it also has the advantage of sorting in place, and it works well even in virtual-memory environments. Our study of quicksort is broken into four sections. Section 7.1 describes the algorithm and an important subroutine used by quicksort for partitioning. Because the behavior of quicksort is complex, we’ll start with an intuitive discussion of its performance in Section 7.2 and analyze it precisely at the end of the chapter. Section 7.3 presents a randomized version of quicksort. When all elements are distinct, this randomized algorithm has a good expected running time and no particular input elicits its worst-case behavior."
+        ],
+        "reference_answer": "Merge Sort ổn định ở O(N log N) nhưng tốn O(N) bộ nhớ phụ. Quick Sort in-place tiết kiệm bộ nhớ, trung bình O(N log N) nhưng trường hợp xấu nhất là O(N^2).",
+        "question_type": "Synthesis",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q11",
+        "question": "Tính liên thông của đồ thị vô hướng là gì?",
+        "reference_contexts": [
+            "G gọi là liên thông (connected) nếu luôn tồn tại đường đi giữa mọi cặp đỉnh phân biệt của đồ thị. Nếu G không liên thông thì chắc chắn nó sẽ là hợp của hai hay nhiều đồ thị con liên thông, các đồ thị con này đôi một không có đỉnh chung. Các đồ thị con liên thông rời nhau như vậy được gọi là các thành phần liên thông của đồ thị đang xét (Xem ví dụ). Hình 59: Đồ thị G và các thành phần liên thông G1, G2, G3 của nó. Một bài toán quan trọng trong lý thuyết đồ thị là bài toán kiểm tra tính liên thông của đồ thị vô hướng hay tổng quát hơn: Bài toán liệt kê các thành phần liên thông của đồ thị vô hướng. Để liệt kê các thành phần liên thông của G phương pháp cơ bản nhất là: Đánh dấu đỉnh 1 và những đỉnh có thể đến từ 1, thông báo những đỉnh đó thuộc thành phần liên thông thứ nhất. Nếu tất cả các đỉnh đều đã bị đánh dấu thì G là đồ thị liên thông, nếu không thì sẽ tồn tại một đỉnh v nào đó chưa bị đánh dấu, ta sẽ đánh dấu v và các đỉnh có thể đến được từ v, thông báo những đỉnh đó thuộc thành phần liên thông thứ hai."
+        ],
+        "reference_answer": "Tính liên thông của đồ thị vô hướng chỉ ra rằng có tồn tại đường đi giữa hai đỉnh bất kỳ trong đồ thị.",
+        "question_type": "Conceptual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q12",
+        "question": "Bài toán tìm đường đi ngắn nhất giữa mọi cặp đỉnh có thể dùng thuật toán nào?",
+        "reference_contexts": [
+            "Cho đơn đồ thị có hướng, có trọng số G = (V, E) với n đỉnh và m cạnh. Bài toán đặt ra là hãy tính tất cả các d(u, v) là khoảng cách từ u tới v. Rõ ràng là ta có thể áp dụng thuật toán tìm đường đi ngắn nhất xuất phát từ một đỉnh với n khả năng chọn đỉnh xuất phát. Nhưng ta có cách làm gọn hơn nhiều, cách làm này rất giống với thuật toán Warshall mà ta đã biết: Từ ma trận trọng số c, thuật toán Floyd tính lại các c[u, v] thành độ dài đường đi ngắn nhất từ u tới v: Với mọi đỉnh k của đồ thị được xét theo thứ tự từ 1 tới n, xét mọi cặp đỉnh u, v. Cực tiểu hoá c[u, v] theo công thức: c[u, v] := min(c[u, v], c[u, k] + c[k, v]). Tức là nếu như đường đi từ u tới v đang có lại dài hơn đường đi từ u tới k cộng với đường đi từ k tới v thì ta huỷ bỏ đường đi từ u tới v hiện thời và coi đường đi từ u tới v sẽ là nối của hai đường đi từ u tới k rồi từ k tới v (Chú ý rằng ta còn có việc lưu lại vết): for k := 1 to n do for u := 1 to n do for v := 1 to n do c[u, v] := min(c[u, v], c[u, k] + c[k, v]);"
+        ],
+        "reference_answer": "Thuật toán Floyd-Warshall.",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q13",
+        "question": "Thuật toán DFS có thể được cài đặt bằng cấu trúc dữ liệu nào?",
+        "reference_contexts": [
+            " In a program, when we come to a point during a graph search where we have more than one edge to traverse, we choose one and save the others to be explored later. In DFS, we use a pushdown stack (that is managed by the system to support the recursive search method) for this purpose. Using the LIFO rule that characterizes the pushdown stack corresponds to exploring passages that are close by in a maze. We choose, of the passages yet to be explored, the one that was most recently encountered. In BFS, we want to explore the graph by fanning out from the source, so we explore the passages in the order in which we encounter them. For this purpose, we use a FIFO queue. The result of a graph search is a tree (the edges that lead us to discover new vertices) and a set of vertices that can be reached from the source vertex. The DFS and BFS algorithms differ only in the data structure used to store the edges that are to be explored."
+        ],
+        "reference_answer": "Có thể sử dụng Ngăn xếp (Stack) hoặc đệ quy.",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q14",
+        "question": "Bài toán ghép đôi (matching problem) trên đồ thị là gì?",
+        "reference_contexts": [
+            " Cho một đồ thị hai phía G = (X ∪ Y, E) ở đây X là tập các đỉnh trái và Y là tập các đỉnh phải của G. X = {x, x, …, x[m]}, Y = {y, y, …, y[n]}. Một bộ ghép (matching) của G là một tập hợp các cạnh của G đôi một không có đỉnh chung. Bài toán ghép đôi (matching problem) là tìm một bộ ghép lớn nhất (nghĩa là có số cạnh lớn nhất) của G. Xét một bộ ghép M của G. Các đỉnh trong M gọi là các đỉnh đã ghép (matched vertices), các đỉnh khác là chưa ghép. Các cạnh trong M gọi là các cạnh đã ghép, các cạnh khác là chưa ghép. Nếu định hướng lại các cạnh của đồ thị thành cung, những cạnh chưa ghép được định hướng từ X sang Y, những cạnh đã ghép định hướng từ Y về X. Trên đồ thị định hướng đó: Một đường đi xuất phát từ một X_đỉnh chưa ghép gọi là đường pha, một đường đi từ một X_đỉnh chưa ghép tới một Y_đỉnh chưa ghép gọi là đường mở."
+        ],
+        "reference_answer": "Là bài toán tìm bộ ghép (tập các cạnh không có đỉnh chung) có số lượng cạnh lớn nhất.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q15",
+        "question": "Cây khung nhỏ nhất (Minimum Spanning Tree) là gì?",
+        "reference_contexts": [
+            "Cho G = (V, E) là đồ thị vô hướng liên thông có trọng số, với một cây khung T của G, ta gọi trọng số của cây T là tổng trọng số các cạnh trong T. Bài toán đặt ra là trong số các cây khung của G, chỉ ra cây khung có trọng số nhỏ nhất, cây khung như vậy được gọi là cây khung (hay cây bao trùm) nhỏ nhất của đồ thị, và bài toán đó gọi là bài toán cây khung nhỏ nhất. Sau đây ta sẽ xét hai thuật toán thông dụng để giải bài toán cây khung nhỏ nhất của đơn đồ thị vô hướng có trọng số. Bạn có thể đưa vào một số sửa đổi nhỏ trong thủ tục nhập liệu để giải quyết bài toán trong trường hợp đa đồ thị. Thuật toán Kruskal dựa trên mô hình xây dựng cây khung bằng thuật toán hợp nhất, chỉ có điều thuật toán không phải xét các cạnh với thứ tự tuỳ ý mà xét các cạnh theo thứ tự đã sắp xếp: Xét tất cả các cạnh của đồ thị từ cạnh có trọng số nhỏ đến cạnh có trọng số lớn, nếu việc thêm cạnh đó vào T không tạo thành chu trình đơn trong T thì kết nạp thêm cạnh đó vào T."
+        ],
+        "reference_answer": "Là cây khung bao trùm tất cả các đỉnh của đồ thị liên thông với tổng trọng số các cạnh nhỏ nhất.",
+        "question_type": "Conceptual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q16",
+        "question": "Thuật toán Kruskal hoạt động dựa trên nguyên lý nào?",
+        "reference_contexts": [
+            "Thuật toán Kruskal dựa trên mô hình xây dựng cây khung bằng thuật toán hợp nhất (§5), chỉ có điều thuật toán không phải xét các cạnh với thứ tự tuỳ ý mà xét các cạnh theo thứ tự đã sắp xếp: Với đồ thị vô hướng G = (V, E) có n đỉnh. Khởi tạo cây T ban đầu không có cạnh nào. Xét tất cả các cạnh của đồ thị từ cạnh có trọng số nhỏ đến cạnh có trọng số lớn, nếu việc thêm cạnh đó vào T không tạo thành chu trình đơn trong T thì kết nạp thêm cạnh đó vào T. Cứ làm như vậy cho tới khi: Hoặc đã kết nạp được n - 1 cạnh vào trong T thì ta được T là cây khung nhỏ nhất. Hoặc chưa kết nạp đủ n - 1 cạnh nhưng hễ cứ kết nạp thêm một cạnh bất kỳ trong số các cạnh còn lại thì sẽ tạo thành chu trình đơn. Trong trường hợp này đồ thị G là không liên thông, việc tìm kiếm cây khung thất bại."
+        ],
+        "reference_answer": "Dựa trên nguyên lý tham lam: duyệt các cạnh theo trọng số tăng dần và kết nạp nếu không tạo thành chu trình.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q17",
+        "question": "Sự khác biệt giữa DFS và BFS là gì?",
+        "reference_contexts": [
+            "DFS offers us little assistance in solving this problem, because the order in which it takes us through the graph has no relationship to the goal of find-ing shortest paths. In contrast, BFS is based on this goal. To find a shortest path from s to v, we start at s and check for v among all the vertices that we can reach by following one edge, then we check for v among all the vertices that we can reach from s by following two edges, and so forth. DFS is analogous to one person exploring a maze. BFS is analogous to a group of searchers exploring by fanning out in all directions, each unrolling his or her own ball of string. When more than one passage needs to be explored, we imagine that the searchers split up to expore all of them; when two groups of searchers meet up, they join forces (using the ball of string held by the one getting there first)."
+        ],
+        "reference_answer": "DFS dùng Stack/đệ quy đi sâu vào một nhánh, còn BFS dùng Queue đi theo từng mức rộng ra xung quanh.",
+        "question_type": "Comparison",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q18",
+        "question": "Quy hoạch động (Dynamic Programming) có đặc điểm gì?",
+        "reference_contexts": [
+            "Dynamic programming, like the divide-and-conquer method, solves problems by combining the solutions to subproblems. Dynamic programming applies when the subproblems overlap—that is, when subproblems share subsubproblems. In this context, a divide-and-conquer algorithm does more work than necessary, repeatedly solving the common subsubproblems. A dynamic-programming algorithm solves each subsubproblem just once and then saves its answer in a table, thereby avoiding the work of recomputing the answer every time it solves each subsubproblem. Dynamic programming typically applies to optimization problems. Such problems can have many possible solutions. Each solution has a value, and you want to find a solution with the optimal (minimum or maximum) value. We call such a solution an optimal solution to the problem, as opposed to the optimal solution, since there may be several solutions that achieve the optimal value."
+        ],
+        "reference_answer": "Lưu trữ kết quả các bài toán con chồng chéo để tránh tính toán lặp lại.",
+        "question_type": "Reasoning",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q19",
+        "question": "Trong quy hoạch động, Bottom-up khác Top-down như thế nào?",
+        "reference_contexts": [
+            "The second approach is the bottom-up method. This approach typically depends on some natural notion of the size of a subproblem, such that solving any particular subproblem depends only on solving smaller subproblems. Solve the subproblems in size order, smallest first, storing the solution to each subproblem when it is first solved. In this way, when solving a particular subproblem, there are already saved solutions for all of the smaller subproblems its solution depends upon. You need to solve each subproblem only once, and when you first see it, you have already solved all of its prerequisite subproblems. The bottom-up method for dynamic programming considers the vertices of the subproblem graph in such an order that you solve the subproblems y adjacent to a given subproblem x before you solve subproblem x. Similarly, you can view the top-down method (with memoization) for dynamic programming as a depth-first search of the subproblem graph."
+        ],
+        "reference_answer": "Bottom-up dùng mảng tính từ gốc rễ lên. Top-down dùng đệ quy từ trên xuống có lưu vết kết quả.",
+        "question_type": "Comparison",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q20",
+        "question": "Thuật toán Prim dùng để làm gì?",
+        "reference_contexts": [
+            " Thuật toán Kruskal hoạt động chậm trong trường hợp đồ thị dày (có nhiều cạnh). Trong trường hợp đó người ta thường sử dụng phương pháp lân cận gần nhất của Prim. Thuật toán đó có thể phát biểu hình thức như sau: Đơn đồ thị vô hướng G = (V, E) có n đỉnh được cho bởi ma trận trong số C. Qui ước c[u, v] = +∞ nếu (u, v) không là cạnh. Xét cây T trong G và một đỉnh v, gọi khoảng cách từ v tới T là trọng số nhỏ nhất trong số các cạnh nối v với một đỉnh nào đó trong T. Xét về độ phức tạp tính toán, thuật toán Prim có độ phức tạp là O(n 2 ). Tương tự thuật toán Dijkstra, nếu kết hợp thuật toán Prim với cấu trúc Heap sẽ được một thuật toán với độ phức tạp O((m+n)⋅logn). Tuy nhiên nếu phải làm việc với đồ thị thưa, người ta thường sử dụng thuật toán Kruskal để tìm cây khung chứ không dùng thuật toán Prim với cấu trúc Heap."
+        ],
+        "reference_answer": "Tìm cây khung nhỏ nhất (Minimum Spanning Tree).",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q21",
+        "question": "AVL Tree khác BST thông thường ở điểm nào?",
+        "reference_contexts": [
+            "An AVL tree is a binary search tree that is height balanced: for each node x , the heights of the left and right subtrees of x differ by at most 1. To implement an AVL tree, maintain an extra attribute h in each node such that x: h is the height of node x . As for any other binary search tree T , assume that T: root points to the root node. Prove that an AVL tree with n nodes has height O.lg n/. (Hint: Prove that an AVL tree of height h has at least F h nodes, where F h is the hth Fibonacci number.) To insert into an AVL tree, ûrst place a node into the appropriate place in binary search tree order. Afterward, the tree might no longer be height balanced. Speciûcally, the heights of the left and right children of some node might differ by 2. Describe a procedure BALANCE.x/, which takes a subtree rooted at x whose left and right children are height balanced and have heights that differ by at most 2, so that jx: right : h  x: left: hj හ 2, and alters the subtree rooted at x to be height balanced."
+        ],
+        "reference_answer": "AVL Tree luôn tự cân bằng sao cho độ lệch chiều cao 2 cây con không quá 1, tránh suy biến.",
+        "question_type": "Comparison",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q22",
+        "question": "Trường hợp xấu nhất của thao tác chèn trong BST là O(N) khi nào?",
+        "reference_contexts": [
+            "Good performance of the basic BST implementation is dependent on the keys being sufficiently similar to random keys that the tree is not likely to contain many long paths. With quicksort, we were able to randomize; with a symbol-table API, we do not have that freedom, because the client controls the mix of operations. Indeed, the worst-case behavior is not unlikely in practice—it arises when a client inserts keys in order or in reverse order, a sequence of operations that some client certainly might attempt in the absence of any explicit warnings to avoid doing so. This possibility is a primary reason to seek better algorithms and data structures, which we consider next. In summary, BSTs are not difficult to implement and can provide fast search and insert for practical applications of all kinds if the key insertions are well-approximated by the random-key model. For our examples (and for many practical applications) BSTs make the difference between being able to accomplish the task at hand and not being able to do so. Moreover, many programmers choose BSTs for symbol-table implementations because they also support fast rank, select, delete, and range query operations."
+        ],
+        "reference_answer": "Khi các phần tử được chèn theo thứ tự tăng dần hoặc giảm dần liên tục, làm cây suy biến thành đường thẳng.",
+        "question_type": "Reasoning",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q23",
+        "question": "Thuật toán Tarjan dùng để làm gì?",
+        "reference_contexts": [
+            "Thuật toán Tarjan (R.E.Tarjan - 1972). Chọn u là chốt mà từ đó quá trình tìm kiếm theo chiều sâu không thăm thêm bất kỳ một chốt nào khác, chọn lấy thành phần liên thông mạnh thứ nhất là nhánh DFS gốc u. Sau đó loại bỏ nhánh DFS gốc u ra khỏi cây DFS, lại tìm thấy một đỉnh chốt v khác mà nhánh DFS gốc v không chứa chốt nào khác, lại chọn lấy thành phần liên thông mạnh thứ hai là nhánh DFS gốc v. Tương tự như vậy cho thành phần liên thông mạnh thứ ba, thứ tư, v.v… Có thể hình dung thuật toán Tarjan “bẻ” cây DFS tại vị trí các chốt để được các nhánh rời rạc, mỗi nhánh là một thành phần liên thông mạnh. Trình bày dài dòng như vậy, nhưng điều quan trọng nhất bây giờ mới nói tới: Làm thế nào kiểm tra một đỉnh v nào đó có phải là chốt hay không ? Hãy để ý nhánh DFS gốc ở đỉnh r nào đó. Nhận xét 1: Nếu như từ các đỉnh thuộc nhánh gốc r này không có cung ngược hay cung chéo nào đi ra khỏi nhánh đó thì r là chốt. Điều này dễ hiểu bởi như vậy có nghĩa là từ r, đi theo các cung của đồ thị thì chỉ đến được những đỉnh thuộc nhánh đó mà thôi."
+        ],
+        "reference_answer": "Tìm các thành phần liên thông mạnh trên đồ thị có hướng.",
+        "question_type": "Factual",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q24",
+        "question": "Bipartite Graph (Đồ thị hai phía) là gì?",
+        "reference_contexts": [
+            " A bipartite graph is a graph whose vertices we can divide into two sets such that all edges connect a vertex in one set with a vertex in the other set. The figure at right gives an example of a bipartite graph, where one set of vertices is colored red and the other set of vertices is colored black. Bipartite graphs arise in a natural way in many situations, one of which we will consider in detail at the end of this section. With these preparations, we are ready to move on to consider graph-processing algorithms. We begin by considering an API and implementation for a graph data type, then we consider classic algorithms for searching graphs and for identifying connected components. To conclude the section, we consider real-world applications where vertex names need not be integers and graphs may have huge numbers of vertices and edges. Undirected graph data type Our starting point for developing graph-processing algorithms is an API that defines the fundamental graph operations. This scheme allows us to address graph-processing tasks ranging from elementary maintenance operations to sophisticated solutions of difficult problems."
+        ],
+        "reference_answer": "Là đồ thị có thể chia đỉnh thành 2 tập phân biệt mà không có cạnh nào nối 2 đỉnh trong cùng một tập.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q25",
+        "question": "Sắp xếp chèn (Insertion Sort) hoạt động như thế nào?",
+        "reference_contexts": [
+            "Insertion sort The algorithm that people often use to sort bridge hands is to consider the cards one at a time, inserting each into its proper place among those already considered (keeping them sorted). In a computer implementation, we need to make space to insert the current item by moving larger items one position to the right, before inserting the current item into the vacated position. Algorithm 2.2 is an implementation of this method, which is called insertion sort. As in selection sort, the items to the left of the current index are in sorted order during the sort, but they are not in their final position, as they may have to be moved to make room for smaller items encountered later. The array is, however, fully sorted when the index reaches the right end. Unlike that of selection sort, the running time of insertion sort depends on the initial order of the items in the input. For example, if the array is large and its entries are already in order (or nearly in order), then insertion sort is much, much faster than if the entries are randomly ordered or in reverse order."
+        ],
+        "reference_answer": "Duyệt từng phần tử và chèn nó vào vị trí đúng trong mảng con đã sắp xếp phía trước.",
+        "question_type": "Conceptual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q26",
+        "question": "Cấu trúc dữ liệu Trie (Prefix Tree) thường được dùng để làm gì?",
+        "reference_contexts": [
+            "In this section, we consider a search tree known as a trie, a data structure built from the characters of the string keys that allows us to use the characters of the search key to guide the search. The name “trie” is a bit of wordplay introduced by E. Fredkin in 1960 because the data structure is used for retrieval, but we pronounce it “try” to avoid confusion with “tree.” We begin with a high-level description of the basic properties of tries, including search and insert algorithms, and then proceed to the details of the representation and Java implementation. Basic properties. As with search trees, tries are data structures composed of nodes that contain links that are either null or references to other nodes. Each node is pointed to by just one other node, which is called its parent (except for one node, the root, which has no nodes pointing to it), and each node has R links, where R is the alphabet size. Often, tries have a substantial number of null links, so when we draw a trie, we typically omit null links. Although links point to nodes, we can view each link as pointing to a trie, the trie whose root is the referenced node."
+        ],
+        "reference_answer": "Lưu trữ và tìm kiếm xâu ký tự (chuỗi), tra cứu tiền tố (prefix search).",
+        "question_type": "Factual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q27",
+        "question": "Độ phức tạp của thuật toán Binary Search là bao nhiêu?",
+        "reference_contexts": [
+            "Người ta đã chứng minh được độ phức tạp tính toán của thuật toán tìm kiếm nhị phân trong trường hợp tốt nhất là O(1), trong trường hợp xấu nhất là O(lgn) và trong trường hợp trung bình là O(lgn). Tuy nhiên, ta không nên quên rằng trước khi sử dụng tìm kiếm nhị phân, dãy khoá phải được sắp xếp rồi, tức là thời gian chi phí cho việc sắp xếp cũng phải tính đến. Nếu dãy khoá luôn luôn biến động bởi phép bổ sung hay loại bớt đi thì lúc đó chi phí cho sắp xếp lại nổi lên rất rõ làm bộc lộ nhược điểm của phương pháp này. Phép tìm kiếm nhị phân có thể áp dụng trên dãy khoá đã có thứ tự: k ≤ k ≤ … ≤ k[n]. Giả sử ta cần tìm trong đoạn k[inf...sup] với khoá tìm kiếm là X, trước hết ta xét khoá nằm giữa dãy k[median] với median = (inf + sup) div 2; Nếu k[median] < X thì có nghĩa là đoạn từ k[inf] tới k[median] chỉ chứa toàn khoá < X, ta tiến hành tìm kiếm tiếp với đoạn từ k[median+1]tới k[sup]."
+        ],
+        "reference_answer": "O(log N).",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q28",
+        "question": "Khi nào thì nên dùng Adjacency Matrix thay vì Adjacency List?",
+        "reference_contexts": [
+            "You can choose between two standard ways to represent a graph G = (V, E): as a collection of adjacency lists or as an adjacency matrix. Either way applies to both directed and undirected graphs. Because the adjacency-list representation provides a compact way to represent sparse graphs—those for which |E| is much less than |V|^2—it is usually the method of choice. Most of the graph algorithms presented in this book assume that an input graph is represented in adjacency-list form. You might prefer an adjacency-matrix representation, however, when the graph is dense—|E| is close to |V|^2—or when you need to be able to tell quickly whether there is an edge connecting two given vertices. For example, two of the algorithms for finding all-pairs shortest paths in Chapter 23 assume that the input graph is represented as an adjacency matrix. The adjacency matrix of a graph requires Θ(V 2 ) memory, independent of the number of edges in the graph. Because finding each edge in the graph requires examining the entire adjacency matrix, doing so takes Θ(V 2 ) time."
+        ],
+        "reference_answer": "Nên dùng cho đồ thị dày (nhiều cạnh) vì truy xuất nhanh O(1) và đồ thị ít đỉnh.",
+        "question_type": "Reasoning",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q29",
+        "question": "Sắp xếp nổi bọt (Bubble Sort) là gì?",
+        "reference_contexts": [
+            " Trong thuật toán sắp xếp nổi bọt, dãy các khoá sẽ được duyệt từ cuối dãy lên đầu dãy (từ k[n] về k), nếu gặp hai khoá kế cận bị ngược thứ tự thì đổi chỗ của chúng cho nhau. Sau lần duyệt như vậy, khoá nhỏ nhất trong dãy khoá sẽ được chuyển về vị trí đầu tiên và vấn đề trở thành sắp xếp dãy khoá từ k tới k[n]: procedure BubbleSort; var i, j: Integer; begin for i := 2 to n do for j := n downto i do {Duyệt từ cuối dãy lên, làm nổi khoá nhỏ nhất trong đoạn k[i-1, n] về vị trí i-1} if k[j] < k[j-1] then <Đảo giá trị k[j] và k[j-1]> end; Đối với thuật toán sắp xếp nổi bọt, có thể coi phép toán tích cực là phép so sánh k[j] < k[j-1]. Và số lần thực hiện phép so sánh này là: (n - 1) + (n - 2) + … + 1 = n * (n - 1) / 2. Vậy thuật toán sắp xếp nổi bọt cũng có độ phức tạplà O(n2)."
+        ],
+        "reference_answer": "Duyệt mảng nhiều lần, so sánh và đổi chỗ phần tử kề nhau để đẩy phần tử lớn nhất về cuối mảng.",
+        "question_type": "Conceptual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q30",
+        "question": "Độ phức tạp thời gian tốt nhất của Bubble Sort là gì?",
+        "reference_contexts": [
+            "Đối với thuật toán sắp xếp nổi bọt, có thể coi phép toán tích cực là phép so sánh k[j] < k[j-1]. Và số lần thực hiện phép so sánh này là: (n - 1) + (n - 2) + … + 1 = n * (n - 1) / 2. Vậy thuật toán sắp xếp nổi bọt cũng có độ phức tạp là O(n2). Bất kể tình trạng dữ liệu vào như thế nào. Những thuật toán có độ phức tạp O(n2) thì chỉ nên áp dụng trong chương trình có ít lần sắp xếp và với kích thước n nhỏ. Về tốc độ, BubbleSort luôn luôn đứng bét, nhưng mã lệnh của nó lại hết sức đơn giản mà người mới học lập trình nào cũng có thể cài đặt được, tính ổn định của BubbleSort cũng rất đáng chú ý. Trong những thuật toán có độ phức tạp O(n2), InsertionSort tỏ ra nhanh hơn những phương pháp còn lại và cũng có tính ổn định, mã lệnh cũng tương đối đơn giản, dễ nhớ. SelectionSort thì không ổn định nhưng với n nhỏ, việc chọn ra m khoá nhỏ nhất có thể thực hiện dễ dàng chứ không cần phải sắp xếp lại toàn bộ như sắp xếp chèn."
+        ],
+        "reference_answer": "O(N) khi mảng đã có thứ tự.",
+        "question_type": "Factual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q31",
+        "question": "Thuật toán Topological Sort áp dụng cho loại đồ thị nào?",
+        "reference_contexts": [
+            "Xét trường hợp đồ thị có hướng, không có chu trình (Directed Acyclic Graph - DAG), ta có một thuật toán hiệu quả dựa trên kỹ thuật sắp xếp Tô pô (Topological Sorting), cơ sở của thuật toán dựa vào định lý: Nếu G = (V, E) là một DAG thì các đỉnh của nó có thể đánh số sao cho mỗi cung của G chỉ nối từ đỉnh có chỉ số nhỏ hơn đến đỉnh có chỉ số lớn hơn. Để đánh số lại các đỉnh theo điều kiện trên, ta có thể dùng thuật toán tìm kiếm theo chiều sâu và đánh số ngược lại với thứ tự duyệt xong, có thể viết như sau: procedure Number; procedure Visit(u: Integer); var v: Integer; begin 〈Đánh dấu u đã thăm〉; for (∀v ∈ V: v chưa thăm kề với u) do Visit(v); {Thăm tiếp những đỉnh chưa thăm kề với u} 〈Đã duyệt xong nhánh DFS gốc u, đánh số mới cho đỉnh u là count〉; count := count - 1; end; begin 〈Đánh dấu mọi đỉnh ∈ V đều chưa thăm〉; count := n; {Biến đánh số được khởi tạo bằng n để đếm lùi} for u := 1 to n do if 〈u chưa thăm〉 then Visit(u); end;"
+        ],
+        "reference_answer": "Đồ thị có hướng phi chu trình (DAG).",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q32",
+        "question": "Thuật toán tham lam (Greedy) có đặc điểm gì?",
+        "reference_contexts": [
+            " The ûrst key ingredient is the greedy-choice property: you can assemble a globally optimal solution by making locally optimal (greedy) choices. In other words, when you are considering which choice to make, you make the choice that looks best in the current problem, without considering results from subproblems. Here is where greedy algorithms differ from dynamic programming. In dynamic programming, you make a choice at each step, but the choice usually depends on the solutions to subproblems. Consequently, you typically solve dynamic-programming problems in a bottom-up manner, progressing from smaller subproblems to larger subproblems. In a greedy algorithm, you make whatever choice seems best at the moment and then solve the subproblem that remains. The choice made by a greedy algorithm may depend on choices so far, but it cannot depend on any future choices or on the solutions to subproblems. Thus, unlike dynamic programming, which solves the subproblems before making the ûrst choice, a greedy algorithm makes its ûrst choice before solving any subproblems. A greedy strategy usually progresses top down, making one greedy choice after another, reducing each given problem instance to a smaller one."
+        ],
+        "reference_answer": "Luôn chọn phương án tốt nhất ở thời điểm hiện tại (tối ưu cục bộ).",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q33",
+        "question": "Khái niệm Hàng đợi ưu tiên (Priority Queue) là gì?",
+        "reference_contexts": [
+            " Many applications require that we process items having keys in order, but not necessarily in full sorted order and not necessarily all at once. Often, we collect a set of items, then process the one with the largest key, then perhaps collect more items, then process the one with the current largest key, and so forth. For example, you are likely to have a computer (or a cellphone) that is capable of running several applications at the same time. This effect is typically achieved by assigning a priority to events associated with applications, then always choosing to process next the highest-priority event. An appropriate data type in such an environment supports two operations: remove the maximum and insert. Such a data type is called a priority queue. Using priority queues is similar to using queues (remove the oldest) and stacks (remove the newest), but implementing them efficiently is more challenging. After a short discussion of elementary representations we consider a classic priority-queue implementation based on the binary heap data structure, where items are kept in an array, subject to certain ordering constraints that allow for efficient implementations."
+        ],
+        "reference_answer": "Là hàng đợi mà phần tử lấy ra luôn là phần tử có độ ưu tiên cao nhất thay vì phần tử vào trước.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q34",
+        "question": "Cấu trúc dữ liệu Heap (Đống) là gì?",
+        "reference_contexts": [
+            "Đống là một dạng cây nhị phân hoàn chỉnh đặc biệt mà giá trị lưu tại mọi nút có độ ưu tiên cao hơn hay bằng giá trị lưu trong hai nút con của nó. Trong thuật toán sắp xếp kiểu vun đống, ta coi quan hệ “ưu tiên hơn hay bằng” là quan hệ “lớn hơn hay bằng”: ≥. Trong bài §6, ta đã biết một dãy khoá k[1..n] là biểu diễn của một cây nhị phân hoàn chỉnh mà k[i] là giá trị lưu trong nút thứ i, nút con của nút thứ i là nút 2i và nút 2i + 1, nút cha của nút thứ j là nút j div 2. Vấn đề đặt ra là sắp lại dãy khoá đã cho để nó biểu diễn một đống. Vì cây nhị phân chỉ gồm có một nút hiển nhiên là đống, nên để vun một nhánh cây gốc r thành đống, ta có thể coi hai nhánh con của nó (nhánh gốc 2r và 2r + 1) đã là đống rồi và thực hiện thuật toán vun đống từ dưới lên (bottom-up) đối với cây: Gọi h là chiều cao của cây, nút ở mức h (nút lá) đã là gốc một đống, ta vun lên để những nút ở mức h - 1 cũng là gốc của đống, … cứ như vậy cho tới nút ở mức 1 (nút gốc) cũng là gốc của đống."
+        ],
+        "reference_answer": "Là cây nhị phân hoàn chỉnh mà mọi nút cha đều lớn hơn hoặc bằng (Max Heap) hoặc nhỏ hơn hoặc bằng (Min Heap) các con của nó.",
+        "question_type": "Conceptual",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q35",
+        "question": "Trong Heapsort, làm thế nào để sắp xếp tăng dần?",
+        "reference_contexts": [
+            "Đầu tiên, dãy khoá k[1..n] được vun từ dưới lên để nó biểu diễn một đống, khi đó khoá k[1] tương ứng với nút gốc của đống là khoá lớn nhất, ta đảo giá trị khoá đó cho k[n] và không tính tới nút n này nữa. Vun phần còn lại thành đống rồi lại đảo trị k[1] cho k[n-1]. Thuật toán HeapSort có hai thủ tục chính: Thủ tục Adjust(root, endnode) vun cây gốc root thành đống trong điều kiện hai cây gốc 2.root và 2.root +1 đã là đống rồi. Các nút từ endnode + 1 tới n đã nằm ở vị trí đúng và không được tính tới nữa. Thủ tục HeapSort mô tả lại quá trình vun đống và chọn khoá theo ý tưởng trên: begin for r := n div 2 downto 1 do Adjust(r, n); {Vun cây từ dưới lên tạo thành đống} for i := n downto 2 do begin 〈Đảo giá trị k[1] và k[i]〉; {Khoá lớn nhất được chuyển ra cuối dãy} Adjust(1, i - 1); {Vun phần còn lại thành đống} end; end. Về độ phức tạp của thuật toán, ta đã biết rằng cây nhị phân hoàn chỉnh có n nút thì chiều cao của nó là [lg(n)] + 1."
+        ],
+        "reference_answer": "Xây dựng Max Heap, sau đó lặp lại việc đổi chỗ gốc với phần tử cuối và vun lại đống.",
+        "question_type": "Reasoning",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q36",
+        "question": "Disjoint Set (Union-Find) là gì?",
+        "reference_contexts": [
+            "A disjoint-set data structure maintains a collection S = {S1, S2, ..., Sk} of disjoint dynamic sets. To identify each set, choose a representative, which is some member of the set. In some applications, it doesn’t matter which member is used as the representative; it matters only that if you ask for the representative of a dynamic set twice without modifying the set between the requests, you get the same answer both times. Other applications may require a prespeciûed rule for choosing the representative, such as choosing the smallest member in the set (for a set whose elements can be ordered). As in the other dynamic-set implementations we have studied, each element of a set is represented by an object. Letting x denote an object, we’ll see how to support the following operations: MAKE-SET(x), where x does not already belong to some other set, creates a new set whose only member (and thus representative) is x. UNION(x, y) unites two disjoint, dynamic sets that contain x and y, say Sx and Sy, into a new set that is the union of these two sets. The representative of the resulting set is any member of Sx ∪ Sy, although many implementations of UNION speciûcally choose the representative of either Sx or Sy as the new representative. Since the sets in the collection must at all times be disjoint, the UNION operation destroys sets Sx and Sy, removing them from the collection S. FIND-SET(x) returns a pointer to the representative of the unique set containing x."
+        ],
+        "reference_answer": "Là cấu trúc dữ liệu quản lý các tập hợp rời rạc, hỗ trợ tìm tập hợp của một phần tử và gộp 2 tập hợp.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q37",
+        "question": "Kỹ thuật Path Compression trong Union-Find có tác dụng gì?",
+        "reference_contexts": [
+            "Ideally, we would like every node to link directly to the root of its tree, but we do not want to pay the price of changing a large number of links, as we did in the quick-find algorithm. We can approach the ideal simply by making all the nodes that we do examine directly link to the root. This step seems drastic at first blush, but it is easy to implement, and there is nothing sacrosanct about the structure of these trees: if we can modify them to make the algorithm more efficient, we should do so. To implement path compression, we just add another loop to find() that sets the id[] entry corresponding to each node encountered along the way to link directly to the root. The net result is to flatten the trees almost completely, approximating the ideal achieved by the quick-find algorithm. The method is simple and effective, but you are not likely to be able to discern any improvement over weighted quick-union in a practical situation. Theoretical results about the situation are extremely complicated and quite remarkable. Weighted quick union with path compression is optimal but not quite constant-time per operation. That is, not only is weighted quick-find with path compression not constant-time per operation in the worst case (amortized), but also there exists no algorithm that can guarantee to perform each union-find operation in amortized constant time."
+        ],
+        "reference_answer": "Gắn trực tiếp các nút trên đường đi về gốc, làm giảm độ cao cây để tăng tốc thao tác Find.",
+        "question_type": "Reasoning",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q38",
+        "question": "Sắp xếp theo cơ số (Radix Sort) hoạt động ra sao?",
+        "reference_contexts": [
+            "Radix sort solves the problem of card sorting—counterintuitively—by sorting on the least significant digit ûrst. The algorithm then combines the cards into a single deck, with the cards in the 0 bin preceding the cards in the 1 bin preceding the cards in the 2 bin, and so on. Then it sorts the entire deck again on the second-least signiûcant digit and recombines the deck in a like manner. The process continues until the cards have been sorted on all d digits. Remarkably, at that point the cards are fully sorted on the d-digit number. Thus, only d passes through the deck are required to sort. In order for radix sort to work correctly, the digit sorts must be stable. The sort performed by a card sorter is stable, but the operator must be careful not to change the order of the cards as they come out of a bin, even though all the cards in a bin have the same digit in the chosen column. In a typical computer, which is a sequential random-access machine, we sometimes use radix sort to sort records of information that are keyed by multiple ûelds. For example, we might wish to sort dates by three keys: year, month, and day. We could run a sorting algorithm with a comparison function that, given two dates, compares years, and if there is a tie, compares months, and if another tie occurs, compares days. Alternatively, we could sort the information three times with a stable sort: ûrst on day (the <least signiûcant= part), next on month, and ûnally on year."
+        ],
+        "reference_answer": "Sắp xếp các số dựa trên từng hàng chữ số của chúng, từ hàng đơn vị lên các hàng cao hơn.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q39",
+        "question": "Radix Sort có yêu cầu điều kiện gì để hoạt động tốt?",
+        "reference_contexts": [
+            "In order for radix sort to work correctly, the digit sorts must be stable. The sort performed by a card sorter is stable, but the operator must be careful not to change the order of the cards as they come out of a bin, even though all the cards in a bin have the same digit in the chosen column. Although the pseudocode for RADIX-SORT does not specify which stable sort to use, COUNTING-SORT is commonly used. If you use COUNTING-SORT as the stable sort, you can make RADIX-SORT a little more efûcient by revising COUNTING-SORT to take a pointer to the output array as a parameter, having RADIX-SORT preallocate this array, and alternating input and output between the two arrays in successive iterations of the for loop in RADIX-SORT. Lemma 8.3: Given n d-digit numbers in which each digit can take on up to k possible values, RADIX-SORT correctly sorts these numbers in ‚.d(n + k)/ time if the stable sort it uses takes ‚.n + k/ time. When each digit lies in the range 0 to k - 1 (so that it can take on k possible values), and k is not too large, counting sort is the obvious choice. Each pass over n d-digit numbers then takes ‚.n + k/ time. There are d passes, and so the total time for radix sort is ‚.d(n + k)/."
+        ],
+        "reference_answer": "Cần dữ liệu là số nguyên hoặc chuỗi, và dùng một thuật toán sắp xếp ổn định (như Counting Sort) ở mỗi bước.",
+        "question_type": "Reasoning",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q40",
+        "question": "Chu trình Euler là gì?",
+        "reference_contexts": [
+            "Bài toán tìm đường qua 7 cầu, mỗi cầu đúng một lần có thể tổng quát hoá bằng bài toán: Có tồn tại chu trình đơn trong đa đồ thị chứa tất cả các cạnh? Chu trình đơn chứa tất cả các cạnh của đồ thị được gọi là chu trình Euler. Đường đi đơn chứa tất cả các cạnh của đồ thị được gọi là đường đi Euler. Một đồ thị có chu trình Euler được gọi là đồ thị Euler. Một đồ thị có đường đi Euler được gọi là đồ thị nửa Euler. Một đồ thị vô hướng liên thông G = (V, E) có chu trình Euler khi và chỉ khi mọi đỉnh của nó đều có bậc chẵn: deg(v) ≡ 0 (mod 2) (∀v∈V). Một đồ thị vô hướng liên thông có đường đi Euler nhưng không có chu trình Euler khi và chỉ khi nó có đúng 2 đỉnh bậc lẻ. Một đồ thi có hướng liên thông yếu G = (V, E) có chu trình Euler thì mọi đỉnh của nó có bán bậc ra bằng bán bậc vào: deg+(v) = deg-(v) (∀v∈V); Ngược lại, nếu G liên thông yếu và mọi đỉnh của nó có bán bậc ra bằng bán bậc vào thì G có chu trình Euler, hay G sẽ là liên thông mạnh. Một đồ thị có hướng liên thông yếu G = (V, E) có đường đi Euler nhưng không có chu trình Euler nếu tồn tại đúng hai đỉnh u, v ∈ V sao cho deg+(u) - deg-(u) = deg-(v) - deg+(v) = 1, còn tất cả những đỉnh khác u và v đều có bán bậc ra bằng bán bậc vào."
+        ],
+        "reference_answer": "Là chu trình trên đồ thị đi qua mỗi cạnh đúng 1 lần và quay lại gốc.",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q41",
+        "question": "Đồ thị vô hướng liên thông có chu trình Euler khi nào?",
+        "reference_contexts": [
+            "Một đồ thị vô hướng liên thông G = (V, E) có chu trình Euler khi và chỉ khi mọi đỉnh của nó đều có bậc chẵn: deg(v) ≡ 0 (mod 2) (∀v∈V). Một đồ thị vô hướng liên thông có đường đi Euler nhưng không có chu trình Euler khi và chỉ khi nó có đúng 2 đỉnh bậc lẻ. Một đồ thi có hướng liên thông yếu G = (V, E) có chu trình Euler thì mọi đỉnh của nó có bán bậc ra bằng bán bậc vào: deg+(v) = deg-(v) (∀v∈V); Ngược lại, nếu G liên thông yếu và mọi đỉnh của nó có bán bậc ra bằng bán bậc vào thì G có chu trình Euler, hay G sẽ là liên thông mạnh. Một đồ thị có hướng liên thông yếu G = (V, E) có đường đi Euler nhưng không có chu trình Euler nếu tồn tại đúng hai đỉnh u, v ∈ V sao cho deg+(u) - deg-(u) = deg-(v) - deg+(v) = 1, còn tất cả những đỉnh khác u và v đều có bán bậc ra bằng bán bậc vào."
+        ],
+        "reference_answer": "Khi mọi đỉnh đều có bậc chẵn.",
+        "question_type": "Reasoning",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q42",
+        "question": "Đường đi Hamilton là gì?",
+        "reference_contexts": [
+            "Cho đồ thị G = (V, E) có n đỉnh. Chu trình (x, x, …, x[n], x) được gọi là chu trình Hamilton nếu x[i] ≠ x[j] với ∀i, j: 1 ≤ i < j ≤ n. Đường đi (x, x, …, x[n]) được gọi là đường đi Hamilton nếu x[i] ≠ x[j] với ∀i, j: 1 ≤ i < j ≤ n. Đồ thị có chu trình Hamilton được gọi là đồ thị Hamilton. Đồ thị có đường đi Hamilton được gọi là đồ thị nửa Hamilton. Có thể phát biểu một cách hình thức: Chu trình Hamilton là chu trình xuất phát từ 1 đỉnh, đi thăm tất cả những đỉnh còn lại mỗi đỉnh đúng 1 lần, cuối cùng quay trở lại đỉnh xuất phát. Đường đi Hamilton là đường đi qua tất cả các đỉnh của đồ thị, mỗi đỉnh đúng 1 lần. Khác với khái niệm chu trình Euler và đường đi Euler, một chu trình Hamilton không phải là đường đi Hamilton bởi có đỉnh xuất phát được thăm tới 2 lần."
+        ],
+        "reference_answer": "Đường đi qua mọi đỉnh của đồ thị, mỗi đỉnh đúng 1 lần.",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q43",
+        "question": "Độ phức tạp bài toán tìm đường đi Hamilton là bao nhiêu?",
+        "reference_contexts": [
+            "Dưới đây ta sẽ cài đặt một chương trình liệt kê tất cả các chu trình Hamilton xuất phát từ đỉnh 1, các chu trình Hamilton khác có thể có được bằng cách hoán vị vòng quanh. Lưu ý rằng cho tới nay, người ta vẫn chưa tìm ra một phương pháp nào thực sự hiệu quả hơn phương pháp quay lui để tìm dù chỉ một chu trình Hamilton cũng như đường đi Hamilton trong trường hợp đồ thị tổng quát. Ta có thể xây dựng hành trình bằng thuật toán quay lui kết hợp với phương pháp duyệt ưu tiên Warnsdorff: Nếu gọi deg(x, y) là số ô kề với ô (x, y) và chưa đi qua thì từ một ô ta sẽ không thử xét lần lượt các hướng đi có thể, mà ta sẽ ưu tiên thử hướng đi tới ô có deg nhỏ nhất trước. Trong trường hợp có tồn tại đường đi, phương pháp này hoạt động với tốc độ tuyệt vời. Tuy nhiên trong trường hợp không tồn tại đường đi, do phải duyệt hết mọi khả năng nên thời gian thực thi lại hết sức tồi tệ."
+        ],
+        "reference_answer": "Bài toán thuộc lớp NP-đầy đủ, có độ phức tạp hàm mũ.",
+        "question_type": "Factual",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "Q44",
+        "question": "Hàm băm (Hash Function) tốt cần tiêu chí nào?",
+        "reference_contexts": [
+            "In summary, we have three primary requirements in implementing a good hash function for a given data type: It should be consistent—equal keys must produce the same hash value. It should be efficient to compute. It should uniformly distribute the keys. Satisfying these requirements simultaneously is a job for experts. As with many built-in capabilities, Java programmers who use hashing assume that hashCode() does the job, absent any evidence to the contrary. Still, you should be vigilant whenever using hashing in situations where good performance is critical, because a bad hash function is a classic example of a performance bug: everything will work properly, but much more slowly than expected. Perhaps the easiest way to ensure uniformity is to make sure that all the bits of the key play an equal role in computing every hash value; perhaps the most common mistake in implementing hash functions is to ignore significant numbers of the key bits. Whatever the implementation, it is wise to test any hash function that you use, when performance is important."
+        ],
+        "reference_answer": "Cần tính toán nhanh và phân phối dữ liệu đồng đều để tránh đụng độ.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q45",
+        "question": "Phương pháp Open Addressing giải quyết đụng độ như thế nào?",
+        "reference_contexts": [
+            "This section describes open addressing, a method for collision resolution that, unlike chaining, does not make use of storage outside of the hash table itself. In open addressing, all elements occupy the hash table itself. That is, each table entry contains either an element of the dynamic set or NIL. No lists or elements are stored outside the table, unlike in chaining. Thus, in open addressing, the hash table can fill up so that no further insertions can be made. One consequence is that the load factor alpha can never exceed 1. To perform insertion using open addressing, successively examine, or probe, the hash table until you find an empty slot in which to put the key. Instead of being fixed in the order 0, 1, ..., m - 1, the sequence of positions probed depends upon the key being inserted. To determine which slots to probe, the hash function includes the probe number (starting from 0) as a second input. Thus, the hash function becomes h: U x {0, 1, ..., m - 1} -> {0, 1, ..., m - 1}."
+        ],
+        "reference_answer": "Tìm ô trống khác liền kề trong bảng băm theo một bước nhảy nhất định (vd Linear Probing).",
+        "question_type": "Reasoning",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q46",
+        "question": "Bài toán biến đổi xâu (Edit Distance) được phát biểu như thế nào và phương pháp quy hoạch động được áp dụng để giải bài toán này ra sao?",
+        "reference_contexts": [
+            " Cho xâu ký tự X, xét 3 phép biến đổi: a) Insert(i, C): Phép Insert chèn ký tự C vào sau vị trí i của xâu X. b) Replace(i, C): Phép Replace thay ký tự tại vị trí i của xâu X bởi ký tự C. c) Delete(i): Phép Delete xoá ký tự tại vị trí i của xâu X. Yêu cầu: Cho trước xâu Y, hãy tìm một số ít nhất các phép biến đổi trên để biến xâu X thành xâu Y. Giả sử m là độ dài xâu X và n là độ dài xâu Y. Gọi F[i, j] là số phép biến đổi tối thiểu để biến xâu gồm i ký tự đầu của xâu X thành xâu gồm j ký tự đầu của xâu Y. Nếu X[i] = Y[j] thì ta chỉ cần biến đoạn X[1..i-1] thành Y[1..j-1], tức là F[i, j] = F[i - 1, j - 1]. Nếu X[i] ≠ Y[j] thì tại vị trí hiện tại ta có thể sử dụng một trong 3 phép biến đổi: chèn vào sau vị trí i một ký tự bằng Y[j] (khi đó F[i, j] = 1 + F[i, j - 1]), thay vị trí i bằng Y[j] (F[i, j] = 1 + F[i - 1, j - 1]), hoặc xoá vị trí thứ i của X (F[i, j] = 1 + F[i - 1, j]). Vì cần số phép biến đổi tối thiểu, ta sẽ lấy giá trị nhỏ nhất trong 3 khả năng này."
+        ],
+        "reference_answer": "Bài toán biến đổi xâu yêu cầu tìm số phép chèn, thay thế hoặc xóa ít nhất để biến xâu X thành xâu Y. Thuật toán sử dụng quy hoạch động để tính toán bảng phương án F[i, j] dựa trên việc so sánh các ký tự tương ứng: nếu ký tự giống nhau thì giữ nguyên kết quả bước trước, nếu khác nhau thì chọn giá trị tối ưu nhỏ nhất từ ba phép biến đổi có thể thực hiện.",
+        "question_type": "Conceptual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q47",
+        "question": "Trong đồ thị, Khớp (Articulation Point) là đỉnh như thế nào?",
+        "reference_contexts": [
+            " Với một đồ thị vô hướng G = (V, E), ta dùng phép định chiều DFS để định chiều G, khi đó hãy để ý một cung (u, v) là cung trên cây DFS, ta có các nhận xét sau: Nếu từ nhánh DFS gốc v không có cung nào ngược lên phía trên u, tức là nếu bỏ u đi thì từ v không có cách nào lên được các tiền bối của u. Điều này chỉ ra rằng nếu u không phải là nút gốc của một cây DFS thì u là khớp. Cũng dễ dàng chứng minh điều ngược lại. Vậy nếu u không là gốc của một cây DFS thì u là khớp ⇔ Low[v] ≥ Number[u]. Nếu r là gốc của một cây DFS thì r là khớp ⇔ r có ít nhất 2 nhánh con. Đến đây ta đã có đủ điều kiện để giải bài toán liệt kê các khớp và cầu của đồ thị: đơn giản là dùng phép định chiều DFS đánh số các đỉnh theo thứ tự thăm và ghi nhận cung ngược lên trên cao nhất xuất phát từ một nhánh cây DFS, sau đó dùng ba nhận xét kể trên để liệt kê ra tất cả các cầu và khớp của đồ thị."
+        ],
+        "reference_answer": "Là đỉnh mà nếu xóa nó đi thì số thành phần liên thông của đồ thị sẽ tăng lên.",
+        "question_type": "Factual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q48",
+        "question": "Trong đồ thị, Cầu (Bridge) là cạnh như thế nào?",
+        "reference_contexts": [
+            "Với một đồ thị vô hướng G = (V, E), ta dùng phép định chiều DFS để định chiều G, khi đó hãy để ý một cung (u, v) là cung trên cây DFS, ta có các nhận xét sau: Nếu từ nhánh DFS gốc v không có cung nào ngược lên phía trên v có nghĩa là từ một đỉnh thuộc nhánh DFS gốc v đi theo các cung định hướng chỉ đi được tới những đỉnh nội bộ trong nhánh DFS gốc v mà thôi, suy ra (u, v) là một cầu. Cũng dễ dàng chứng minh được điều ngược lại. Vậy (u, v) là cầu ⇔ Low[v] ≥ Number[v]. Đến đây ta đã có đủ điều kiện để giải bài toán liệt kê các khớp và cầu của đồ thị: đơn giản là dùng phép định chiều DFS đánh số các đỉnh theo thứ tự thăm và ghi nhận cung ngược lên trên cao nhất xuất phát từ một nhánh cây DFS, sau đó dùng ba nhận xét kể trên để liệt kê ra tất cả các cầu và khớp của đồ thị. Việc liệt kê các cầu thực ra còn có một phương pháp khác dựa trên định nghĩa: Cạnh (u, v) là cầu nếu và chỉ nếu nó không thuộc bất kỳ chu trình đơn nào."
+        ],
+        "reference_answer": "Là cạnh mà khi xóa đi sẽ làm đồ thị mất tính liên thông (tăng số thành phần liên thông).",
+        "question_type": "Factual",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "Q49",
+        "question": "Thuật toán Floyd-Warshall dùng phương pháp nào?",
+        "reference_contexts": [
+            "The Floyd-Warshall algorithm exploits a relationship between path p and shortest paths from i to j with all intermediate vertices in the set {1, 2, ..., k - 1}. The details of the relationship depend on whether k is an intermediate vertex of path p or not. Based on recurrence (23.6), the bottom-up procedure FLOYD-WARSHALL computes the values d ij(k)  in order of increasing values of k. Its input is an n x n matrix W. The procedure returns the matrix D (n)  of shortest-path weights. The running time of the Floyd-Warshall algorithm is determined by the triply nested for loops of lines 2–6. Because each execution of line 6 takes O(1) time, the algorithm runs in Θ(n 3 ) time. As in the final algorithm in Section 23.1, the code is tight, with no elaborate data structures, and so the constant hidden in the Θ-notation is small. Thus, the Floyd-Warshall algorithm is quite practical for even moderate-sized input graphs."
+        ],
+        "reference_answer": "Quy hoạch động (Dynamic Programming).",
+        "question_type": "Factual",
+        "difficulty": "Easy"
+    },
+    {
+        "id": "Q50",
+        "question": "Tại sao phải cân bằng cây BST?",
+        "reference_contexts": [
+            " Trường hợp trung bình, thì các thao tác tìm kiếm, chèn, xoá trên BST có độ phức tạp là O(lgn). Còn trong trường hợp xấu nhất, cây nhị phân tìm kiếm bị suy biến thì các thao tác đó đều có độ phức tạp là O(n), với n là số nút trên cây BST. Nếu ta mở rộng hơn khái niệm cây nhị phân tìm kiếm như sau: Giá trị lưu trong một nút lớn hơn hoặc bằng các giá trị lưu trong cây con trái và nhỏ hơn các giá trị lưu trong cây con phải. Thì chỉ cần sửa đổi thủ tục BSTInsert một chút, khi chèn lần lượt vào cây n giá trị, cây BST sẽ có n nút (có thể có hai nút chứa cùng một giá trị). Khi đó nếu ta duyệt các nút của cây theo kiểu trung thứ tự (inorder traversal), ta sẽ liệt kê được các giá trị lưu trong cây theo thứ tự tăng dần. Phép tìm kiếm trên cây BST sẽ kém hiệu quả nếu như cây bị suy biến, người ta có nhiều cách xoay xở để tránh trường hợp này. Đó là phép quay cây để dựng cây nhị phân cân đối AVL, hay kỹ thuật dựng cây nhị phân tìm kiếm tối ưu."
+        ],
+        "reference_answer": "Để giữ độ cao cây là O(log N), tối ưu hóa thời gian tìm kiếm, chèn và xóa.",
+        "question_type": "Reasoning",
+        "difficulty": "Medium"
+    }
+]

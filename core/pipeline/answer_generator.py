@@ -159,7 +159,8 @@ def generate_with_context(
         src_key = f"{doc}:{page}"
         if src_key not in seen_sources:
             seen_sources.add(src_key)
-            source_lines.append(f"[{i}] {doc} — Trang {page}")
+            if not source_lines:
+                source_lines.append(f"{doc} — Trang {page}")
 
     context_str   = "\n\n---\n\n".join(context_parts)
     sources_block = _build_sources_block(source_lines)
@@ -251,7 +252,8 @@ def generate_with_token_metadata(
         src_key = f"{doc}:{page}"
         if src_key not in seen_sources:
             seen_sources.add(src_key)
-            source_lines.append(f"[{i}] {doc} — Trang {page}")
+            if len(source_lines) == 0:
+                source_lines.append(f"{doc} — Trang {page}")
 
     context_str   = "\n\n---\n\n".join(context_parts)
     sources_block = _build_sources_block(source_lines)
@@ -261,9 +263,10 @@ def generate_with_token_metadata(
         f"TÀI LIỆU THAM KHẢO:\n\n{context_str}\n\n"
         f"---\n"
         f"CÂU HỎI: {query}\n\n"
-        f"LƯU Ý QUAN TRỌNG: Hãy kiểm tra kỹ xem tài liệu tham khảo có chứa thông tin để trả lời câu hỏi hay không. "
-        f"Nếu không có thông tin chính xác hoặc không đủ dữ liệu để trả lời, bạn bắt buộc phải trả lời đúng một câu: "
-        f"\"Không tìm thấy thông tin trong tài liệu đã cung cấp.\". Tuyệt đối không tự suy luận hoặc sử dụng kiến thức bên ngoài."
+        f"LƯU Ý: Hãy dựa vào tài liệu tham khảo để trả lời. "
+        f"Nếu tài liệu không có thông tin trực tiếp, hãy cố gắng tận dụng các thông tin liên quan nhất để giải thích. "
+        f"Chỉ trả lời \"Không tìm thấy thông tin trong tài liệu đã cung cấp.\" nếu hoàn toàn không có bất kỳ thông tin nào liên quan. "
+        f"Bạn có thể kết hợp kiến thức của mình để giải thích rõ hơn, nhưng phải dựa trên nền tảng của tài liệu."
     )
 
     cfg = _get_llm_cfg()

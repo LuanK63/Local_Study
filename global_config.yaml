@@ -45,8 +45,8 @@ retrieval:
   chunk_overlap: 102
 
   top_k: 5
-  bm25_weight: 0.4
-  vector_weight: 0.6
+  bm25_weight: 0.5
+  vector_weight: 0.5
   # search_mode: hybrid | semantic | bm25
   # hybrid  = BM25 + Vector với RRF fusion (mặc định, tốt nhất cho tiếng Việt kỹ thuật)
   # semantic = chỉ Vector search (embedding similarity)

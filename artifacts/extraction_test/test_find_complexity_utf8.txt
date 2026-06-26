@@ -1,0 +1,12 @@
+﻿FOUND ON PAGE: 96
+PARENT ID: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by LĂª Minh HoĂ ng (z-lib.org)_p96_parent117
+TEXT: ] 96 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 trÆ°á»›c khoĂ¡ k[j] thĂ¬ láº¡i Ä‘áº£o giĂ¡ trá»‹ cá»§a chĂºng, cho i tiáº¿n lĂªn má»™t vá»‹ trĂ­ vĂ  j lĂ¹i vá» má»™t vá»‹ trĂ­. Váº­y vĂ²ng láº·p repeatâ€¦until sáº½ Ä‘áº£m báº£o táº¡i má»—i bÆ°á»›c: Â™Hai vĂ²ng láº·p whileâ€¦
+FOUND ON PAGE: 246
+PARENT ID: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by LĂª Minh HoĂ ng (z-lib.org)_p246_parent295
+TEXT: ] 246 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 then WriteLn(fo, 'There is no path from ', s, ' to ', f) else begin WriteLn(fo, 'Distance from ', s, ' to ', f, ': ', c[s, f]); repeat Write(fo, s, '->'); s := Trace[s
+FOUND ON PAGE: 256
+PARENT ID: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by LĂª Minh HoĂ ng (z-lib.org)_p256_parent306
+TEXT: ] 256 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 PrintResult; end. XĂ©t vá» Ä‘á»™ phá»©c táº¡p tĂ­nh toĂ¡n, ta cĂ³ thá»ƒ chá»©ng minh Ä‘Æ°á»£c ráº±ng thao tĂ¡c GetRoot cĂ³ Ä‘á»™ phá»©c táº¡p lĂ  O(lgn), cĂ²n thao tĂ¡c Union lĂ  O(1). Giáº£ sá»­ ta Ä‘Ă£ cĂ³ d
+FOUND ON PAGE: 258
+PARENT ID: Giai thuat va Lap Trinh - cau truc du lieu va giai thuat by LĂª Minh HoĂ ng (z-lib.org)_p258_parent309
+TEXT: ] 258 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 u := i; end; if u = 0 then {Náº¿u khĂ´ng chá»n Ä‘Æ°á»£c u nĂ o cĂ³ d[u] < +âˆ thĂ¬ Ä‘á»“ thá»‹ khĂ´ng liĂªn thĂ´ng} begin Connected := False; Break; end; Free[u] := False; {Náº¿u chá»n Ä‘Æ°á»£c 

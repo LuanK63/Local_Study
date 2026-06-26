@@ -11,7 +11,7 @@ QWidget {
     background-color: #1a1b2e;
     color: #cdd6f4;
     font-family: "Inter", "Segoe UI", "Arial", sans-serif;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 QWidget:disabled {
     color: #4a4d64;
@@ -38,7 +38,7 @@ QLabel#AppTitle {
 
 QLabel#SectionLabel {
     color: #5a5d78;
-    font-size: 8pt;
+    font-size: 9pt;
     padding: 4px 0;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -46,7 +46,7 @@ QLabel#SectionLabel {
 
 QLabel#FooterLabel {
     color: #3a3b52;
-    font-size: 7pt;
+    font-size: 8pt;
     padding: 4px 0;
     line-height: 1.4;
 }
@@ -221,7 +221,7 @@ QHeaderView::section {
     border: none;
     border-bottom: 1px solid #2a2b3d;
     font-weight: bold;
-    font-size: 9pt;
+    font-size: 10pt;
 }
 
 /* ── Tabs (sub-tabs inside Code module) ──────────────────────────── */
@@ -350,7 +350,7 @@ QToolTip {
     border: 1px solid #3a3c52;
     border-radius: 6px;
     padding: 6px 10px;
-    font-size: 9pt;
+    font-size: 10pt;
 }
 
 /* ── Special Output Display ──────────────────────────────────────── */
@@ -361,7 +361,7 @@ QTextEdit#OutputDisplay {
     padding: 16px;
     color: #cdd6f4;
     font-family: "Consolas", "Courier New", monospace;
-    font-size: 10pt;
+    font-size: 11pt;
     line-height: 1.6;
 }
 
@@ -373,7 +373,7 @@ QPlainTextEdit#CodeEditor {
     color: #cdd6f4;
     padding: 12px;
     font-family: "Consolas", "Courier New", monospace;
-    font-size: 11pt;
+    font-size: 12pt;
     selection-background-color: #3a3c52;
     line-height: 1.6;
 }
@@ -388,7 +388,7 @@ QTextBrowser#CitationDisplay {
     color: #cdd6f4;
     padding: 4px;
     font-family: "Inter", "Segoe UI", sans-serif;
-    font-size: 10pt;
+    font-size: 11pt;
     line-height: 1.7;
     selection-background-color: #3a3c52;
 }

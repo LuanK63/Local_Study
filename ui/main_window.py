@@ -67,7 +67,7 @@ class Sidebar(QWidget):
         # Subject selector
         layout.addSpacing(16)
         sub_label = QLabel("📚 MÔN HỌC")
-        sub_label.setFont(QFont("Inter", 8))
+        sub_label.setFont(QFont("Inter", 10))
         sub_label.setObjectName("SectionLabel")
         layout.addWidget(sub_label)
 
@@ -102,7 +102,7 @@ class Sidebar(QWidget):
 
         # Footer info
         self.info_label = QLabel()
-        self.info_label.setFont(QFont("Inter", 7))
+        self.info_label.setFont(QFont("Inter", 8))
         self.info_label.setObjectName("FooterLabel")
         self.info_label.setWordWrap(True)
         layout.addWidget(self.info_label)

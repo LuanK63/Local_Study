@@ -209,6 +209,12 @@ def ingest_document(
         
     indexing_time_s = time.time() - start_time
 
+    # Xóa toàn bộ chunk cũ của file này trước khi index chunk mới
+    try:
+        delete_document(path, subject_id)
+    except Exception as e:
+        print(f"[WARN] Failed to delete old chunks for {path.name}: {e}")
+
     # ── Index child chunks vào ChromaDB ──────────────────────────────────────
     index_parent_chunks(parent_chunks, subject_id, progress_cb=_index_progress)
 
@@ -568,8 +574,8 @@ def search(
     else:
         # default: hybrid
         mode   = "hybrid"
-        bm25_w = 0.7
-        vec_w  = 0.3
+        bm25_w = 0.5
+        vec_w  = 0.5
 
     # RRF fusion score map: key = (file_path:page_num:text[:40])
     scores: dict[str, dict] = {}
@@ -629,7 +635,7 @@ def search(
     print(f"Final Top {len(final_top)} (after Rerank):")
     for idx, hit in enumerate(final_top, 1):
         print(f"- [{idx}] Score={hit['fused']:.4f} | Page={hit['page_num']} | Doc={hit['doc_name']}")
-        safe_text = hit['text'].strip()[:180].encode('ascii', 'ignore').decode('ascii')
+        safe_text = hit['text'].strip()[:180].replace('\n', ' ')
         print(f"    Text: {safe_text}...")
     print("="*80 + "\n")
 

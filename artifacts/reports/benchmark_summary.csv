@@ -1,0 +1,13 @@
+﻿config_name,dataset_version,status,total_questions,precision_at_5,recall_at_5,f1_at_5,hit_rate_at_5,mrr,avg_latency_ms
+recursive_512,v2.0-backup,completed,5,0.08,0.4,0.1333,0.4,0.2667,3486.5
+token_128,v2.0,completed,50,0.084,0.42,0.14,0.42,0.249,4300.6
+token_256,v2.0,completed,50,0.084,0.42,0.14,0.42,0.249,3715.6
+semantic_high,v2.0,completed,50,0.084,0.42,0.14,0.42,0.249,6648.8
+sentence_large,v2.0,completed,50,0.08,0.4,0.1333,0.4,0.2063,4771.9
+sentence_small,v2.0,completed,50,0.092,0.36,0.1438,0.36,0.1813,3366.5
+fixed_1024,v2.0,completed,50,0.056,0.26,0.0914,0.26,0.165,3283.1
+fixed_512,v2.0,completed,50,0.064,0.24,0.0959,0.24,0.1533,2805.7
+recursive_1024,v2.0,completed,50,0.068,0.28,0.1076,0.28,0.1503,3291.0
+recursive_512,v2.0,completed,50,0.072,0.28,0.1092,0.28,0.1237,2799.5
+semantic_low,v2.0,completed,50,0.028,0.14,0.0467,0.14,0.1017,6374.0
+parentchild_1024_256,v2.0-backup,completed,5,0.0,0.0,0.0,0.0,0.0,4328.7

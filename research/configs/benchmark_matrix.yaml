@@ -1,0 +1,11 @@
+experiments:
+  - fixed_512
+  - fixed_1024
+  - recursive_512
+  - recursive_1024
+  - sentence_small
+  - sentence_large
+  - token_128
+  - token_256
+  - semantic_low
+  - semantic_high

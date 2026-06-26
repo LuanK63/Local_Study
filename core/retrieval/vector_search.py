@@ -5,19 +5,20 @@ ChromaDB vector search. Each subject has its own isolated collection.
 import sys
 import types
 
-# ── Bypass ChromaDB onnxruntime check ─────────────────────────────────────────
-# Tricking ChromaDB into loading a dummy onnxruntime module prevents it from
-# throwing an error if onnxruntime fails to load its DLLs on Windows.
+# ── Bypass ChromaDB native import checks on Windows ─────────────────────────-
+# ChromaDB may attempt to import onnxruntime / tokenizers / transformers / torch.
+# For our client-only vector delete/search operations we don't need those modules.
 class _DummyModule(types.ModuleType):
     def __getattr__(self, name):
         return _DummyModule(name)
     def __call__(self, *args, **kwargs):
         return self
+    def __iter__(self):
+        return iter([])
 
-if "onnxruntime" not in sys.modules:
-    sys.modules["onnxruntime"] = _DummyModule("onnxruntime")
-if "tokenizers" not in sys.modules:
-    sys.modules["tokenizers"] = _DummyModule("tokenizers")
+for _mod in ("onnxruntime", "tokenizers", "transformers", "torch"):
+    if _mod not in sys.modules:
+        sys.modules[_mod] = _DummyModule(_mod)
 # ──────────────────────────────────────────────────────────────────────────────
 
 import chromadb

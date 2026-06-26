@@ -1,0 +1,56 @@
+Bài toán liệt kê 
+] 9 ^ 
+ 
+Lê Minh Hoàng 
+đủ lớn nên ta sẽ tìm biểu diễn nhỏ nhất của 4 số này gán cho x[3], x[4], x[5], x[6] tức là 〈1, 2, 
+5, 6〉. Vậy hoán vị mới sẽ là 〈3, 4, 1, 2, 5, 6〉. 
+Ta có nhận xét gì qua ví dụ này: Đoạn cuối của hoán vị hiện tại được xếp giảm dần, số x[5] = 
+4 là số nhỏ nhất trong đoạn cuối giảm dần thoả mãn điều kiện lớn hơn x[2] = 2. Nếu đổi chỗ 
+x[5] cho x[2] thì ta sẽ được x[2] = 4 và đoạn cuối vẫn được sắp xếp giảm dần. Khi đó muốn 
+biểu diễn nhỏ nhất cho các giá trị trong đoạn cuối thì ta chỉ cần đảo ngược đoạn cuối. 
+Trong trường hợp hoán vị hiện tại là 〈2, 1, 3, 4〉 thì hoán vị kế tiếp sẽ là 〈2, 1, 4, 3〉. Ta cũng 
+có thể coi hoán vị 〈2, 1, 3, 4〉 có đoạn cuối giảm dần, đoạn cuối này chỉ gồm 1 phần tử (4) 
+Vậy kỹ thuật sinh hoán vị kế tiếp từ hoán vị hiện tại có thể xây dựng như sau: 
+Xác định đoạn cuối giảm dần dài nhất, tìm chỉ số i của phần tử x[i] đứng liền trước đoạn cuối 
+đó. Điều này đồng nghĩa với việc tìm từ vị trí sát cuối dãy lên đầu, gặp chỉ số i đầu tiên thỏa 
+mãn x[i] < x[i+1].  
+ Nếu tìm thấy chỉ số i như trên 
+ 
+Trong đoạn cuối giảm dần, tìm phần tử x[k] nhỏ nhất thoả mãn điều kiện x[k] > x[i]. Do 
+đoạn cuối giảm dần, điều này thực hiện bằng cách tìm từ cuối dãy lên đầu gặp chỉ số k 
+đầu tiên thoả mãn x[k] > x[i] (có thể dùng tìm kiếm nhị phân). 
+ 
+Đảo giá trị x[k] và x[i] 
+ 
+Lật ngược thứ tự đoạn cuối giảm dần (từ x[i+1] đến x[k]) trở thành tăng dần. 
+ Nếu không tìm thấy tức là toàn dãy đã sắp giảm dần, đây là cấu hình cuối cùng 
+Input: file văn bản PERMUTE.INP chứa số nguyên dương n ≤ 100 
+Output: file văn bản PERMUTE.OUT các hoán vị của dãy (1, 2, …, n) 
+PERMUTE.INP 
+3 
+ 
+PERMUTE.OUT 
+1 2 3  
+1 3 2  
+2 1 3  
+2 3 1  
+3 1 2  
+3 2 1  
+P_1_02_3.PAS * Thuật toán sinh liệt kê hoán vị 
+{$MODE DELPHI} (*This program uses 32-bit Integer [-231..231 - 1]*) 
+program Permutation; 
+const 
+  InputFile  = 'PERMUTE.INP'; 
+  OutputFile = 'PERMUTE.OUT'; 
+  max = 100; 
+var 
+  n, i, k, a, b: Integer; 
+  x: array[1..max] of Integer; 
+  f: Text; 
+ 
+procedure Swap(var X, Y: Integer); {Thủ tục đảo giá trị hai tham biến X, Y} 
+var 
+  Temp: Integer; 
+begin 
+  Temp := X; X := Y; Y := Temp; 
+end; 

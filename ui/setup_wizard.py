@@ -200,7 +200,7 @@ class SetupWizard(QDialog):
             "⚠️  Lần đầu tiên sẽ cần tải ~5 GB dữ liệu (model AI).\n"
             "Từ lần sau sẽ khởi động ngay lập tức."
         )
-        note.setFont(QFont("Inter", 9))
+        note.setFont(QFont("Inter", 10))
         note.setObjectName("PlaceholderInfo")
         note.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(note)
