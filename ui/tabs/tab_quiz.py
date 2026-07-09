@@ -1,5 +1,4 @@
-"""
-ui/tabs/tab_quiz.py — M6 Quiz Generator Tab
+"""ui/tabs/tab_quiz.py — M6 Quiz Generator Tab
 Generate MCQ, show options, record answers, give score.
 """
 import json
@@ -33,7 +32,7 @@ class QuizTab(QWidget):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        layout.addWidget(SectionHeader("📝 Quiz Generator"))
+        layout.addWidget(SectionHeader("Quiz Generator"))
 
         # Config row
         cfg = QHBoxLayout()
@@ -58,7 +57,7 @@ class QuizTab(QWidget):
         cfg.addWidget(self.diff_combo)
 
         cfg.addStretch()
-        self.gen_btn = QPushButton("🎲 Tạo Quiz")
+        self.gen_btn = QPushButton("Tạo Quiz")
         self.gen_btn.setFixedSize(110, 36)
         self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_quiz)
@@ -109,13 +108,13 @@ class QuizTab(QWidget):
 
         # Nav buttons
         nav = QHBoxLayout()
-        self.submit_btn = QPushButton("✅ Trả lời")
+        self.submit_btn = QPushButton("Trả lời")
         self.submit_btn.setFixedSize(120, 36)
         self.submit_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.submit_btn.clicked.connect(self._submit_answer)
         nav.addWidget(self.submit_btn)
 
-        self.next_btn = QPushButton("▶ Câu tiếp")
+        self.next_btn = QPushButton("Câu tiếp")
         self.next_btn.setFixedSize(120, 36)
         self.next_btn.setEnabled(False)
         self.next_btn.clicked.connect(self._next_question)
@@ -211,13 +210,13 @@ class QuizTab(QWidget):
             self.feedback_label.setStyleSheet(
                 "background:#1a1b2e; border-radius:6px; padding:10px; color:#a6e3a1;"
             )
-            self.feedback_label.setText(f"✅ Đúng! {q.get('explanation', '')}")
+            self.feedback_label.setText(f"Đúng! {q.get('explanation', '')}")
         else:
             self.feedback_label.setStyleSheet(
                 "background:#1a1b2e; border-radius:6px; padding:10px; color:#f38ba8;"
             )
             self.feedback_label.setText(
-                f"❌ Sai! Đáp án đúng: {correct}\n{q.get('explanation', '')}"
+                f"Sai! Đáp án đúng: {correct}\n{q.get('explanation', '')}"
             )
 
         self.feedback_label.show()
@@ -240,7 +239,7 @@ class QuizTab(QWidget):
         if self._current_idx >= len(self._questions):
             total = len(self._questions)
             self.question_label.setText(
-                f"🎉 Hoàn thành!\n\nKết quả: {self._score}/{total} "
+                f"Hoàn thành!\n\nKết quả: {self._score}/{total} "
                 f"({self._score/total*100:.0f}%)"
             )
             for btn in self.option_btns:

@@ -6,8 +6,6 @@ with open(dataset_path, 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 for q in data:
-    # Build a strong query to find the exact verbatim text
-    # We combine the question, the old context, and the answer to get the best match
     search_query = f"{q['question']} {q.get('reference_answer', '')} {' '.join(q.get('reference_contexts', []))}"
     
     # Search the database to find the verbatim chunk

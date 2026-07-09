@@ -104,7 +104,7 @@ class LinkedListVisualizer:
         self._emit(
             active=new_node.id,
             broken_at=new_node.id,   # mũi tên từ new_node đến old_head chưa vẽ
-            message=f"✨ Tạo node mới [{value}] — chưa nối vào list",
+            message=f" Tạo node mới [{value}] — chưa nối vào list",
         )
 
         # Bước 3: Không cần hoàn nguyên vì đã chèn đúng thật sự
@@ -112,7 +112,7 @@ class LinkedListVisualizer:
         self._size += 1
         self._emit(
             active=new_node.id,
-            message=f"✅ Nối node [{value}] vào đầu — Insert hoàn tất!",
+            message=f" Nối node [{value}] vào đầu — Insert hoàn tất!",
         )
 
     def insert_at_tail(self, value: int) -> None:
@@ -127,7 +127,7 @@ class LinkedListVisualizer:
             self._size += 1
             self._emit(
                 active=new_node.id,
-                message=f"✅ List rỗng → [{value}] là head. Insert hoàn tất!",
+                message=f" List rỗng → [{value}] là head. Insert hoàn tất!",
             )
             return
 
@@ -141,7 +141,7 @@ class LinkedListVisualizer:
             self._emit(
                 highlight=set(visited),
                 active=cur.id,
-                message=f"🔍 Duyệt đến node [{cur.val}] để tìm cuối list...",
+                message=f" Duyệt đến node [{cur.val}] để tìm cuối list...",
             )
             cur = cur.nxt
 
@@ -150,7 +150,7 @@ class LinkedListVisualizer:
             highlight=set(visited),
             active=cur.id,
             broken_at=cur.id,
-            message=f"✂️ Tìm thấy cuối [{cur.val}] — chuẩn bị nối node mới...",
+            message=f" Tìm thấy cuối [{cur.val}] — chuẩn bị nối node mới...",
         )
 
         # Nối thật sự
@@ -159,7 +159,7 @@ class LinkedListVisualizer:
 
         self._emit(
             active=new_node.id,
-            message=f"✅ Nối [{cur.val}] → [{value}] — Insert hoàn tất!",
+            message=f" Nối [{cur.val}] → [{value}] — Insert hoàn tất!",
         )
 
     def insert_at_index(self, index: int, value: int) -> None:
@@ -183,7 +183,7 @@ class LinkedListVisualizer:
             self._emit(
                 highlight=set(visited),
                 active=cur.id,
-                message=f"🔍 Duyệt node [{cur.val}] (vị trí {i})...",
+                message=f" Duyệt node [{cur.val}] (vị trí {i})...",
             )
             cur = cur.nxt
 
@@ -194,7 +194,7 @@ class LinkedListVisualizer:
             highlight=set(visited),
             active=cur.id,
             broken_at=cur.id,
-            message=f"✂️ Cắt liên kết [{cur.val}] → [{old_next.val if old_next else 'None'}]",
+            message=f" Cắt liên kết [{cur.val}] → [{old_next.val if old_next else 'None'}]",
         )
 
         # Nối: new_node → old_next
@@ -205,7 +205,7 @@ class LinkedListVisualizer:
 
         self._emit(
             active=new_node.id,
-            message=f"✅ Chèn [{value}] tại vị trí {index} — hoàn tất!",
+            message=f" Chèn [{value}] tại vị trí {index} — hoàn tất!",
         )
 
     # ── Thao tác Delete ───────────────────────────────────────────────────────
@@ -215,7 +215,7 @@ class LinkedListVisualizer:
         self._emit(message=f"⏳ Tìm kiếm [{value}] để xóa...")
 
         if self._head is None:
-            self._emit(message="❌ Danh sách rỗng, không thể xóa!")
+            self._emit(message=" Danh sách rỗng, không thể xóa!")
             return False
 
         # Xóa head
@@ -223,11 +223,11 @@ class LinkedListVisualizer:
             old_id = self._head.id
             self._emit(
                 active=old_id,
-                message=f"🎯 Tìm thấy [{value}] tại HEAD — đang xóa...",
+                message=f" Tìm thấy [{value}] tại HEAD — đang xóa...",
             )
             self._head = self._head.nxt
             self._size -= 1
-            self._emit(message=f"✅ Đã xóa [{value}] khỏi HEAD!")
+            self._emit(message=f" Đã xóa [{value}] khỏi HEAD!")
             return True
 
         # Duyệt tìm node trước node cần xóa
@@ -243,7 +243,7 @@ class LinkedListVisualizer:
                 self._emit(
                     highlight=set(visited),
                     active=target.id,
-                    message=f"🎯 Tìm thấy [{value}] — chuẩn bị cắt liên kết...",
+                    message=f" Tìm thấy [{value}] — chuẩn bị cắt liên kết...",
                 )
 
                 # Bước đứt gãy
@@ -251,7 +251,7 @@ class LinkedListVisualizer:
                     highlight=set(visited),
                     active=target.id,
                     broken_at=cur.id,
-                    message=f"✂️ Cắt [{cur.val}] → [{value}]...",
+                    message=f" Cắt [{cur.val}] → [{value}]...",
                 )
 
                 # Nối cur → target.nxt (bỏ qua target)
@@ -261,7 +261,7 @@ class LinkedListVisualizer:
 
                 self._emit(
                     active=cur.id,
-                    message=f"✅ Đã xóa [{value}] — nối lại [{cur.val}] → "
+                    message=f" Đã xóa [{value}] — nối lại [{cur.val}] → "
                             f"[{cur.nxt.val if cur.nxt else 'None'}]",
                 )
                 return True
@@ -269,18 +269,18 @@ class LinkedListVisualizer:
             self._emit(
                 highlight=set(visited),
                 active=cur.id,
-                message=f"🔍 [{cur.val}] ≠ {value}, tiếp tục duyệt...",
+                message=f" [{cur.val}] ≠ {value}, tiếp tục duyệt...",
             )
             cur = cur.nxt
 
-        self._emit(message=f"❌ Không tìm thấy [{value}] để xóa!")
+        self._emit(message=f" Không tìm thấy [{value}] để xóa!")
         return False
 
     # ── Thao tác Search ───────────────────────────────────────────────────────
 
     def search(self, value: int) -> bool:
         """Tìm kiếm tuần tự với hoạt ảnh, highlight node khi tìm thấy."""
-        self._emit(message=f"🔍 Bắt đầu tìm kiếm [{value}]...")
+        self._emit(message=f" Bắt đầu tìm kiếm [{value}]...")
 
         cur = self._head
         index = 0
@@ -294,14 +294,14 @@ class LinkedListVisualizer:
             self._emit(
                 highlight=set(visited),
                 active=cur.id,
-                message=f"🔍 Kiểm tra node [{cur.val}] (vị trí {index})...",
+                message=f" Kiểm tra node [{cur.val}] (vị trí {index})...",
             )
 
             if cur.val == value:
                 self._emit(
                     found=cur.id,
                     active=cur.id,
-                    message=f"✅ Tìm thấy [{value}] tại vị trí {index}!",
+                    message=f" Tìm thấy [{value}] tại vị trí {index}!",
                 )
                 return True
 
@@ -309,7 +309,7 @@ class LinkedListVisualizer:
             cur = cur.nxt
             index += 1
 
-        self._emit(message=f"❌ Không tìm thấy [{value}] trong danh sách!")
+        self._emit(message=f" Không tìm thấy [{value}] trong danh sách!")
         return False
 
     # ── Utility ───────────────────────────────────────────────────────────────
@@ -318,7 +318,7 @@ class LinkedListVisualizer:
         """Xóa toàn bộ danh sách."""
         self._head = None
         self._size = 0
-        self._emit(message="🗑️ Đã xóa toàn bộ danh sách.")
+        self._emit(message=" Đã xóa toàn bộ danh sách.")
 
     @property
     def size(self) -> int:

@@ -10,3 +10,20 @@ subjects/
 .vscode/
 .idea/
 BÁOCÁOTIẾNĐỘ.md
+
+# Dev / scratch
+scratch/
+/test_*.py
+run_output.log
+outputs/
+
+# Backup & temp artifacts
+artifacts/reports_v4_backup/
+artifacts/extraction_test/
+archive/
+~$*
+*.bkp
+
+# Research scratch output
+research/chunking_inspection.txt
+research/datasets/*_backup.json

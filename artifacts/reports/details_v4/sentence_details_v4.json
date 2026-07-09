@@ -1,0 +1,1441 @@
+[
+  {
+    "question_id": "Q001",
+    "question": "Mảng (Array) là gì và các đặc điểm cơ bản của nó trong lưu trữ dữ liệu?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      12
+    ],
+    "reference_contexts": [
+      "Mảng cho phép truy cập ngẫu nhiên đến bất kỳ phần tử nào trong thời gian O(1) thông qua chỉ số. Kích thước của mảng thường phải được khai báo trước và không thay đổi trong suốt quá trình sử dụng."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3561.9418621063232,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q002",
+    "question": "Danh sách liên kết đơn (Singly Linked List) khác gì so với mảng về cách tổ chức bộ nhớ?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      45,
+      52
+    ],
+    "reference_contexts": [
+      "Mảng lưu trữ các phần tử trong các ô nhớ liên tiếp nhau, cho phép truy cập ngẫu nhiên qua chỉ số với độ phức tạp O(1). Tuy nhiên, việc chèn hay xóa phần tử ở giữa mảng đòi hỏi phải dịch chuyển nhiều phần tử, tốn thời gian O(n).",
+      "Danh sách liên kết lưu trữ các phần tử tại các ô nhớ không liên tiếp nhau. Việc chèn hoặc xóa một phần tử chỉ cần thay đổi con trỏ, thực hiện trong O(1) nếu đã biết vị trí, nhưng việc truy cập phần tử thứ i đòi hỏi duyệt tuần tự từ đầu danh sách, tốn O(n)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3383.6629390716553,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q003",
+    "question": "Ngăn xếp (Stack) là gì và nguyên tắc hoạt động LIFO được áp dụng như thế nào?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      65
+    ],
+    "reference_contexts": [
+      "Ngăn xếp (Stack) là một cấu trúc dữ liệu hoạt động theo nguyên tắc LIFO (Last In First Out - Vào sau ra trước). Hai thao tác cơ bản là Push (thêm một phần tử vào đỉnh ngăn xếp) và Pop (lấy một phần tử ra khỏi đỉnh ngăn xếp)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3436.1937046051025,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q004",
+    "question": "So sánh nguyên tắc hoạt động của Stack và Queue, và nêu ứng dụng điển hình của từng loại?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      65,
+      78
+    ],
+    "reference_contexts": [
+      "Ngăn xếp (Stack) hoạt động theo nguyên tắc LIFO (Last In First Out). Ứng dụng của ngăn xếp bao gồm: quản lý lời gọi hàm đệ quy, kiểm tra tính hợp lệ của biểu thức ngoặc, tính giá trị biểu thức hậu tố.",
+      "Hàng đợi (Queue) hoạt động theo nguyên tắc FIFO (First In First Out - Vào trước ra trước). Hàng đợi được sử dụng trong các bài toán lập lịch, xử lý yêu cầu theo thứ tự và thuật toán tìm kiếm theo chiều rộng BFS."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3392.336130142212,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q005",
+    "question": "Cây nhị phân tìm kiếm (BST) là gì và tính chất quan trọng nhất của nó?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      112
+    ],
+    "reference_contexts": [
+      "Cây nhị phân tìm kiếm (Binary Search Tree - BST) là một cây nhị phân mà với mỗi nút, tất cả các nút trong cây con trái có giá trị nhỏ hơn giá trị của nút đó, và tất cả các nút trong cây con phải có giá trị lớn hơn giá trị của nút đó."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3591.24493598938,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q006",
+    "question": "So sánh BST và AVL Tree về cấu trúc, tính chất cân bằng và độ phức tạp các thao tác?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      112,
+      145
+    ],
+    "reference_contexts": [
+      "Cây nhị phân tìm kiếm (BST) không đảm bảo tính cân bằng. Trong trường hợp xấu nhất, khi các phần tử được chèn theo thứ tự tăng dần hoặc giảm dần, cây sẽ bị suy biến thành danh sách liên kết, làm cho độ phức tạp của các thao tác tìm kiếm, chèn, xóa trở thành O(n).",
+      "Cây AVL là một dạng cây nhị phân tìm kiếm tự cân bằng. Tính chất của cây AVL là với mỗi nút, chiều cao của cây con trái và cây con phải chênh lệch nhau không quá 1, đảm bảo các thao tác tìm kiếm, chèn, xóa đều thực hiện trong thời gian O(log n) ngay cả trong trường hợp xấu nhất."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3037.4982357025146,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q007",
+    "question": "Mô tả các bước thực hiện phép quay đơn trái (Left Rotation) trong cây AVL khi mất cân bằng?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      148
+    ],
+    "reference_contexts": [
+      "Để thực hiện quay trái tại nút x: đặt y là con phải của x, gán cây con trái của y làm con phải của x, sau đó nâng y lên thay vị trí của x, gán x làm con trái của y. Sau phép quay, cần cập nhật lại chiều cao của x trước, sau đó cập nhật chiều cao của y vì y là cha mới."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3439.633369445801,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q008",
+    "question": "Cấu trúc và tính chất của Heap nhị phân (Binary Heap) là gì?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      170
+    ],
+    "reference_contexts": [
+      "Heap nhị phân (Binary Heap) là một cây nhị phân hoàn chỉnh thỏa mãn tính chất heap: với Max-Heap, giá trị của mỗi nút luôn lớn hơn hoặc bằng giá trị của các nút con của nó. Do là cây nhị phân hoàn chỉnh, heap có thể được lưu trữ hiệu quả trong một mảng, trong đó phần tử ở vị trí i có con trái tại vị trí 2i và con phải tại vị trí 2i+1."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3414.8623943328857,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q009",
+    "question": "So sánh hai phương pháp giải quyết đụng độ trong bảng băm: Chaining và Open Addressing?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      195,
+      205
+    ],
+    "reference_contexts": [
+      "Phương pháp xích (Chaining) tại mỗi vị trí trong bảng băm lưu một danh sách liên kết chứa tất cả các phần tử có cùng giá trị hàm băm. Phương pháp này đơn giản, dễ cài đặt và hiệu suất không giảm mạnh khi hệ số tải tăng cao. Nhược điểm là tốn thêm bộ nhớ cho các con trỏ của danh sách liên kết.",
+      "Phương pháp địa chỉ mở (Open Addressing) lưu tất cả phần tử trực tiếp trong bảng. Phương pháp này sử dụng bộ nhớ hiệu quả hơn nhưng hiệu suất giảm nhanh khi hệ số tải vượt quá 0.7."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3428.4348487854004,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q010",
+    "question": "Hàm băm (Hash Function) là gì và một hàm băm tốt cần có những tính chất nào?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      190
+    ],
+    "reference_contexts": [
+      "Một hàm băm tốt cần thỏa mãn các tính chất sau: tính toán nhanh (thời gian O(1)); phân phối đều các khóa vào các vị trí trong bảng để giảm thiểu đụng độ; và tính xác định, tức là cùng một khóa luôn cho cùng một giá trị băm."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3357.9654693603516,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q011",
+    "question": "So sánh thuật toán tìm kiếm theo chiều rộng (BFS) và tìm kiếm theo chiều sâu (DFS) trên đồ thị?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      230,
+      240
+    ],
+    "reference_contexts": [
+      "Tìm kiếm theo chiều rộng (BFS) sử dụng hàng đợi (Queue) để lưu các đỉnh cần thăm. BFS tìm được đường đi ngắn nhất (theo số cạnh) từ đỉnh nguồn đến mọi đỉnh khác trong đồ thị không có trọng số.",
+      "Tìm kiếm theo chiều sâu (DFS) sử dụng ngăn xếp (Stack) hoặc đệ quy. DFS thường được dùng để phát hiện chu trình, tìm thành phần liên thông mạnh, sắp xếp tô-pô và giải các bài toán mê cung."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3412.7585887908936,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q012",
+    "question": "Mô tả các bước thực hiện thuật toán Dijkstra tìm đường đi ngắn nhất trên đồ thị có trọng số?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      268
+    ],
+    "reference_contexts": [
+      "Thuật toán Dijkstra: Khởi tạo khoảng cách từ nguồn đến chính nó là 0, đến tất cả đỉnh còn lại là vô cực. Lặp n lần: chọn đỉnh u chưa trong S có khoảng cách nhỏ nhất, thêm u vào S, sau đó cập nhật (relax) khoảng cách đến tất cả các đỉnh v kề với u: nếu d[u] + w(u,v) < d[v] thì cập nhật d[v] = d[u] + w(u,v)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3212.022542953491,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q013",
+    "question": "Đồ thị có hướng và đồ thị vô hướng khác nhau như thế nào về cấu trúc và ứng dụng?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      218,
+      219
+    ],
+    "reference_contexts": [
+      "Đồ thị vô hướng (undirected graph) là đồ thị mà mỗi cạnh nối hai đỉnh không có chiều xác định; nếu có cạnh (u, v) thì cũng có cạnh (v, u). Đồ thị vô hướng thường dùng để mô hình hóa các mối quan hệ đối xứng như mạng lưới đường giao thông, quan hệ bạn bè.",
+      "Đồ thị có hướng (directed graph hay digraph) là đồ thị mà mỗi cạnh có một chiều xác định từ đỉnh này đến đỉnh khác. Cạnh có hướng (u, v) chỉ cho phép đi từ u đến v, không cho phép đi ngược lại từ v đến u."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3271.8498706817627,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q014",
+    "question": "So sánh thuật toán sắp xếp Quick Sort và Merge Sort về chiến lược chia để trị và độ phức tạp?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      78,
+      92
+    ],
+    "reference_contexts": [
+      "Thuật toán Quick Sort có độ phức tạp trung bình là O(n log n) nhưng trong trường hợp xấu nhất là O(n²) khi pivot luôn là phần tử nhỏ nhất hoặc lớn nhất.",
+      "Thuật toán Merge Sort có độ phức tạp O(n log n) trong mọi trường hợp (tốt nhất, trung bình và xấu nhất), nhưng cần thêm O(n) bộ nhớ phụ cho mảng tạm trong bước trộn."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3382.0197582244873,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q015",
+    "question": "Mô tả các bước thực hiện thuật toán Heap Sort và giải thích tại sao độ phức tạp là O(n log n)?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      175
+    ],
+    "reference_contexts": [
+      "Thuật toán Heap Sort gồm hai giai đoạn: Giai đoạn 1 - Xây dựng Max-Heap từ mảng đầu vào bằng cách gọi thủ tục Heapify cho tất cả các nút không phải lá từ dưới lên trên, mất O(n) thời gian. Giai đoạn 2 - Lần lượt hoán đổi phần tử lớn nhất (ở đỉnh heap) với phần tử cuối mảng chưa sắp xếp, giảm kích thước heap đi 1, rồi gọi Heapify để khôi phục tính chất heap, bước này lặp lại n-1 lần, mỗi lần tốn O(log n)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3424.670457839966,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q016",
+    "question": "So sánh hai cách biểu diễn đồ thị: Ma trận kề (Adjacency Matrix) và Danh sách kề (Adjacency List)?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      220,
+      222
+    ],
+    "reference_contexts": [
+      "Ma trận kề (Adjacency Matrix) cho phép kiểm tra sự tồn tại của cạnh trong O(1) nhưng tốn O(n²) bộ nhớ dù đồ thị thưa.",
+      "Danh sách kề (Adjacency List) chỉ tốn O(V + E) bộ nhớ nên hiệu quả với đồ thị thưa (E << V²), nhưng việc kiểm tra sự tồn tại của một cạnh cụ thể mất O(degree(v)) thời gian."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3493.0195808410645,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q017",
+    "question": "Cây nhị phân (Binary Tree) là gì và các loại cây nhị phân đặc biệt khác nhau như thế nào?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      100,
+      101
+    ],
+    "reference_contexts": [
+      "Cây nhị phân đầy đủ (Full Binary Tree) là cây mà mỗi nút hoặc là nút lá hoặc có đúng hai con. Cây nhị phân hoàn chỉnh (Complete Binary Tree) là cây nhị phân đầy đủ tới mức n-1, và tất cả các lá ở mức n được điền từ trái sang phải.",
+      "Cây nhị phân cân bằng (Balanced Binary Tree) là cây mà với mỗi nút, chiều cao của cây con trái và cây con phải chênh lệch không quá một giá trị ngưỡng nhất định (thường là 1 trong trường hợp cây AVL)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3401.454448699951,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q018",
+    "question": "Thuật toán tìm kiếm nhị phân (Binary Search) hoạt động như thế nào và yêu cầu tiên quyết là gì?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      35
+    ],
+    "reference_contexts": [
+      "Tìm kiếm nhị phân (Binary Search) là thuật toán tìm kiếm hiệu quả áp dụng trên mảng đã được sắp xếp. Điều kiện tiên quyết bắt buộc là mảng phải được sắp xếp trước. Mỗi lần so sánh loại bỏ được một nửa phần tử cần xét, nên độ phức tạp chỉ là O(log n)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3383.798122406006,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q019",
+    "question": "Mô tả quá trình thực hiện duyệt cây theo thứ tự giữa (Inorder Traversal) và ứng dụng của nó với BST?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      107
+    ],
+    "reference_contexts": [
+      "Duyệt cây theo thứ tự giữa (Inorder Traversal) thực hiện theo thứ tự: duyệt cây con trái, thăm nút gốc, duyệt cây con phải. Đối với cây nhị phân tìm kiếm (BST), duyệt Inorder sẽ cho ra dãy các phần tử theo thứ tự tăng dần."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3371.8173503875732,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q020",
+    "question": "So sánh thuật toán sắp xếp nổi bọt (Bubble Sort) với sắp xếp chọn (Selection Sort) về cơ chế và hiệu quả?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+      25,
+      30
+    ],
+    "reference_contexts": [
+      "Sắp xếp nổi bọt (Bubble Sort) có thể tối ưu bằng cách dừng sớm nếu không có hoán đổi nào xảy ra trong một lượt duyệt. Độ phức tạp trong trường hợp xấu nhất và trung bình là O(n²).",
+      "Sắp xếp chọn (Selection Sort) luôn thực hiện đúng n-1 phép hoán đổi bất kể dữ liệu đầu vào như thế nào. Tuy nhiên, cả hai đều có độ phức tạp O(n²) và không hiệu quả với dữ liệu lớn."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3230.2534580230713,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q021",
+    "question": "What is a linked list and what are the advantages of using it compared to arrays?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      142
+    ],
+    "reference_contexts": [
+      "The key advantage of a linked list over an array is that it uses space proportional to the number of items in the collection. Another advantage is that inserting and deleting items at the beginning of the list takes constant time in the worst case."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3397.2866535186768,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q022",
+    "question": "What are the key differences between array-based and linked-list-based Stack implementations in Sedgewick?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      120,
+      133
+    ],
+    "reference_contexts": [
+      "With an array-based implementation of a stack, we need to specify the maximum stack size in advance, and we get an exception if we push more items than the limit. Every push and pop takes constant time in the worst case.",
+      "With a linked-list-based implementation, the stack never overflows and never becomes less than one-quarter full. The tradeoff is that each operation requires extra time and space to deal with the links."
+    ],
+    "metrics": {
+      "mrr": 0.5,
+      "hit_rate": 1.0,
+      "ref_coverage": 0.5,
+      "full_hit": 0
+    },
+    "latency_ms": 2787.722587585449,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q023",
+    "question": "How does a Queue work, and what is the difference between a Queue and a Stack in terms of ordering policy?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      126,
+      127
+    ],
+    "reference_contexts": [
+      "A queue is a collection that is based on the first-in, first-out (FIFO) policy. The item least recently added is removed first.",
+      "By contrast, a stack is based on a last-in, first-out (LIFO) policy. In a stack, the item most recently added is removed first."
+    ],
+    "metrics": {
+      "mrr": 0.5,
+      "hit_rate": 1.0,
+      "ref_coverage": 0.5,
+      "full_hit": 0
+    },
+    "latency_ms": 2867.2895431518555,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q024",
+    "question": "What is a Binary Search Tree and what invariant does it maintain?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      396
+    ],
+    "reference_contexts": [
+      "A binary search tree (BST) is a binary tree where each node has a Comparable key and satisfies the restriction that the key in any node is larger than the keys in all nodes in that node's left subtree and smaller than the keys in all nodes in that node's right subtree."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3005.3300857543945,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q025",
+    "question": "How does Sedgewick describe the difference between a 2-3 tree and a red-black BST, and why are they equivalent?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      432,
+      433
+    ],
+    "reference_contexts": [
+      "A 2-3 search tree is a tree that is either empty or a 2-node with one key and two links, or a 3-node with two keys and three links. A perfectly balanced 2-3 search tree has all null links at the same distance from the root.",
+      "A red-black BST satisfies: red links lean left; no node has two red links connected to it; the tree has perfect black balance, meaning that every path from the root to a null link has the same number of black links. This one-to-one correspondence between red-black BSTs and 2-3 trees allows us to directly port the insertion algorithm for 2-3 trees to red-black BSTs."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2829.2667865753174,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q026",
+    "question": "What is a binary heap and how does the heap-ordered property define its structure?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      308
+    ],
+    "reference_contexts": [
+      "A binary tree is heap-ordered if the key in each node is larger than or equal to the keys in that node's two children (if any). A binary heap is a collection of keys arranged in a complete heap-ordered binary tree, represented in level order in an array (not using the first entry)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2852.2329330444336,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q027",
+    "question": "How does separate chaining differ from linear probing as collision resolution strategies in hash tables?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      460,
+      468
+    ],
+    "reference_contexts": [
+      "In separate chaining, we build, for each of the M array positions, a linked list of the key-value pairs whose keys hash to that position. Separate chaining makes it easy to implement deletion and to expand the table, and performance degrades gracefully when the load factor exceeds 1.",
+      "Linear probing handles collisions by storing the entry in the next available slot in the table. The main disadvantage is clustering: a long cluster of occupied entries can form, slowing search significantly as the load factor approaches 1."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3365.182638168335,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q028",
+    "question": "Describe how BFS finds the shortest path in an undirected graph according to Sedgewick.",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      540
+    ],
+    "reference_contexts": [
+      "Put the source vertex on a queue, then repeatedly do the following until the queue is empty: take the next vertex v from the queue and mark it; for each unmarked vertex w adjacent to v: add w to the queue, mark w, and set edgeTo[w] to v. For any vertex v reachable from s, breadth-first search computes a shortest path between s and v (no path from s to v has fewer edges)."
+    ],
+    "metrics": {
+      "mrr": 0.5,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3000.8528232574463,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q029",
+    "question": "What is depth-first search and how is it used for cycle detection and topological sorting in directed graphs?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      569,
+      577
+    ],
+    "reference_contexts": [
+      "In a directed graph, DFS maintains a recursive call stack; if we reach a vertex that is already on that stack, we have found a directed cycle. For topological sort in a directed acyclic graph (DAG), DFS computes a reverse postorder: we add a vertex to a stack after both recursive calls, and reverse postorder of a DAG is a topological sort of that DAG."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3151.5254974365234,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q030",
+    "question": "How do Dijkstra's algorithm and Bellman-Ford differ in handling edge weights and negative cycles?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      645,
+      668
+    ],
+    "reference_contexts": [
+      "Dijkstra's algorithm requires that all edge weights be nonnegative. It uses a greedy approach with an indexed priority queue and repeatedly relaxes the vertex with the minimum known distance.",
+      "The Bellman-Ford algorithm relaxes all E edges V-1 times and runs in time proportional to EV. If there exists a negative cycle reachable from the source, Bellman-Ford detects it, while Dijkstra's algorithm cannot handle negative weights."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3373.4195232391357,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q031",
+    "question": "How does Sedgewick describe the mergesort algorithm and what guarantee does it provide?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      272
+    ],
+    "reference_contexts": [
+      "Mergesort uses between ½ N lg N and N lg N compares to sort any array of N items and uses extra space proportional to N. Top-down mergesort is an ideal sorting method because it is stable, has guaranteed N log N performance, and uses linear extra space."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2821.3870525360107,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q032",
+    "question": "What is quicksort's partitioning scheme and how does the choice of pivot affect its performance?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      289
+    ],
+    "reference_contexts": [
+      "With random shuffling before sorting, the average number of compares is ~2N ln N and the expected running time is O(N log N). However, if the array is already sorted and the pivot is always the first element, the running time degrades to O(N²)."
+    ],
+    "metrics": {
+      "mrr": 0,
+      "hit_rate": 0,
+      "ref_coverage": 0,
+      "full_hit": 0
+    },
+    "latency_ms": 3046.3356971740723,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q033",
+    "question": "How does Sedgewick compare heapsort to mergesort and quicksort in terms of space and time complexity?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      323,
+      324
+    ],
+    "reference_contexts": [
+      "Heapsort is the only sort algorithm that is both in-place (uses O(1) extra space) and guarantees O(N log N) worst-case performance.",
+      "The practical performance of heapsort is often worse than quicksort due to poor cache behavior: heapsort accesses memory in a nearly random order, whereas quicksort accesses nearby elements in memory."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2980.3178310394287,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q034",
+    "question": "What is an array in the context of Sedgewick's Algorithms, and how does Java support resizing arrays?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      116
+    ],
+    "reference_contexts": [
+      "To avoid the problem of a fixed-size array, we use a resizing array: when the array is full, we create a new array of twice the size and copy all items to the new array. When the array is one-quarter full, we halve its size. This ensures that the array is always between 25% and 100% full, and each push or pop takes amortized constant time."
+    ],
+    "metrics": {
+      "mrr": 0.5,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2966.1788940429688,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q035",
+    "question": "How does Sedgewick define a symbol table (dictionary) and what operations does it support?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      362
+    ],
+    "reference_contexts": [
+      "A symbol table is a data structure for key-value pairs that supports two operations: insert (put) a new pair into the table and search for (get) the value associated with a given key. The primary purpose of a symbol table is to associate a value with a key."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3121.4356422424316,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q036",
+    "question": "Compare undirected graphs and directed graphs in terms of connectivity and reachability according to Sedgewick.",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      524,
+      584
+    ],
+    "reference_contexts": [
+      "In an undirected graph, two vertices u and v are connected if there is a path from u to v. A maximal set of connected vertices is called a connected component.",
+      "In a directed graph (digraph), edges are one-way. Two vertices v and w are strongly connected if they are mutually reachable. A strongly connected component is a maximal set of mutually reachable vertices."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3066.1380290985107,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q037",
+    "question": "What is a minimum spanning tree and how do Prim's and Kruskal's algorithms differ in building one?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      604,
+      618
+    ],
+    "reference_contexts": [
+      "Prim's algorithm builds the MST by starting with any vertex and greedily adding the minimum-weight edge that connects a tree vertex to a non-tree vertex, one at a time.",
+      "Kruskal's algorithm builds the MST by processing the edges in order of their weight values (smallest to largest), taking for the MST each edge that does not form a cycle with edges previously added. Kruskal's algorithm uses a union-find data structure to check whether adding an edge would create a cycle."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3270.3921794891357,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q038",
+    "question": "Describe the swim (bottom-up reheapify) procedure in a binary heap and when it is used.",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      316
+    ],
+    "reference_contexts": [
+      "The swim operation is used when inserting a new element: we add the new element at the end of the array and then swim it up to restore the heap order. Each swim step moves the new element up one level and takes O(1) time; since the tree has height O(log N), the insert operation takes O(log N) time."
+    ],
+    "metrics": {
+      "mrr": 0,
+      "hit_rate": 0,
+      "ref_coverage": 0,
+      "full_hit": 0
+    },
+    "latency_ms": 3214.4153118133545,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q039",
+    "question": "What is binary search and what is its time complexity guarantee according to Sedgewick?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      381
+    ],
+    "reference_contexts": [
+      "Binary search guarantees that the search completes in at most lg N + 1 compares for a table of size N. This is because the invariant is that if the key is in the table, it is in a[lo..hi], and the interval halves with each comparison."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3189.2073154449463,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q040",
+    "question": "How does Sedgewick describe the AVL tree balance condition and how does it relate to the height of the tree?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+      450
+    ],
+    "reference_contexts": [
+      "An AVL tree is a BST with the additional property that, for every node in the tree, the heights of its left and right subtrees differ by at most 1. This balance condition ensures that the height of an AVL tree with N nodes is at most about 1.44 lg N, so all operations take O(log N) time in the worst case."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2803.468942642212,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q041",
+    "question": "What is an array data structure and how does CLRS describe its memory layout and access time?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      254
+    ],
+    "reference_contexts": [
+      "Given an index i, you can compute the address of the i-th element in O(1) time, since the address of element A[i] is simply the base address of the array plus i times the size of each element. Conversely, inserting or deleting an element in the middle of an array takes Θ(n) time because all subsequent elements must be shifted."
+    ],
+    "metrics": {
+      "mrr": 0.5,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2862.957715988159,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q042",
+    "question": "How does CLRS define a linked list and what are the differences between singly and doubly linked lists?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      258,
+      260
+    ],
+    "reference_contexts": [
+      "A singly linked list has each element x with an attribute x.next. A doubly linked list has each element x with attributes x.next (pointing to the successor) and x.prev (pointing to the predecessor).",
+      "In a singly linked list, deletion requires traversal to find the predecessor, which takes Θ(n) time in the worst case. In a doubly linked list, deletion takes O(1) time given a pointer to the element to delete."
+    ],
+    "metrics": {
+      "mrr": 0.3333333333333333,
+      "hit_rate": 1.0,
+      "ref_coverage": 0.5,
+      "full_hit": 0
+    },
+    "latency_ms": 2979.353904724121,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q043",
+    "question": "What is a stack and how does CLRS describe its LIFO property and basic operations?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      252
+    ],
+    "reference_contexts": [
+      "A stack implements a last-in, first-out, or LIFO, policy. The INSERT operation on a stack is often called PUSH, and the DELETE operation is often called POP. The stack consists of elements S[1..S.top], where S[1] is the element at the bottom of the stack and S[S.top] is the element at the top."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2946.681261062622,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q044",
+    "question": "How does a queue differ from a stack according to CLRS, and what are its ENQUEUE and DEQUEUE operations?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      252,
+      253
+    ],
+    "reference_contexts": [
+      "A queue implements a first-in, first-out, or FIFO, policy. The element dequeued is always the one at the head of the queue.",
+      "In contrast, a stack implements LIFO: the element deleted is the one most recently inserted. Stacks suit function-call management and expression evaluation; queues suit BFS and scheduling."
+    ],
+    "metrics": {
+      "mrr": 0.5,
+      "hit_rate": 1.0,
+      "ref_coverage": 0.5,
+      "full_hit": 0
+    },
+    "latency_ms": 3014.5084857940674,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q045",
+    "question": "What is a binary search tree and what property must it satisfy at every node?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      312
+    ],
+    "reference_contexts": [
+      "The keys in a binary search tree always satisfy the binary-search-tree property: let x be a node in a binary search tree. If y is a node in the left subtree of x, then y.key ≤ x.key. If y is a node in the right subtree of x, then y.key ≥ x.key."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3032.5677394866943,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q046",
+    "question": "How does CLRS compare the performance of BST operations in the average case versus the worst case?",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      312,
+      313
+    ],
+    "reference_contexts": [
+      "For a complete binary tree with n nodes, basic operations run in Θ(lg n) worst-case time. If the tree is a linear chain of n nodes, the same operations take Θ(n) worst-case time.",
+      "The worst case for an unbalanced BST arises when keys are inserted in sorted order, causing the tree to degenerate into a linked list with height n-1. Balanced BSTs such as red-black trees overcome this by guaranteeing O(lg n) height."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3260.9848976135254,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q047",
+    "question": "What is a red-black tree and what properties must it satisfy according to CLRS?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      330
+    ],
+    "reference_contexts": [
+      "A red-black tree satisfies the following red-black properties: every node is either red or black; the root is black; every leaf (NIL) is black; if a node is red, then both its children are black; for each node, all simple paths from the node to descendant leaves contain the same number of black nodes."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2757.4002742767334,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q048",
+    "question": "Describe the MAX-HEAPIFY procedure and explain why its time complexity is O(log n).",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      165,
+      166
+    ],
+    "reference_contexts": [
+      "MAX-HEAPIFY lets the value at A[i] float down in the max-heap so that the subtree rooted at index i obeys the max-heap property. At each step, the largest of the elements A[i], A[LEFT(i)], and A[RIGHT(i)] is determined; if A[i] is not the largest, it is swapped with the largest child and MAX-HEAPIFY is called recursively on that subtree.",
+      "The children's subtrees each have size at most 2n/3, so the recurrence T(n) ≤ T(2n/3) + Θ(1) applies. By the master theorem, this recurrence has the solution T(n) = O(lg n)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3086.22670173645,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q049",
+    "question": "How does CLRS describe the BUILD-MAX-HEAP procedure and what is its time complexity?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      167,
+      168
+    ],
+    "reference_contexts": [
+      "BUILD-MAX-HEAP goes through the remaining nodes of the tree and runs MAX-HEAPIFY on each one in a bottom-up manner. We can derive a tighter bound of O(n) by observing that the time for MAX-HEAPIFY to run at a node varies with the height of the node, and the heights of most nodes are small."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3206.7782878875732,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q050",
+    "question": "How does CLRS define a hash table and what role does a hash function play in it?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      272
+    ],
+    "reference_contexts": [
+      "A hash function h maps the universe U of keys into the slots of a hash table T[0..m-1]. The hash function reduces the range of array indices and hence the size of the array. Under reasonable assumptions, the average time to search for an element in a hash table is O(1)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3219.022035598755,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q051",
+    "question": "Compare chaining and open addressing as collision resolution techniques, including their load factor implications.",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      275,
+      285
+    ],
+    "reference_contexts": [
+      "In chaining, the load factor α = n/m can exceed 1 without causing problems, since lists can grow arbitrarily. An unsuccessful search takes average-case time Θ(1 + α) under simple uniform hashing.",
+      "In open addressing, the load factor α can never exceed 1 since we can store at most m elements. Performance degrades significantly as α approaches 1 due to clustering effects."
+    ],
+    "metrics": {
+      "mrr": 0.3333333333333333,
+      "hit_rate": 1.0,
+      "ref_coverage": 0.5,
+      "full_hit": 0
+    },
+    "latency_ms": 2912.2140407562256,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q052",
+    "question": "How does CLRS describe BFS and what does it prove about the shortest-path distances it computes?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      554,
+      555
+    ],
+    "reference_contexts": [
+      "Breadth-first search systematically explores the edges of G to discover every vertex that is reachable from s and computes the distance (smallest number of edges) from s to each reachable vertex. The algorithm discovers all vertices at distance k from s before discovering any vertices at distance k+1 from s.",
+      "Upon termination, BFS has correctly computed δ(s,v) = v.d for each reachable vertex v, where δ(s,v) is the shortest-path distance."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2897.6612091064453,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q053",
+    "question": "What is DFS and what do its discovery and finish timestamps reveal about graph structure?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      563
+    ],
+    "reference_contexts": [
+      "Each vertex v has two timestamps: v.d records when v is first discovered (colored gray) and v.f records when the search finishes examining v's adjacency list (colored black). The parenthesis theorem states that for any two vertices u and v, the intervals [u.d, u.f] and [v.d, v.f] are either disjoint, or one is entirely contained in the other."
+    ],
+    "metrics": {
+      "mrr": 0,
+      "hit_rate": 0,
+      "ref_coverage": 0,
+      "full_hit": 0
+    },
+    "latency_ms": 3500.4682540893555,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q054",
+    "question": "Compare DFS and BFS in terms of their time complexity, space usage, and what graph problems each is best suited for.",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      556,
+      568
+    ],
+    "reference_contexts": [
+      "The total running time of BFS is O(V + E). BFS is particularly suited for finding shortest paths (by number of edges) in unweighted graphs, testing graph bipartiteness, and finding connected components.",
+      "The total running time of DFS is Θ(V + E). DFS is well-suited for topological sorting of a DAG, finding strongly connected components, and detecting cycles. BFS builds a shortest-path tree, while DFS builds a DFS forest that reveals the deep structure of the graph through discovery/finish times."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2764.935255050659,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q055",
+    "question": "Describe the MERGE-SORT algorithm steps and prove its O(n log n) time complexity using recurrences.",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      36,
+      37
+    ],
+    "reference_contexts": [
+      "The recurrence for the worst-case running time T(n) of MERGE-SORT is T(n) = Θ(1) if n = 1, and T(n) = 2T(n/2) + Θ(n) if n > 1. By case 2 of the master theorem, since f(n) = Θ(n^log_2(2)) = Θ(n^1), the solution is T(n) = Θ(n lg n). This Θ(n lg n) bound is optimal for comparison-based sorting."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2878.9849281311035,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q056",
+    "question": "How does CLRS analyze quicksort's expected running time and why is it O(n log n) on average?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      182,
+      184
+    ],
+    "reference_contexts": [
+      "The analysis relies on the fact that element z_i is compared with element z_j at most once during the entire algorithm, and the probability that they are compared is 2/(j - i + 1). Summing over all pairs yields the expected number of comparisons as Θ(n ln n) = Θ(n lg n)."
+    ],
+    "metrics": {
+      "mrr": 0,
+      "hit_rate": 0,
+      "ref_coverage": 0,
+      "full_hit": 0
+    },
+    "latency_ms": 3300.4002571105957,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q057",
+    "question": "Compare comparison-based sorting lower bound with linear-time sorting algorithms like counting sort and radix sort.",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      196,
+      198
+    ],
+    "reference_contexts": [
+      "Using a decision-tree model, we can prove that any comparison sort must make Ω(n lg n) comparisons in the worst case. Therefore, merge sort and heapsort are asymptotically optimal comparison sorts.",
+      "Counting sort assumes that each of the n input elements is an integer in the range 0 to k. When k = O(n), the sort runs in Θ(n) time. These algorithms break the Ω(n lg n) lower bound by using operations other than comparisons."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 2933.864116668701,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q058",
+    "question": "What is binary search and how does CLRS formally analyze its worst-case time complexity?",
+    "question_type": "factual",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      800
+    ],
+    "reference_contexts": [
+      "The recurrence for the worst-case running time of binary search is T(n) = T(n/2) + Θ(1), which by the master theorem gives T(n) = Θ(lg n)."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3076.878547668457,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q059",
+    "question": "How does CLRS define strongly connected components and describe Kosaraju's algorithm to find them?",
+    "question_type": "procedural",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      616,
+      617
+    ],
+    "reference_contexts": [
+      "To compute strongly connected components: first call DFS(G) to compute finish times u.f for each vertex u; then compute the transpose G^T; then call DFS(G^T) considering vertices in order of decreasing u.f; finally output the vertices of each tree in the DFS forest as a separate strongly connected component. This two-pass DFS algorithm runs in Θ(V + E) time."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 1.0,
+      "full_hit": 1.0
+    },
+    "latency_ms": 3607.881784439087,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  },
+  {
+    "question_id": "Q060",
+    "question": "Compare Dijkstra's algorithm and Bellman-Ford for single-source shortest paths in terms of correctness and complexity.",
+    "question_type": "comparative",
+    "ground_truth_docs": [
+      "Introduction_to_Algorithms_CLRS"
+    ],
+    "ground_truth_pages": [
+      652,
+      645
+    ],
+    "reference_contexts": [
+      "Dijkstra's algorithm requires that all edge weights be nonnegative. With a Fibonacci heap, the running time is O(V lg V + E).",
+      "The Bellman-Ford algorithm runs in time O(VE), which is considerably slower than Dijkstra's algorithm but handles negative weights and detects negative-weight cycles reachable from the source."
+    ],
+    "metrics": {
+      "mrr": 1.0,
+      "hit_rate": 1.0,
+      "ref_coverage": 0.5,
+      "full_hit": 0
+    },
+    "latency_ms": 2915.4839515686035,
+    "retrieved_chunks": [],
+    "_note": "retrieved_chunks not stored in DB; only aggregate metrics available"
+  }
+]

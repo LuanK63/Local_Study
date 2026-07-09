@@ -5,13 +5,12 @@ Analyze quiz/practice history to find weak topics and suggest review.
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QTableWidget, QTableWidgetItem,
-    QHeaderView, QFrame
+    QHeaderView,
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
 
-from ui.widgets import OutputDisplay, SectionHeader, StatusLabel
-from ui.worker import LLMWorker, run_in_thread
+from ui.widgets import SectionHeader, StatusLabel
 
 
 class WeaknessTab(QWidget):
@@ -19,8 +18,6 @@ class WeaknessTab(QWidget):
         super().__init__(parent)
         self.subject_id = subject_id
         self.subject_cfg = subject_config
-        self._thread = None
-        self._worker = None
         self._weak_topics = []
         self._setup_ui()
 
@@ -29,7 +26,7 @@ class WeaknessTab(QWidget):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        layout.addWidget(SectionHeader("⚠️ Weakness Detection"))
+        layout.addWidget(SectionHeader("Weakness Detection"))
         
         desc = QLabel(
             "Phân tích dữ liệu từ quá trình làm bài Quiz và Practice của bạn "
@@ -41,19 +38,11 @@ class WeaknessTab(QWidget):
 
         # Controls
         controls = QHBoxLayout()
-        self.scan_btn = QPushButton("🔍 Quét Lịch Sử Học Tập")
+        self.scan_btn = QPushButton("Quét lịch sử học tập")
         self.scan_btn.setFixedSize(200, 40)
         self.scan_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.scan_btn.clicked.connect(self._scan_weaknesses)
         controls.addWidget(self.scan_btn)
-        
-        self.plan_btn = QPushButton("💡 Đề xuất Kế Hoạch Ôn Tập")
-        self.plan_btn.setFixedSize(220, 40)
-        self.plan_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
-        self.plan_btn.clicked.connect(self._generate_plan)
-        self.plan_btn.setEnabled(False)
-        controls.addWidget(self.plan_btn)
-        
         controls.addStretch()
         layout.addLayout(controls)
 
@@ -64,15 +53,22 @@ class WeaknessTab(QWidget):
         self.table = QTableWidget(0, 4)
         self.table.setHorizontalHeaderLabels(["Chủ đề", "Số lần thử", "Số lần sai", "Tỷ lệ sai"])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        self.table.setStyleSheet(
-            "QTableWidget { background:#1a1b2e; color:#cdd6f4; gridline-color:#3a3c52; border: 1px solid #3a3c52; border-radius: 6px; }"
-            "QHeaderView::section { background:#2a2b3d; color:#cdd6f4; padding:4px; font-weight:bold; border: 1px solid #3a3c52; }"
-        )
         layout.addWidget(self.table)
+        self.apply_theme_styles()
 
-        # Output Plan
-        self.output = OutputDisplay()
-        layout.addWidget(self.output)
+    def apply_theme_styles(self):
+        """Update all inline-styled widgets to current theme."""
+        try:
+            from ui.theme_manager import get_theme, PALETTES
+            tokens = PALETTES[get_theme()]
+            self.table.setStyleSheet(
+                f"QTableWidget {{ background:{tokens['BG_MAIN']}; color:{tokens['COLOR_TEXT']};"
+                f" gridline-color:{tokens['BORDER']}; border:1px solid {tokens['BORDER']}; border-radius:6px; }}"
+                f"QHeaderView::section {{ background:{tokens['BG_WIDGET']}; color:{tokens['COLOR_TEXT']};"
+                f" padding:4px; font-weight:bold; border:1px solid {tokens['BORDER']}; }}"
+            )
+        except Exception:
+            pass
 
     def set_subject(self, subject_id: str, subject_config):
         self.subject_id = subject_id
@@ -89,7 +85,6 @@ class WeaknessTab(QWidget):
             self._weak_topics = get_weak_topics(self.subject_id)
             self._populate_table()
             self.status.set_done(f"Đã tìm thấy {len(self._weak_topics)} chủ đề có dữ liệu.")
-            self.plan_btn.setEnabled(len(self._weak_topics) > 0)
         except Exception as e:
             self.status.set_error(str(e))
         finally:
@@ -112,13 +107,23 @@ class WeaknessTab(QWidget):
             rate = data['wrong_rate']
             item_rate = QTableWidgetItem(f"{rate*100:.0f}%")
             
-            # Color coding
-            if rate > 0.5:
-                color = QColor("#f38ba8") # Red
-            elif rate > 0.3:
-                color = QColor("#f9e2af") # Yellow
-            else:
-                color = QColor("#a6e3a1") # Green
+            # Color coding with theme-aware colors
+            try:
+                from ui.theme_manager import get_theme, PALETTES
+                tokens = PALETTES[get_theme()]
+                if rate > 0.5:
+                    color = QColor(tokens["COLOR_RED"])
+                elif rate > 0.3:
+                    color = QColor(tokens["COLOR_YELLOW"])
+                else:
+                    color = QColor(tokens["COLOR_GREEN"])
+            except Exception:
+                if rate > 0.5:
+                    color = QColor("#f38ba8")
+                elif rate > 0.3:
+                    color = QColor("#f9e2af")
+                else:
+                    color = QColor("#a6e3a1")
                 
             item_rate.setForeground(color)
             
@@ -131,29 +136,3 @@ class WeaknessTab(QWidget):
             self.table.setItem(row, 1, item_att)
             self.table.setItem(row, 2, item_wrong)
             self.table.setItem(row, 3, item_rate)
-
-    def _generate_plan(self):
-        if not self._weak_topics:
-            return
-            
-        if self._thread and self._thread.isRunning():
-            return
-            
-        self.plan_btn.setEnabled(False)
-        self.output.clear_output()
-        self.status.set_loading("Đang nhờ AI phân tích và lên kế hoạch ôn tập...")
-
-        def _gen():
-            from modules.weakness_detector import generate_review_plan
-            return generate_review_plan(self._weak_topics, self.subject_id)
-
-        self._worker = LLMWorker(_gen)
-        self._worker.result.connect(self._on_plan_ready)
-        self._worker.error.connect(lambda e: self.status.set_error(e))
-        self._worker.finished.connect(lambda: self.plan_btn.setEnabled(True))
-        self._thread = run_in_thread(self._worker)
-
-    def _on_plan_ready(self, plan: str):
-        self.output.clear_output()
-        self.output.append_token(plan) # Non-streaming, just dump all
-        self.status.set_done("Đã lập kế hoạch ôn tập.")

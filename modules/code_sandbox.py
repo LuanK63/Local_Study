@@ -7,9 +7,13 @@ import subprocess
 import tempfile
 import os
 import time
+import shutil
 from pathlib import Path
 from dataclasses import dataclass
 from utils.config import get_config
+
+
+_UNBUFFER_SRC = Path(__file__).parent / "sandbox_unbuffer.c"
 
 
 @dataclass
@@ -81,6 +85,56 @@ def run_c(code: str, stdin: str = "", lang: str = "cpp") -> RunResult:
                 stdout="", stderr=f"[Timeout] Chương trình chạy quá {timeout}s",
                 elapsed_ms=round(elapsed, 2), exit_code=-1, timed_out=True
             )
+
+
+def compile_c(code: str, lang: str = "cpp") -> tuple[str, str, str]:
+    """Compile C/C++ to an exe. Returns (exe_path, tmpdir, error_msg)."""
+    ext = ".c" if lang == "c" else ".cpp"
+    compiler = _find_compiler(lang)
+
+    tmpdir = tempfile.mkdtemp(prefix="sandbox_interactive_")
+    src = os.path.join(tmpdir, f"main{ext}")
+    exe = os.path.join(tmpdir, "main.exe")
+
+    try:
+        with open(src, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        compile_cmd = [compiler, src]
+        if _UNBUFFER_SRC.exists():
+            compile_cmd.append(str(_UNBUFFER_SRC))
+        compile_cmd.extend(["-o", exe, "-Wall", "-O2", "-lm"])
+
+        compile_result = subprocess.run(
+            compile_cmd,
+            capture_output=True, encoding="utf-8", errors="replace", timeout=30, cwd=tmpdir
+        )
+        if compile_result.returncode != 0:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+            return "", "", compile_result.stderr
+        return exe, tmpdir, ""
+    except Exception as e:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        return "", "", f"Lỗi biên dịch: {e}"
+
+
+def prepare_python(code: str) -> tuple[str, str, str]:
+    """Validate and save Python source to a temp file. Returns (py_path, tmpdir, error_msg)."""
+    blocked = ["import os", "import sys", "import socket", "import subprocess",
+               "import shutil", "__import__"]
+    for b in blocked:
+        if b in code:
+            return "", "", f"[BLOCKED] '{b}' không được phép trong sandbox"
+
+    tmpdir = tempfile.mkdtemp(prefix="sandbox_interactive_")
+    src = os.path.join(tmpdir, "main.py")
+    try:
+        with open(src, "w", encoding="utf-8") as f:
+            f.write(code)
+        return src, tmpdir, ""
+    except Exception as e:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        return "", "", f"Lỗi tạo tệp tạm: {e}"
 
 
 def run_python(code: str, stdin: str = "") -> RunResult:

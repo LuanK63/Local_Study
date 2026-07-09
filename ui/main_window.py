@@ -17,23 +17,21 @@ from ui.tabs.tab_sandbox import SandboxTab
 from ui.tabs.tab_quiz import QuizTab
 from ui.tabs.tab_practice import PracticeTab
 from ui.tabs.tab_flashcard import FlashcardTab
-from ui.tabs.tab_path import PathTab
 from ui.tabs.tab_weakness import WeaknessTab
 from ui.tabs.tab_document import DocumentTab
 from ui.tabs.tab_visualize import VisualizeTab
 
 # ── Nav button IDs ────────────────────────────────────────────────────────────
 NAV_ITEMS = [
-    ("📖", "Giải thích",   "explain"),
-    ("📁", "Tài liệu",     "document"),
-    ("🌳", "Visualizer",   "visualize"),   # shown only if has_visualizer
-    ("💻", "Code",         "code"),
-    ("▶️", "Sandbox",      "sandbox"),
-    ("📝", "Quiz",         "quiz"),
-    ("🎯", "Luyện tập",    "practice"),
-    ("🃏", "Flashcard",    "flashcard"),
-    ("🗺️", "Lộ trình",    "path"),
-    ("⚠️", "Điểm yếu",    "weakness"),
+    ("", "Giải thích",   "explain"),
+    ("", "Tài liệu",     "document"),
+    ("", "Visualizer",   "visualize"),   # shown only if has_visualizer
+    ("", "Code",         "code"),
+    ("", "Sandbox",      "sandbox"),
+    ("", "Quiz",         "quiz"),
+    ("", "Luyện tập",    "practice"),
+    ("", "Flashcard",    "flashcard"),
+    ("", "Điểm yếu",    "weakness"),
 ]
 
 
@@ -41,7 +39,7 @@ class NavButton(QPushButton):
     def __init__(self, icon_text: str, label: str, page_id: str, parent=None):
         super().__init__(parent)
         self.page_id = page_id
-        self.setText(f"  {icon_text}  {label}")
+        self.setText(label.strip())
         self.setCheckable(True)
         self.setFixedHeight(40)
         self.setFont(QFont("Inter", 10))
@@ -59,23 +57,25 @@ class Sidebar(QWidget):
         layout.setSpacing(4)
 
         # App title
-        title = QLabel("🎓 Study Agent")
+        title = QLabel("Study Agent")
         title.setFont(QFont("Inter", 16, QFont.Weight.Bold))
         title.setObjectName("AppTitle")
         layout.addWidget(title)
 
         # Subject selector
         layout.addSpacing(16)
-        sub_label = QLabel("📚 MÔN HỌC")
+        sub_label = QLabel("MÔN HỌC")
         sub_label.setFont(QFont("Inter", 10))
         sub_label.setObjectName("SectionLabel")
         layout.addWidget(sub_label)
 
+
         layout.addSpacing(4)
-        self.subject_combo = QComboBox()
-        self.subject_combo.setFont(QFont("Inter", 10))
-        self.subject_combo.setFixedHeight(36)
-        layout.addWidget(self.subject_combo)
+        self.subject_label = QLabel("Cấu trúc dữ liệu và Giải thuật")
+        self.subject_label.setFont(QFont("Inter", 10, QFont.Weight.Bold))
+        self.subject_label.setWordWrap(True)
+        self.subject_label.setObjectName("ActiveSubjectLabel")
+        layout.addWidget(self.subject_label)
 
         # Divider
         line = QFrame()
@@ -100,12 +100,8 @@ class Sidebar(QWidget):
         layout.addWidget(footer_line)
         layout.addSpacing(8)
 
-        # Footer info
-        self.info_label = QLabel()
-        self.info_label.setFont(QFont("Inter", 8))
-        self.info_label.setObjectName("FooterLabel")
-        self.info_label.setWordWrap(True)
-        layout.addWidget(self.info_label)
+        # Theme toggle hidden — app uses light mode by default.
+        self.theme_btn = None
 
     def rebuild_nav(self, has_visualizer: bool):
         """Rebuild nav buttons based on subject capabilities."""
@@ -135,7 +131,7 @@ class ContentPlaceholder(QWidget):
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        icon = QLabel("🚧")
+        icon = QLabel("")
         icon.setFont(QFont("Inter", 48))
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(icon)
@@ -206,30 +202,25 @@ class MainWindow(QMainWindow):
             "quiz":      safe_tab(QuizTab, "Quiz"),
             "practice":  safe_tab(PracticeTab, "Luyện tập"),
             "flashcard": safe_tab(FlashcardTab, "Flashcard"),
-            "path":      safe_tab(PathTab, "Lộ trình"),
             "weakness":  safe_tab(WeaknessTab, "Điểm yếu"),
         }
         for page in self.pages.values():
             self.stack.addWidget(page)
 
-        # Populate subject combo
-        for sid, cfg in self.subjects.items():
-            self.sidebar.subject_combo.addItem(cfg.display_name, sid)
+        pass
 
     # ── Signals ───────────────────────────────────────────────────────────────
     def _connect_signals(self):
-        self.sidebar.subject_combo.currentIndexChanged.connect(
-            lambda _: self._load_subject(self.sidebar.subject_combo.currentData())
-        )
+        # Connect DocumentTab changes to ExplainTab sources panel
+        explain_tab = self.pages.get("explain")
+        document_tab = self.pages.get("document")
+        if (explain_tab and hasattr(explain_tab, "_load_existing_sources") and 
+            document_tab and hasattr(document_tab, "document_changed")):
+            document_tab.document_changed.connect(explain_tab._load_existing_sources)
 
     def _load_subject(self, subject_id: str):
         subject = self.subjects[subject_id]
         self.sidebar.rebuild_nav(subject.has_visualizer)
-        self.sidebar.info_label.setText(
-            f"Collection  {subject.chroma_collection}\n"
-            f"Sandbox  {'C/C++' if subject.code_language == 'c_cpp' else 'Python'}\n"
-            f"Lang  {', '.join(subject.languages).upper()}"
-        )
 
         # Update subject in all pages that support it
         for page in self.pages.values():

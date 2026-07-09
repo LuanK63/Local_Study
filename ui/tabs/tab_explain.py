@@ -1,26 +1,25 @@
 """
 ui/tabs/tab_explain.py — NotebookLM-style Q&A Tab
 Layout: Left = Sources panel | Right = Chat conversation
-Features:
-  - Citation [1],[2],... clickable in answers
-  - Citation popup shows exact source chunk
-  - Sources panel with file upload management
 """
-import shutil
 from pathlib import Path
-DEFAULT_TOP_K = 5   # number of chunks retrieved per query
+
+DEFAULT_TOP_K = 5
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QLineEdit, QPushButton, QLabel, QComboBox,
-    QFrame, QScrollArea, QFileDialog,
+    QLineEdit, QPushButton, QLabel, QFrame, QScrollArea,
 )
 from PyQt6.QtCore import Qt, pyqtSlot, QPoint, QObject
 from PyQt6.QtCore import pyqtSignal as Signal
 from PyQt6.QtGui import QFont
 
 from ui.widgets import (
-    SourcesPanel, ChatBubble, CitationPopup, StatusLabel, IngestProgressWidget,
+    SourcesPanel, ChatBubble, CitationPopup, StatusLabel,
+    SURFACE_0, SURFACE_1, SURFACE_2,
+    BORDER, BORDER_STRONG,
+    TEXT_MAIN, TEXT_MUTED, TEXT_ACCENT, TEXT_SUCCESS, TEXT_DANGER,
+    ACCENT_BG,
 )
 from ui.worker import StreamWorker, run_in_thread
 
@@ -32,7 +31,7 @@ class ExplainTab(QWidget):
         self.subject_cfg = subject_config
         self._thread = None
         self._worker = None
-        self._current_chunks: list[dict] = []   # retrieved chunks for last query
+        self._current_chunks: list[dict] = []
         self._chat_bubbles: list[ChatBubble] = []
         self._citation_popup = CitationPopup(self)
         self._citation_popup.hide()
@@ -47,171 +46,222 @@ class ExplainTab(QWidget):
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.setHandleWidth(1)
-        splitter.setStyleSheet("QSplitter::handle { background: #2a2b3d; }")
+        self._splitter = splitter
+        splitter.setStyleSheet(f"QSplitter::handle {{ background: {BORDER}; }}")
 
-        # ── Left: Sources panel ──────────────────────────────────────────
+        # ── Left: Sources panel ───────────────────────────────────────────
         self.sources_panel = SourcesPanel()
-        self.sources_panel.add_source_clicked.connect(self._add_source)
-        self.sources_panel.remove_source_requested.connect(self._on_remove_source)
         splitter.addWidget(self.sources_panel)
 
-        # ── Right: Chat area ─────────────────────────────────────────────
-        chat_widget = QWidget()
-        chat_widget.setStyleSheet("background: #1a1b2e;")
-        chat_layout = QVBoxLayout(chat_widget)
+        # ── Right: Chat area ──────────────────────────────────────────────
+        self.chat_widget = QWidget()
+        chat_layout = QVBoxLayout(self.chat_widget)
         chat_layout.setContentsMargins(0, 0, 0, 0)
         chat_layout.setSpacing(0)
 
         # Top bar
         top_bar = QFrame()
         top_bar.setObjectName("ChatTopBar")
-        top_bar.setFixedHeight(48)
-        top_bar.setStyleSheet("""
-            QFrame#ChatTopBar {
-                background: #0e0f1e;
-                border-bottom: 1px solid #2a2b3d;
-            }
-        """)
+        self.top_bar = top_bar
+        top_bar.setFixedHeight(44)
         top_row = QHBoxLayout(top_bar)
-        top_row.setContentsMargins(20, 0, 20, 0)
-        top_row.setSpacing(12)
+        top_row.setContentsMargins(16, 0, 12, 0)
+        top_row.setSpacing(10)
 
-        title_lbl = QLabel("💬 Cuộc trò chuyện")
-        title_lbl.setFont(QFont("Inter", 11, QFont.Weight.Bold))
-        title_lbl.setStyleSheet("color:#cba6f7; background:transparent;")
-        top_row.addWidget(title_lbl)
+        self.title_lbl = QLabel("Cuộc trò chuyện")
+        self.title_lbl.setFont(QFont("Inter", 10, QFont.Weight.Bold))
+        self.title_lbl.setObjectName("ChatTitle")
+        top_row.addWidget(self.title_lbl)
         top_row.addStretch()
 
-
-        # Clear chat button — icon only, clean
-        clear_btn = QPushButton("🗑")
-        clear_btn.setFixedSize(32, 32)
-        clear_btn.setFont(QFont("Inter", 12))
-        clear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        clear_btn.setToolTip("Xóa cuộc trò chuyện")
-        clear_btn.setStyleSheet("""
-            QPushButton {
-                background: transparent;
-                border: 1px solid #3a3c52;
-                border-radius: 8px;
-                padding: 0;
-                color: #5a5d78;
-            }
-            QPushButton:hover {
-                background: #2a2b3d;
-                color: #f38ba8;
-                border-color: #f38ba8;
-            }
-        """)
-        clear_btn.clicked.connect(self._clear_chat)
-        top_row.addWidget(clear_btn)
+        self.clear_btn = QPushButton("Xóa chat")
+        self.clear_btn.setObjectName("ClearChatBtn")
+        self.clear_btn.setFixedHeight(30)
+        self.clear_btn.setMinimumWidth(76)
+        self.clear_btn.setFont(QFont("Inter", 9, QFont.Weight.Bold))
+        self.clear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.clear_btn.setToolTip("Xóa toàn bộ cuộc trò chuyện")
+        self.clear_btn.clicked.connect(self._clear_chat)
+        top_row.addWidget(self.clear_btn)
         chat_layout.addWidget(top_bar)
 
-        # Status bar
+        # Status bar (hidden when idle)
         self.status = StatusLabel()
-        self.status.setContentsMargins(20, 6, 20, 0)
         chat_layout.addWidget(self.status)
 
         # Chat scroll area
         self._chat_scroll = QScrollArea()
         self._chat_scroll.setWidgetResizable(True)
-        self._chat_scroll.setStyleSheet(
-            "QScrollArea{background:#1a1b2e;border:none;}"
-        )
 
         self._chat_container = QWidget()
-        self._chat_container.setStyleSheet("background:#1a1b2e;")
         self._chat_vbox = QVBoxLayout(self._chat_container)
-        self._chat_vbox.setContentsMargins(24, 20, 24, 20)
-        self._chat_vbox.setSpacing(20)
+        self._chat_vbox.setContentsMargins(20, 20, 20, 20)
+        self._chat_vbox.setSpacing(16)
         self._chat_vbox.addStretch()
 
         self._chat_scroll.setWidget(self._chat_container)
         chat_layout.addWidget(self._chat_scroll, 1)
 
-        # ── Input area (full-width, send button inside) ──────────────────
+        # ── Input area ────────────────────────────────────────────────────
         input_frame = QFrame()
-        input_frame.setObjectName("InputFrame")
-        input_frame.setStyleSheet("""
-            QFrame#InputFrame {
-                background: #0e0f1e;
-                border-top: 1px solid #2a2b3d;
-            }
-        """)
-        input_frame.setFixedHeight(64)
-        inp_row = QHBoxLayout(input_frame)
-        inp_row.setContentsMargins(16, 10, 16, 10)
+        self.input_frame = input_frame
+        self.input_frame.setObjectName("InputFrame")
+        self.input_frame.setFixedHeight(60)
+        inp_row = QHBoxLayout(self.input_frame)
+        inp_row.setContentsMargins(12, 10, 12, 10)
         inp_row.setSpacing(0)
 
-        # Container for input + send button overlay
+        # Inner container (input + send button)
         input_container = QFrame()
-        input_container.setStyleSheet("""
-            QFrame {
-                background: #2a2b3d;
-                border: 1.5px solid #3a3c52;
-                border-radius: 14px;
-            }
-            QFrame:focus-within {
-                border-color: #89b4fa;
-            }
-        """)
-        container_layout = QHBoxLayout(input_container)
-        container_layout.setContentsMargins(4, 4, 4, 4)
-        container_layout.setSpacing(8)
+        self.input_container = input_container
+        self.input_container.setObjectName("InputContainer")
+        c_layout = QHBoxLayout(self.input_container)
+        c_layout.setContentsMargins(4, 4, 4, 4)
+        c_layout.setSpacing(6)
 
         self.query_input = QLineEdit()
         self.query_input.setPlaceholderText("Đặt câu hỏi về tài liệu của bạn...")
         self.query_input.setFont(QFont("Inter", 10))
-        self.query_input.setFixedHeight(36)
-        self.query_input.setStyleSheet("""
-            QLineEdit {
+        self.query_input.setFixedHeight(32)
+        self.query_input.setStyleSheet(f"""
+            QLineEdit {{
                 background: transparent;
                 border: none;
-                color: #cdd6f4;
-                padding: 4px 12px;
-            }
-            QLineEdit:focus {
-                border: none;
-                background: transparent;
-            }
+                color: {TEXT_MAIN};
+                padding: 0 10px;
+            }}
+            QLineEdit:focus {{ border: none; outline: none; }}
         """)
         self.query_input.returnPressed.connect(self._on_ask)
-        container_layout.addWidget(self.query_input)
+        c_layout.addWidget(self.query_input)
 
-        self.ask_btn = QPushButton("↑")
-        self.ask_btn.setFixedSize(36, 36)
-        self.ask_btn.setFont(QFont("Inter", 14, QFont.Weight.Bold))
+        self.ask_btn = QPushButton("Gửi")
+        self.ask_btn.setFixedSize(48, 32)
+        self.ask_btn.setFont(QFont("Inter", 9, QFont.Weight.Bold))
         self.ask_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.ask_btn.setStyleSheet("""
-            QPushButton {
-                background: #cba6f7;
-                color: #1a1b2e;
+        self.ask_btn.setStyleSheet(f"""
+            QPushButton {{
+                background: {TEXT_ACCENT};
+                color: {SURFACE_0};
                 border: none;
-                border-radius: 12px;
+                border-radius: 8px;
                 text-align: center;
                 padding: 0;
-            }
-            QPushButton:hover { background: #d4b5ff; }
-            QPushButton:pressed { background: #b09ae0; }
-            QPushButton:disabled { background: #3a3c52; color: #5a5d78; }
+            }}
+            QPushButton:hover {{ background: #8fa0f0; }}
+            QPushButton:pressed {{ background: #6a7bce; }}
+            QPushButton:disabled {{ background: {SURFACE_2}; color: {TEXT_MUTED}; }}
         """)
         self.ask_btn.clicked.connect(self._on_ask)
-        container_layout.addWidget(self.ask_btn)
+        c_layout.addWidget(self.ask_btn)
 
-        inp_row.addWidget(input_container)
-        chat_layout.addWidget(input_frame)
+        inp_row.addWidget(self.input_container)
+        chat_layout.addWidget(self.input_frame)
 
-        splitter.addWidget(chat_widget)
-        splitter.setSizes([260, 900])
+        splitter.addWidget(self.chat_widget)
+        splitter.setSizes([240, 860])
         root.addWidget(splitter)
-
-        # Load existing sources on startup
+        self.apply_theme_styles()
         self._load_existing_sources()
+
+    def apply_theme_styles(self):
+        """Update all inline-styled widgets in ExplainTab to current theme."""
+        try:
+            from ui.theme_manager import get_theme, PALETTES
+            tokens = PALETTES[get_theme()]
+
+            self._splitter.setStyleSheet(
+                f"QSplitter::handle {{ background: {tokens['BORDER']}; }}"
+            )
+            self.chat_widget.setStyleSheet(
+                f"background: {tokens['BG_SIDEBAR']};"
+            )
+            self.top_bar.setStyleSheet(f"""
+                QFrame#ChatTopBar {{
+                    background: {tokens['BG_MAIN']};
+                    border-bottom: 1px solid {tokens['BORDER']};
+                }}
+            """)
+            self.title_lbl.setStyleSheet(
+                f"color:{tokens['COLOR_TEXT']}; background:transparent; border:none;"
+            )
+            self.clear_btn.setStyleSheet(f"""
+                QPushButton#ClearChatBtn {{
+                    background: {tokens['BG_WIDGET']};
+                    border: 1px solid {tokens['BORDER']};
+                    border-radius: 8px;
+                    color: {tokens['COLOR_TEXT']};
+                    padding: 0 12px;
+                }}
+                QPushButton#ClearChatBtn:hover {{
+                    background: {tokens['BG_HOVER']};
+                    color: {tokens['COLOR_RED']};
+                    border-color: {tokens['COLOR_RED']};
+                }}
+                QPushButton#ClearChatBtn:pressed {{
+                    background: {tokens['BG_CHECKED']};
+                }}
+            """)
+            self._chat_scroll.setStyleSheet(
+                f"QScrollArea{{background:{tokens['BG_SIDEBAR']};border:none;}}"
+            )
+            self._chat_container.setStyleSheet(
+                f"background:{tokens['BG_SIDEBAR']};"
+            )
+            self.input_frame.setStyleSheet(f"""
+                QFrame#InputFrame {{
+                    background: {tokens['BG_MAIN']};
+                    border-top: 1px solid {tokens['BORDER']};
+                }}
+            """)
+            self.input_container.setStyleSheet(f"""
+                QFrame#InputContainer {{
+                    background: {tokens['BG_SIDEBAR']};
+                    border: 1px solid {tokens['BORDER']};
+                    border-radius: 10px;
+                }}
+                QFrame#InputContainer:focus-within {{
+                    border-color: {tokens['COLOR_ACCENT']};
+                }}
+            """)
+            self.query_input.setStyleSheet(f"""
+                QLineEdit {{
+                    background: transparent;
+                    border: none;
+                    color: {tokens['COLOR_TEXT']};
+                    padding: 0 10px;
+                }}
+                QLineEdit:focus {{ border: none; outline: none; }}
+            """)
+            # ask_btn: accent hover adapts to theme
+            accent = tokens['COLOR_ACCENT']
+            accent_hover = tokens['COLOR_ACCENT_HOVER']
+            self.ask_btn.setStyleSheet(f"""
+                QPushButton {{
+                    background: {accent};
+                    color: {tokens['BG_MAIN']};
+                    border: none;
+                    border-radius: 8px;
+                    text-align: center;
+                    padding: 0;
+                }}
+                QPushButton:hover {{ background: {accent_hover}; }}
+                QPushButton:pressed {{ background: {tokens['BG_CHECKED']}; color: {accent}; }}
+                QPushButton:disabled {{ background: {tokens['BG_WIDGET']}; color: {tokens['COLOR_TEXT_MUTED']}; }}
+            """)
+        except Exception:
+            pass
 
     # ── Helpers ───────────────────────────────────────────────────────────────
     def _load_existing_sources(self):
-        """Scan the subject's documents dir and show existing files."""
         try:
+            self.sources_panel._cards.clear()
+            for i in reversed(range(self.sources_panel._cards_layout.count() - 1)):
+                w = self.sources_panel._cards_layout.itemAt(i).widget()
+                if w:
+                    w.deleteLater()
+            self.sources_panel._update_count()
+
             doc_dir = Path(self.subject_cfg.documents_dir)
             if not doc_dir.exists():
                 return
@@ -228,165 +278,48 @@ class ExplainTab(QWidget):
     def _add_bubble(self, role: str) -> ChatBubble:
         bubble = ChatBubble(role)
         bubble.citation_clicked.connect(self._on_citation_clicked)
-
         idx = self._chat_vbox.count() - 1
-        if role == "user":
-            self._chat_vbox.insertWidget(idx, bubble, alignment=Qt.AlignmentFlag.AlignRight)
-        else:
-            self._chat_vbox.insertWidget(idx, bubble)
-
+        self._chat_vbox.insertWidget(idx, bubble)
         self._chat_bubbles.append(bubble)
         return bubble
 
-    # ── Add source (file upload) ──────────────────────────────────────────────
-    def _add_source(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Chọn tài liệu", "", "Documents (*.pdf *.docx *.txt)"
-        )
-        if not file_path:
-            return
-        if self._thread and self._thread.isRunning():
-            self.status.set_error("Đang xử lý, vui lòng đợi...")
-            return
-
-        src = Path(file_path)
-
-        # Show progress widget
-        self.sources_panel.show_progress(src.name)
-        self.status.set_loading(f"Đang nạp '{src.name}'...")
-
-        # Thread-safe bridge: background thread sends (stage,done,total)
-        # to main thread via a QObject signal
-        class _ProgressBridge(QObject):
-            progress = Signal(str, int, int)  # stage, done, total
-
-        bridge = _ProgressBridge()
-        bridge.progress.connect(self.sources_panel.update_progress)
-
-        def _process():
-            doc_dir = Path(self.subject_cfg.documents_dir)
-            doc_dir.mkdir(parents=True, exist_ok=True)
-            dest = doc_dir / src.name
-            if src != dest:
-                shutil.copy2(src, dest)
-
-            def _cb(stage, done, total):
-                bridge.progress.emit(stage, done, total)
-
-            from core.retrieval.hybrid_retriever import ingest_document
-            chunks_added = ingest_document(dest, self.subject_id, progress_cb=_cb)
-            return str(dest), src.name, chunks_added
-
-        from ui.worker import LLMWorker
-        self._worker = LLMWorker(_process)
-        self._worker.result.connect(self._on_source_added)
-        self._worker.error.connect(self._on_source_error)
-        self._thread = run_in_thread(self._worker)
-
-    @pyqtSlot(object)
-    def _on_source_added(self, result):
-        dest_path, name, chunks = result
-        self.sources_panel.finish_progress(chunks)
-        self.sources_panel.add_card(dest_path, name, chunks)
-        self.status.set_done(f"Đã thêm '{name}' — {chunks} đoạn")
-
-    @pyqtSlot(str)
-    def _on_source_error(self, err: str):
-        self.sources_panel.hide_progress()
-        self.status.set_error(f"Lỗi: {err}")
-
-    # ── Remove source ─────────────────────────────────────────────────────────
-    @pyqtSlot(str)
-    def _on_remove_source(self, file_path: str):
-        from PyQt6.QtWidgets import QMessageBox
-        from pathlib import Path
-        name = Path(file_path).name
-        reply = QMessageBox.question(
-            self,
-            "Xác nhận xóa tài liệu",
-            f"Bạn có chắc muốn xóa '{name}' khỏi cơ sở tri thức?\n"
-            f"Thao tác này sẽ xóa file và toàn bộ dữ liệu liên quan.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
-        )
-        if reply != QMessageBox.StandardButton.Yes:
-            return
-
-        if self._thread and self._thread.isRunning():
-            self.status.set_error("Đang xử lý, vui lòng đợi...")
-            return
-
-        self.status.set_loading(f"Đang xóa '{name}'...")
-
-        def _delete():
-            import os
-            from core.retrieval.hybrid_retriever import delete_document
-            # 1. Remove from ChromaDB + BM25
-            removed = delete_document(file_path, self.subject_id)
-            # 2. Delete physical file
-            try:
-                os.remove(file_path)
-            except FileNotFoundError:
-                pass
-            return name, removed
-
-        from ui.worker import LLMWorker
-        self._worker = LLMWorker(_delete)
-        self._worker.result.connect(self._on_source_removed)
-        self._worker.error.connect(lambda e: self.status.set_error(f"Lỗi xóa: {e}"))
-        self._thread = run_in_thread(self._worker)
-
-    @pyqtSlot(object)
-    def _on_source_removed(self, result):
-        name, removed = result
-        self.status.set_done(f"Đã xóa '{name}' — {removed} đoạn bị loại bỏ")
-
-    # ── Ask question ──────────────────────────────────────────────────────────
+    # ── Ask ───────────────────────────────────────────────────────────────────
     def _on_ask(self):
         query = self.query_input.text().strip()
-        if not query:
-            return
-        if self._thread and self._thread.isRunning():
+        if not query or (self._thread and self._thread.isRunning()):
             return
 
-        top_k = DEFAULT_TOP_K
         self.ask_btn.setEnabled(False)
         self.query_input.setEnabled(False)
         self.query_input.clear()
         self._citation_popup.hide()
 
-        # Add user bubble
         user_bubble = self._add_bubble("user")
         user_bubble.set_text(query)
         self._scroll_to_bottom()
 
-        # Add assistant bubble (empty, will be filled by stream)
         asst_bubble = self._add_bubble("assistant")
-        asst_bubble.begin_streaming()           # ← prepare for incoming tokens
+        asst_bubble.begin_streaming()
         self._current_assistant_bubble = asst_bubble
         self._scroll_to_bottom()
 
-        # Thread-safe status and chunk updates via a PyQt bridge QObject
         class _StatusBridge(QObject):
-            status_changed = Signal(str)
+            status_changed  = Signal(str)
             chunks_received = Signal(object)
 
         self._status_bridge = _StatusBridge()
         self._status_bridge.status_changed.connect(self.status.set_loading)
         self._status_bridge.chunks_received.connect(self._on_chunks_received)
 
-        # Stream answer via Agentic RAG (forcing hybrid search)
-        selected_mode = "hybrid"
-
         def _stream():
-            from core.pipeline.agentic_rag import generate_agentic_response
-            return generate_agentic_response(
+            from core.pipeline.advanced_rag import generate_rag_response
+            return generate_rag_response(
                 query,
                 self.subject_id,
                 self.subject_cfg,
                 status_cb=self._status_bridge.status_changed.emit,
                 chunks_cb=self._status_bridge.chunks_received.emit,
-                search_mode=selected_mode,
+                search_mode="hybrid",
             )
 
         self._worker = StreamWorker(_stream)
@@ -400,33 +333,15 @@ class ExplainTab(QWidget):
         self.ask_btn.setEnabled(True)
         self.query_input.setEnabled(True)
         self.query_input.setFocus()
-        # Re-render plain text → HTML with clickable [N] citations
         if self._current_assistant_bubble:
-            self._current_assistant_bubble.finalize()  # ← key fix
-        self.status.set_done(
-            f"Tìm thấy {len(self._current_chunks)} đoạn liên quan"
-        )
+            self._current_assistant_bubble.finalize()
+
+        self.status.set_done("Tìm thấy nguồn liên quan")
         self._scroll_to_bottom()
 
     @pyqtSlot(object)
     def _on_chunks_received(self, chunks):
-        print(f"[DEBUG UI] Chunks received in PyQt slot: {len(chunks)}")
-        #self._current_chunks = chunks
-        self._current_chunks = chunks[:1]
-
-    # ── Citation clicked ──────────────────────────────────────────────────────
-    @pyqtSlot(int)
-    def _on_citation_clicked(self, num: int):
-        idx = num - 1
-        if 0 <= idx < len(self._current_chunks):
-            chunk = self._current_chunks[idx]
-            # Position popup relative to window
-            pos = self.mapToGlobal(QPoint(
-                self.width() // 2 - 200,
-                self.height() // 2 - 150,
-            ))
-            self._citation_popup.move(pos)
-            self._citation_popup.show_citation(num, chunk)
+        self._current_chunks = chunks
 
     # ── Clear chat ────────────────────────────────────────────────────────────
     def _clear_chat(self):
@@ -437,18 +352,28 @@ class ExplainTab(QWidget):
         self._current_chunks = []
         self._current_assistant_bubble = None
         self._citation_popup.hide()
+
+        # Khôi phục lại toàn bộ tài liệu của môn học ở panel trái
+        self._load_existing_sources()
+
         self.status.clear_status()
+
+    # ── Citation clicked ──────────────────────────────────────────────────────
+    @pyqtSlot(int)
+    def _on_citation_clicked(self, num: int):
+        idx = num - 1
+        if 0 <= idx < len(self._current_chunks):
+            chunk = self._current_chunks[idx]
+            pos = self.mapToGlobal(QPoint(
+                self.width() // 2 - 200,
+                self.height() // 2 - 150,
+            ))
+            self._citation_popup.move(pos)
+            self._citation_popup.show_citation(num, chunk)
+
 
     # ── Subject switch ────────────────────────────────────────────────────────
     def set_subject(self, subject_id: str, subject_config):
         self.subject_id = subject_id
         self.subject_cfg = subject_config
         self._clear_chat()
-        # Refresh source panel - clear and reload
-        self.sources_panel._cards.clear()
-        for i in reversed(range(self.sources_panel._cards_layout.count() - 1)):
-            w = self.sources_panel._cards_layout.itemAt(i).widget()
-            if w:
-                w.deleteLater()
-        self.sources_panel._update_count()
-        self._load_existing_sources()

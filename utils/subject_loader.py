@@ -28,7 +28,7 @@ class SubjectConfig:
 
     @property
     def display_name(self) -> str:
-        return f"{self.icon} {self.name}"
+        return f"{self.icon} {self.name}".strip() if self.icon else self.name
 
 
 def _load_one(subject_dir: Path) -> Optional[SubjectConfig]:
@@ -56,7 +56,7 @@ def _load_one(subject_dir: Path) -> Optional[SubjectConfig]:
         subject_id      = cfg["subject_id"],
         name            = cfg["name"],
         name_en         = cfg.get("name_en", cfg["name"]),
-        icon            = cfg.get("icon", "📚"),
+        icon            = cfg.get("icon", ""),
         has_visualizer  = cfg.get("has_visualizer", False),
         code_language   = cfg.get("code_language", "python"),
         chroma_collection = cfg.get("chroma_collection", cfg["subject_id"]),

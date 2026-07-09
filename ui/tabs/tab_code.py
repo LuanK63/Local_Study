@@ -1,15 +1,13 @@
 """
-ui/tabs/tab_code.py — M3 Code Explainer + M4 Code Generator tab
-Split view: left = code editor, right = LLM output
+ui/tabs/tab_code.py — Tab sinh code từ mô tả tự nhiên.
 """
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QPushButton, QComboBox, QLabel, QTabWidget,
+    QWidget, QVBoxLayout, QHBoxLayout,
+    QPushButton, QComboBox, QLabel, QTextEdit,
 )
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
-from ui.widgets import CodeEditor, OutputDisplay, SectionHeader, StatusLabel
+from ui.widgets import CodeGenOutput, SectionHeader, StatusLabel
 from ui.worker import StreamWorker, run_in_thread
 
 
@@ -25,188 +23,143 @@ class CodeTab(QWidget):
     def _setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 20, 24, 20)
-        layout.setSpacing(10)
+        layout.setSpacing(12)
 
-        layout.addWidget(SectionHeader("💻 Code Generator & Explainer"))
+        layout.addWidget(SectionHeader("Sinh mã"))
 
-        # Sub-tabs: Generator | Explainer | Complexity
-        self.sub_tabs = QTabWidget()
-        self.sub_tabs.setFont(QFont("Inter", 10))
-        self.sub_tabs.addTab(self._build_generator(), "✨ Generator")
-        self.sub_tabs.addTab(self._build_explainer(), "🔍 Explainer")
-        self.sub_tabs.addTab(self._build_complexity(), "⏱ Complexity")
-        layout.addWidget(self.sub_tabs)
+        hint = QLabel("Mô tả thuật toán hoặc bài toán cần viết code:")
+        hint.setFont(QFont("Inter", 10))
+        hint.setObjectName("CodeGenHint")
+        layout.addWidget(hint)
 
-    # ── Generator ─────────────────────────────────────────────────────────────
-    def _build_generator(self) -> QWidget:
-        w = QWidget()
-        layout = QVBoxLayout(w)
-        layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(8)
-
-        layout.addWidget(QLabel("Mô tả yêu cầu:"))
-
-        from PyQt6.QtWidgets import QTextEdit
         self.gen_input = QTextEdit()
-        self.gen_input.setPlaceholderText("Vd: Viết thuật toán QuickSort bằng C++")
-        self.gen_input.setFont(QFont("Inter", 10))
-        self.gen_input.setFixedHeight(80)
-        self.gen_input.setStyleSheet(
-            "background:#2a2b3d; border:1px solid #3a3c52; border-radius:6px; "
-            "color:#cdd6f4; padding:8px;"
+        self.gen_input.setPlaceholderText(
+            "Ví dụ: Viết thuật toán QuickSort bằng C++, có hàm main và in mảng sau khi sắp xếp"
         )
+        self.gen_input.setFont(QFont("Inter", 10))
+        self.gen_input.setFixedHeight(88)
+        self.gen_input.setObjectName("CodeGenInput")
         layout.addWidget(self.gen_input)
 
-        # Controls
         ctrl = QHBoxLayout()
+        ctrl.setSpacing(10)
+
+        lang_lbl = QLabel("Ngôn ngữ")
+        lang_lbl.setFont(QFont("Inter", 9))
+        lang_lbl.setObjectName("CodeGenLangLabel")
+        ctrl.addWidget(lang_lbl)
+
         self.gen_lang = QComboBox()
         self.gen_lang.addItems(["C++", "C", "Python"])
-        self.gen_lang.setFixedHeight(36)
-        ctrl.addWidget(QLabel("Ngôn ngữ:"))
+        self.gen_lang.setFixedHeight(34)
+        self.gen_lang.setObjectName("CodeGenLangCombo")
         ctrl.addWidget(self.gen_lang)
+
         ctrl.addStretch()
-        self.gen_btn = QPushButton("✨ Tạo code")
-        self.gen_btn.setFixedSize(120, 36)
+
+        self.gen_btn = QPushButton("Tạo code")
+        self.gen_btn.setObjectName("PrimaryBtn")
+        self.gen_btn.setFixedSize(120, 34)
         self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._on_generate)
         ctrl.addWidget(self.gen_btn)
+
+        self.copy_btn = QPushButton("Sao chép")
+        self.copy_btn.setFixedSize(100, 34)
+        self.copy_btn.setEnabled(False)
+        self.copy_btn.clicked.connect(self._on_copy)
+        ctrl.addWidget(self.copy_btn)
+
         layout.addLayout(ctrl)
 
         self.gen_status = StatusLabel()
         layout.addWidget(self.gen_status)
 
-        self.gen_output = OutputDisplay()
-        layout.addWidget(self.gen_output)
-        return w
+        out_lbl = QLabel("Kết quả")
+        out_lbl.setFont(QFont("Inter", 9, QFont.Weight.Bold))
+        out_lbl.setObjectName("CodeGenOutLabel")
+        layout.addWidget(out_lbl)
 
-    # ── Explainer ─────────────────────────────────────────────────────────────
-    def _build_explainer(self) -> QWidget:
-        w = QWidget()
-        layout = QVBoxLayout(w)
-        layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(8)
+        self.gen_output = CodeGenOutput()
+        layout.addWidget(self.gen_output, stretch=1)
 
-        splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.apply_theme_styles()
 
-        # Left: code input
-        left = QWidget()
-        ll = QVBoxLayout(left)
-        ll.addWidget(QLabel("Nhập code cần giải thích:"))
-        self.exp_editor = CodeEditor("cpp")
-        self.exp_editor.setMinimumHeight(300)
-        ll.addWidget(self.exp_editor)
-        exp_ctrl = QHBoxLayout()
-        self.exp_lang = QComboBox()
-        self.exp_lang.addItems(["C++", "C", "Python"])
-        exp_ctrl.addWidget(QLabel("Ngôn ngữ:"))
-        exp_ctrl.addWidget(self.exp_lang)
-        exp_ctrl.addStretch()
-        self.exp_btn = QPushButton("🔍 Giải thích")
-        self.exp_btn.setFixedSize(120, 36)
-        self.exp_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
-        self.exp_btn.clicked.connect(self._on_explain)
-        exp_ctrl.addWidget(self.exp_btn)
-        ll.addLayout(exp_ctrl)
-        self.exp_status = StatusLabel()
-        ll.addWidget(self.exp_status)
-        splitter.addWidget(left)
+    def apply_theme_styles(self):
+        try:
+            from ui.theme_manager import get_theme, PALETTES
+            tokens = PALETTES[get_theme()]
+            for lbl in (self.findChild(QLabel, "CodeGenHint"),
+                        self.findChild(QLabel, "CodeGenLangLabel"),
+                        self.findChild(QLabel, "CodeGenOutLabel")):
+                if lbl:
+                    lbl.setStyleSheet(
+                        f"color: {tokens['COLOR_TEXT_MUTED']}; background: transparent;"
+                    )
+            self.gen_input.setStyleSheet(f"""
+                QTextEdit#CodeGenInput {{
+                    background: {tokens["BG_WIDGET"]};
+                    border: 1px solid {tokens["BORDER"]};
+                    border-radius: 8px;
+                    color: {tokens["COLOR_TEXT"]};
+                    padding: 10px 12px;
+                }}
+                QTextEdit#CodeGenInput:focus {{
+                    border-color: {tokens["COLOR_ACCENT"]};
+                }}
+            """)
+            self.gen_lang.setStyleSheet(f"""
+                QComboBox#CodeGenLangCombo {{
+                    background: {tokens["BG_WIDGET"]};
+                    border: 1px solid {tokens["BORDER"]};
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    color: {tokens["COLOR_TEXT"]};
+                    min-width: 90px;
+                }}
+            """)
+            if hasattr(self.gen_output, "apply_theme_styles"):
+                self.gen_output.apply_theme_styles()
+        except Exception:
+            pass
 
-        # Right: output
-        right = QWidget()
-        rl = QVBoxLayout(right)
-        rl.addWidget(QLabel("Kết quả giải thích:"))
-        self.exp_output = OutputDisplay()
-        rl.addWidget(self.exp_output)
-        splitter.addWidget(right)
-
-        splitter.setSizes([400, 500])
-        layout.addWidget(splitter)
-        return w
-
-    # ── Complexity ────────────────────────────────────────────────────────────
-    def _build_complexity(self) -> QWidget:
-        w = QWidget()
-        layout = QVBoxLayout(w)
-        layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(8)
-
-        layout.addWidget(QLabel("Nhập code hoặc mô tả thuật toán:"))
-        self.cplx_editor = CodeEditor("cpp")
-        self.cplx_editor.setMinimumHeight(200)
-        layout.addWidget(self.cplx_editor)
-
-        ctrl = QHBoxLayout()
-        ctrl.addStretch()
-        self.cplx_btn = QPushButton("⏱ Phân tích Complexity")
-        self.cplx_btn.setFixedSize(180, 36)
-        self.cplx_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
-        self.cplx_btn.clicked.connect(self._on_complexity)
-        ctrl.addWidget(self.cplx_btn)
-        layout.addLayout(ctrl)
-
-        self.cplx_status = StatusLabel()
-        layout.addWidget(self.cplx_status)
-        self.cplx_output = OutputDisplay()
-        layout.addWidget(self.cplx_output)
-        return w
-
-    # ── Slots ─────────────────────────────────────────────────────────────────
     def set_subject(self, subject_id: str, subject_config):
         self.subject_id = subject_id
         self.subject_cfg = subject_config
 
-    def _lang_str(self, combo: QComboBox) -> str:
-        return {"C++": "cpp", "C": "c", "Python": "python"}[combo.currentText()]
+    def _lang_str(self) -> str:
+        return {"C++": "cpp", "C": "c", "Python": "python"}[self.gen_lang.currentText()]
 
     def _on_generate(self):
         desc = self.gen_input.toPlainText().strip()
         if not desc:
+            self.gen_status.set_error("Vui lòng nhập mô tả.")
             return
-        lang = self._lang_str(self.gen_lang)
-        self.gen_output.clear_output()
+
+        lang = self._lang_str()
+        self.gen_output.begin_streaming()
         self.gen_btn.setEnabled(False)
+        self.copy_btn.setEnabled(False)
         self.gen_status.set_loading()
 
         from modules.code_generator import generate_code_stream
         self._worker = StreamWorker(generate_code_stream, desc, lang)
         self._worker.token.connect(self.gen_output.append_token)
-        self._worker.error.connect(lambda e: self.gen_status.set_error(e))
-        self._worker.finished.connect(lambda: (
-            self.gen_btn.setEnabled(True), self.gen_status.set_done()
-        ))
+        self._worker.error.connect(self._on_error)
+        self._worker.finished.connect(self._on_finished)
         self._thread = run_in_thread(self._worker)
 
-    def _on_explain(self):
-        code = self.exp_editor.get_code().strip()
-        if not code:
-            return
-        lang = self._lang_str(self.exp_lang)
-        self.exp_output.clear_output()
-        self.exp_btn.setEnabled(False)
-        self.exp_status.set_loading()
+    def _on_error(self, err: str):
+        self.gen_status.set_error(err)
 
-        from modules.code_explainer import explain_code_stream
-        self._worker = StreamWorker(explain_code_stream, code, lang)
-        self._worker.token.connect(self.exp_output.append_token)
-        self._worker.error.connect(lambda e: self.exp_status.set_error(e))
-        self._worker.finished.connect(lambda: (
-            self.exp_btn.setEnabled(True), self.exp_status.set_done()
-        ))
-        self._thread = run_in_thread(self._worker)
+    def _on_finished(self):
+        self.gen_btn.setEnabled(True)
+        self.gen_output.finalize()
+        self.copy_btn.setEnabled(bool(self.gen_output._raw_text.strip()))
+        self.gen_status.set_done()
 
-    def _on_complexity(self):
-        code = self.cplx_editor.get_code().strip()
-        if not code:
-            return
-        self.cplx_output.clear_output()
-        self.cplx_btn.setEnabled(False)
-        self.cplx_status.set_loading()
-
-        from modules.complexity_analyzer import analyze_complexity_stream
-        self._worker = StreamWorker(analyze_complexity_stream, code, True)
-        self._worker.token.connect(self.cplx_output.append_token)
-        self._worker.error.connect(lambda e: self.cplx_status.set_error(e))
-        self._worker.finished.connect(lambda: (
-            self.cplx_btn.setEnabled(True), self.cplx_status.set_done()
-        ))
-        self._thread = run_in_thread(self._worker)
+    def _on_copy(self):
+        from PyQt6.QtWidgets import QApplication
+        text = self.gen_output._raw_text.strip()
+        if text:
+            QApplication.clipboard().setText(text)

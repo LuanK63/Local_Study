@@ -1,8 +1,0 @@
-﻿FOUND SOMEWHERE!
-] 236 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 nhĂ£n theo cĂ´ng thá»©c: d[v] := min(d[v], d[u] + c[u, v]) vá»›i âˆ€u, v âˆˆ V. NhÆ° váº­y náº¿u nhÆ° ta dĂ¹ng Ä‘á»‰nh u sá»­a nhĂ£n Ä‘á»‰nh v, sau Ä‘Ă³ náº¿u ta láº¡i tá»‘i Æ°u Ä‘Æ°á»£c d[u] thĂªm ná»¯a thĂ¬ t
-FOUND SOMEWHERE!
-BÆ°á»›c 3: Káº¿t há»£p vá»›i viá»‡c lÆ°u váº¿t Ä‘Æ°á»ng Ä‘i trĂªn tá»«ng bÆ°á»›c sá»­a nhĂ£n, thĂ´ng bĂ¡o Ä‘Æ°á»ng Ä‘i ngáº¯n nháº¥t tĂ¬m Ä‘Æ°á»£c hoáº·c cho biáº¿t khĂ´ng tá»“n táº¡i Ä‘Æ°á»ng Ä‘i (d[f] = +âˆ). for (âˆ€v âˆˆ V) do d[v] := +âˆ; d[s] := 0; repeat
-FOUND SOMEWHERE!
-LĂ½ thuyáº¿t Ä‘á»“ thá»‹ ] 239 ^ LĂª Minh HoĂ ng P_4_08_3.PAS * Thuáº­t toĂ¡n Dijkstra vĂ  cáº¥u trĂºc Heap {$MODE DELPHI} (*This program uses 32-bit Integer [-231..231 - 1]*) program Shortest_Path_by_Dijkstra_and_Hea
-FOUND SOMEWHERE!
-] 246 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 then WriteLn(fo, 'There is no path from ', s, ' to ', f) else begin WriteLn(fo, 'Distance from ', s, ' to ', f, ': ', c[s, f]); repeat Write(fo, s, '->'); s := Trace[s

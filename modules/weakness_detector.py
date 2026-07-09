@@ -82,7 +82,7 @@ def get_weak_topics(subject_id: str) -> List[dict]:
 def generate_review_plan(weak_topics: List[dict], subject_id: str) -> str:
     """Generate a personalized review plan based on detected weaknesses using LLM."""
     if not weak_topics:
-        return "✅ Không phát hiện điểm yếu rõ ràng. Hãy tiếp tục luyện tập!"
+        return " Không phát hiện điểm yếu rõ ràng. Hãy tiếp tục luyện tập!"
 
     # We can fetch human-readable names to make the LLM prompt more informative
     topic_lines = []

@@ -1,5 +1,4 @@
-"""
-ui/tabs/tab_visualize.py — Algorithm & Data Structure Visualizer Tab
+"""ui/tabs/tab_visualize.py — Algorithm & Data Structure Visualizer Tab
 Wrapper nhẹ nhúng VisualizerController vào layout của app chính.
 Toàn bộ logic nằm trong modules/visualizer/.
 """

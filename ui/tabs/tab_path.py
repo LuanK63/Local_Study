@@ -1,5 +1,4 @@
-"""
-ui/tabs/tab_path.py — M10 Learning Path Tab
+"""ui/tabs/tab_path.py — M10 Learning Path Tab
 Generate personalized learning roadmap based on subject topics + detected weaknesses.
 """
 from PyQt6.QtWidgets import (
@@ -27,7 +26,7 @@ class PathTab(QWidget):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        layout.addWidget(SectionHeader("🗺️ Learning Path"))
+        layout.addWidget(SectionHeader("Learning Path"))
         
         desc = QLabel(
             "Lộ trình học tập được AI thiết kế riêng cho bạn dựa trên giáo trình của môn học "
@@ -39,7 +38,7 @@ class PathTab(QWidget):
 
         # Controls
         controls = QHBoxLayout()
-        self.gen_btn = QPushButton("✨ Tạo Lộ Trình Học Tập")
+        self.gen_btn = QPushButton("Tạo Lộ Trình Học Tập")
         self.gen_btn.setFixedSize(200, 40)
         self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_path)

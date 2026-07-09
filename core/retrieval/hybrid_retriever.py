@@ -34,6 +34,40 @@ _chunks_cache: dict[str, list[dict]] = {}
 _parent_cache: dict[str, dict[str, str]] = {}
 
 
+def resolve_retrieval_subject_id(subject_id: str) -> str:
+    """
+    Chọn namespace ChromaDB / SQLite parent_chunks khi truy vấn.
+    Ưu tiên collection chính (chroma_collection); nếu rỗng, thử {subject}_{chunking_strategy}.
+    """
+    from utils.subject_loader import get_subject
+    from core.retrieval.vector_search import collection_count
+
+    try:
+        cfg = get_subject(subject_id)
+        primary = cfg.chroma_collection or subject_id
+    except ValueError:
+        primary = subject_id
+
+    try:
+        if collection_count(primary) > 0:
+            return primary
+    except Exception:
+        pass
+
+    strategy = get_config().get("retrieval", {}).get("chunking_strategy", "parent_child")
+    fallback = f"{subject_id}_{strategy}"
+    if fallback != primary:
+        try:
+            fb_count = collection_count(fallback)
+            if fb_count > 0:
+                print(f"[Retrieval] Using '{fallback}' ({fb_count} chunks); '{primary}' is empty")
+                return fallback
+        except Exception as exc:
+            print(f"[WARN] resolve_retrieval_subject_id fallback failed: {exc}")
+
+    return primary
+
+
 # ── SQLite parent store helpers ───────────────────────────────────────────────
 def _get_db_conn():
     """Trả về sqlite3 connection đến study_agent.db."""
@@ -128,17 +162,23 @@ def warm_up_bm25(subject_ids: list[str]) -> None:
     from core.retrieval.vector_search import _get_collection
 
     for sid in subject_ids:
+        storage_id = resolve_retrieval_subject_id(sid)
         try:
-            # 1. Thử tải index từ file pickle trước
+            # 1. Thử tải index từ file pickle trước (logical id hoặc storage id)
             if load_bm25_index(sid):
                 from core.retrieval.bm25_search import _indexes
-                # Phục hồi cache chunks cho hoạt động ingest/delete tiếp theo
                 _chunks_cache[sid] = _indexes[sid][1]
                 print(f"[WarmUp] Loaded BM25 index from pickle cache for '{sid}'")
                 continue
+            if storage_id != sid and load_bm25_index(storage_id):
+                from core.retrieval.bm25_search import _indexes
+                _indexes[sid] = _indexes[storage_id]
+                _chunks_cache[sid] = _indexes[sid][1]
+                print(f"[WarmUp] Loaded BM25 cache '{storage_id}' for subject '{sid}'")
+                continue
 
             # 2. Fallback nếu không có file cache pickle
-            col = _get_collection(sid)
+            col = _get_collection(storage_id)
             if col.count() == 0:
                 continue
 
@@ -386,8 +426,9 @@ def hybrid_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
 
     # Fetch nhiều hơn top_k để sau dedup parent vẫn đủ kết quả
     fetch_k = top_k * 3
+    storage_id = resolve_retrieval_subject_id(subject_id)
 
-    vec_results  = vector_search(query, subject_id, top_k=fetch_k)
+    vec_results  = vector_search(query, storage_id, top_k=fetch_k)
     bm25_results = bm25_search(query, subject_id, top_k=fetch_k)
 
     # Logging trung gian số lượng kết quả thô thu được
@@ -411,7 +452,7 @@ def hybrid_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     ranked = sorted(scores.values(), key=lambda x: x["fused"], reverse=True)[:fetch_k]
 
     # Resolve child → parent text từ SQLite, top_k sau dedup
-    resolved = _resolve_parents(ranked, subject_id)
+    resolved = _resolve_parents(ranked, storage_id)
     return resolved[:top_k]
 
 
@@ -425,11 +466,12 @@ def semantic_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     Nhược điểm: yếu hơn khi query có thuật ngữ kỹ thuật cụ thể (tên hàm, ký hiệu toán).
     """
     fetch_k = top_k * 3
-    hits    = vector_search(query, subject_id, top_k=fetch_k)
+    storage_id = resolve_retrieval_subject_id(subject_id)
+    hits    = vector_search(query, storage_id, top_k=fetch_k)
     # Đặt fused = score để _resolve_parents có thể sort (nếu cần)
     for h in hits:
         h.setdefault("fused", h.get("score", 0.0))
-    resolved = _resolve_parents(hits, subject_id)
+    resolved = _resolve_parents(hits, storage_id)
     return resolved[:top_k]
 
 
@@ -443,10 +485,11 @@ def bm25_only_search(query: str, subject_id: str, top_k: int = 5) -> list[dict]:
     Nhược điểm: yếu hơn khi paraphrase (cùng nghĩa khác từ).
     """
     fetch_k = top_k * 3
+    storage_id = resolve_retrieval_subject_id(subject_id)
     hits    = bm25_search(query, subject_id, top_k=fetch_k)
     for h in hits:
         h.setdefault("fused", h.get("score", 0.0))
-    resolved = _resolve_parents(hits, subject_id)
+    resolved = _resolve_parents(hits, storage_id)
     return resolved[:top_k]
 
 
@@ -548,9 +591,10 @@ def search(
         mode = get_config()["retrieval"].get("search_mode", "hybrid")
 
     mode = mode.lower().strip()
+    storage_id = resolve_retrieval_subject_id(subject_id)
 
     # 1. Chạy Vector Search (Lấy top 20 kết quả thô)
-    vec_results = vector_search(query_norm, subject_id, top_k=20)
+    vec_results = vector_search(query_norm, storage_id, top_k=20)
     print("Vector Search Top 20:")
     for idx, hit in enumerate(vec_results, 1):
         print(f"- [{idx}] Score={hit['score']:.4f} | Page={hit['page_num']} | Doc={hit['doc_name']}")
@@ -601,33 +645,30 @@ def search(
     print()
 
     # 3. Resolve child -> parent text từ SQLite (chuan bi cho Reranker)
-    resolved = _resolve_parents(hybrid_top, subject_id)
-    
+    resolved = _resolve_parents(hybrid_top, storage_id)
+
     # 4. MiniLM Reranker (Top 20 -> Top 4)
     # -------------------------------------------------------------------------
-    try:
-        from sentence_transformers import CrossEncoder
-        # Lay model path tu config hoac su dung default
-        cfg_retrieval = get_config().get("retrieval", {})
-        # Doc them section models trong TH benchmark ghi de
-        cfg_models = get_config().get("models", {})
-        reranker_model = cfg_models.get("reranker_model", "cross-encoder/ms-marco-MiniLM-L-6-v2")
-        
-        print(f"[Reranker] Loading CrossEncoder: {reranker_model}...")
-        reranker = CrossEncoder(reranker_model)
-        
-        pairs = [[query_norm, chunk["text"]] for chunk in resolved]
-        rerank_scores = reranker.predict(pairs)
-        
-        for idx, chunk in enumerate(resolved):
-            chunk["rerank_score"] = float(rerank_scores[idx])
-            chunk["fused"] = chunk["rerank_score"] # Thay score chinh bang rerank score
-            
-        # Sort lai theo rerank score
-        resolved = sorted(resolved, key=lambda x: x["rerank_score"], reverse=True)
-        print("[Reranker] Reranking thanh cong.")
-    except Exception as e:
-        print(f"[WARNING] Loi chay MiniLM Reranker, fallback ve RRF: {e}")
+    if resolved:
+        try:
+            from sentence_transformers import CrossEncoder
+            cfg_models = get_config().get("models", {})
+            reranker_model = cfg_models.get("reranker_model", "cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+            print(f"[Reranker] Loading CrossEncoder: {reranker_model}...")
+            reranker = CrossEncoder(reranker_model)
+
+            pairs = [[query_norm, chunk["text"]] for chunk in resolved]
+            rerank_scores = reranker.predict(pairs)
+
+            for idx, chunk in enumerate(resolved):
+                chunk["rerank_score"] = float(rerank_scores[idx])
+                chunk["fused"] = chunk["rerank_score"]
+
+            resolved = sorted(resolved, key=lambda x: x["rerank_score"], reverse=True)
+            print("[Reranker] Reranking thanh cong.")
+        except Exception as e:
+            print(f"[WARNING] Loi chay MiniLM Reranker, fallback ve RRF: {e}")
     # -------------------------------------------------------------------------
     
     final_top = resolved[:top_k]

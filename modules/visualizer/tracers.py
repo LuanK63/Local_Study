@@ -1,5 +1,4 @@
-"""
-modules/visualizer/tracers.py — Tracer Widgets (PyQt6)
+"""modules/visualizer/tracers.py — Tracer Widgets (PyQt6)
 =======================================================
 Mỗi Tracer là một QWidget độc lập, nhận dữ liệu qua slot và tự vẽ lại.
 Giống kiến trúc algorithm-visualizer.org nhưng native PyQt6.
@@ -95,6 +94,49 @@ _TITLE_STYLE = (
 _CANVAS_STYLE = "#tracer_canvas { background:#1e1e2e; border:1px solid #45475a; border-radius:0 0 6px 6px; }"
 
 
+def _theme_tokens() -> dict:
+    from ui.theme_manager import get_theme, PALETTES
+    return PALETTES[get_theme()]
+
+
+def _contrast_text(bg: QColor) -> QColor:
+    lum = 0.299 * bg.red() + 0.587 * bg.green() + 0.114 * bg.blue()
+    return QColor("#FFFFFF") if lum < 150 else QColor("#0F172A")
+
+
+def _apply_tracer_frame_theme(frame: QWidget) -> None:
+    try:
+        t = _theme_tokens()
+        header = frame.findChild(QWidget, "TracerHeader")
+        title = frame.findChild(QLabel, "TracerTitle")
+        canvas = frame.findChild(QWidget, "tracer_canvas")
+        if header:
+            header.setStyleSheet(f"""
+                background:{t["BG_SIDEBAR"]};
+                border-radius:6px 6px 0 0;
+                border-bottom:1px solid {t["BORDER"]};
+            """)
+        if title:
+            title.setStyleSheet(f"""
+                background:{t["BG_WIDGET"]};
+                color:{t["COLOR_ACCENT"]};
+                font-weight:bold;
+                font-size:10px;
+                padding:3px 10px;
+                border-radius:4px;
+            """)
+        if canvas:
+            canvas.setStyleSheet(f"""
+                #tracer_canvas {{
+                    background:{t["BG_CANVAS"]};
+                    border:1px solid {t["BORDER"]};
+                    border-radius:0 0 6px 6px;
+                }}
+            """)
+    except Exception:
+        pass
+
+
 def _make_tracer_frame(title: str, canvas: QWidget) -> QWidget:
     """Bọc canvas trong một frame có tiêu đề compact (label chỉ rộng bằng text)."""
     frame = QWidget()
@@ -102,30 +144,23 @@ def _make_tracer_frame(title: str, canvas: QWidget) -> QWidget:
     layout.setContentsMargins(0, 0, 0, 0)
     layout.setSpacing(0)
 
-    # Header bar: nền tối, label trái + stretch phải
     header = QWidget()
-    header.setStyleSheet(
-        "background:#181825; border-radius:6px 6px 0 0;"
-        "border-bottom:1px solid #313244;"
-    )
+    header.setObjectName("TracerHeader")
     header.setFixedHeight(28)
     h_layout = QHBoxLayout(header)
     h_layout.setContentsMargins(10, 0, 10, 0)
     h_layout.setSpacing(0)
 
     lbl = QLabel(title)
-    lbl.setStyleSheet(
-        "background:#313244; color:#cba6f7; font-weight:bold;"
-        "font-size:10px; padding:3px 10px; border-radius:4px;"
-    )
+    lbl.setObjectName("TracerTitle")
     lbl.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
     h_layout.addWidget(lbl)
     h_layout.addStretch()
 
     layout.addWidget(header)
     canvas.setObjectName("tracer_canvas")
-    canvas.setStyleSheet(_CANVAS_STYLE)
-    layout.addWidget(canvas)
+    layout.addWidget(canvas, stretch=1)
+    _apply_tracer_frame_theme(frame)
     return frame
 
 
@@ -280,11 +315,16 @@ class ChartTracer(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(_make_tracer_frame(f"📊 {title}", self._canvas))
+        self._frame = _make_tracer_frame(f"{title}", self._canvas)
+        layout.addWidget(self._frame)
 
     @property
     def canvas(self) -> ChartTracerCanvas:
         return self._canvas
+
+    def apply_theme_styles(self):
+        _apply_tracer_frame_theme(self._frame)
+        self._canvas.update()
 
     def set_state(self, **kwargs):
         self._canvas.set_state(**kwargs)
@@ -406,7 +446,7 @@ class Array1DTracerCanvas(QWidget):
             p.setPen(QPen(C["border"], 1))
             p.drawRoundedRect(x + 1, y, cell_w - 2, cell_h, 6, 6)
 
-            fg = C["bg"] if bg != C["surface"] else C["text"]
+            fg = _contrast_text(bg) if bg != C["surface"] else C["text"]
             p.setPen(QPen(fg))
             p.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
             p.drawText(QRect(x + 1, y, cell_w - 2, cell_h),
@@ -426,11 +466,16 @@ class Array1DTracer(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(_make_tracer_frame(f"🔢 {title}", self._canvas))
+        self._frame = _make_tracer_frame(f"{title}", self._canvas)
+        layout.addWidget(self._frame)
 
     @property
     def canvas(self) -> Array1DTracerCanvas:
         return self._canvas
+
+    def apply_theme_styles(self):
+        _apply_tracer_frame_theme(self._frame)
+        self._canvas.update()
 
     def set_state(self, **kwargs):
         self._canvas.set_state(**kwargs)
@@ -446,70 +491,77 @@ class LogTracer(QWidget):
     def __init__(self, title: str = "Log", parent=None):
         super().__init__(parent)
         self.setMinimumHeight(100)
+        self._title_text = title
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        lbl = QLabel(f"📝 {title}")
-        lbl.setStyleSheet(_TITLE_STYLE)
-        layout.addWidget(lbl)
+        self._title_lbl = QLabel(f"{title}")
+        layout.addWidget(self._title_lbl)
 
         self._text = QTextEdit()
         self._text.setReadOnly(True)
         self._text.setFont(QFont("Consolas", 9))
-        self._text.setStyleSheet(
-            "background:#1e1e2e; border:1px solid #45475a; "
-            "border-radius:0 0 6px 6px; padding:6px;"
-        )
         layout.addWidget(self._text)
         self._log_history: list[str] = []
+        self.apply_theme_styles()
+
+    def apply_theme_styles(self):
+        try:
+            t = _theme_tokens()
+            self._title_lbl.setStyleSheet(f"""
+                background:{t["BG_WIDGET"]};
+                color:{t["COLOR_ACCENT"]};
+                font-weight:bold;
+                font-size:11px;
+                padding:4px 10px;
+                border-radius:4px 4px 0 0;
+            """)
+            self._text.setStyleSheet(f"""
+                background:{t["BG_CANVAS"]};
+                color:{t["COLOR_TEXT"]};
+                border:1px solid {t["BORDER"]};
+                border-radius:0 0 6px 6px;
+                padding:6px;
+            """)
+            if self._log_history:
+                self._render_log()
+        except Exception:
+            pass
+
+    def _render_log(self):
+        t = _theme_tokens()
+        html_parts = []
+        for i, msg in enumerate(self._log_history):
+            is_last = (i == len(self._log_history) - 1)
+            escaped = (
+                msg.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+            )
+            if is_last:
+                html_parts.append(
+                    f'<div style="background-color:{t["BG_HOVER"]}; color:{t["COLOR_YELLOW"]}; '
+                    f'padding:2px 6px; margin:1px 0; border-radius:3px; font-weight:bold;">{escaped}</div>'
+                )
+            else:
+                html_parts.append(
+                    f'<div style="color:{t["COLOR_GREEN"]}; padding:1px 6px; opacity:0.75;">{escaped}</div>'
+                )
+        self._text.setHtml("".join(html_parts))
 
     def log(self, message: str):
         if not message.strip():
             return
-        
+
         clean_msg = message.strip()
-        emoji_prefix = ""
-        # Auto-detect emojis if not present
-        if not any(emoji in clean_msg for emoji in ("🔍", "🔄", "✅", "🎯", "❌", "⏹", "💡")):
-            if "so sánh" in clean_msg.lower():
-                emoji_prefix = "🔍 "
-            elif "hoán đổi" in clean_msg.lower() or "dịch" in clean_msg.lower() or "đưa" in clean_msg.lower():
-                emoji_prefix = "🔄 "
-            elif "hoàn tất" in clean_msg.lower() or "hoàn thành" in clean_msg.lower() or "vị trí" in clean_msg.lower():
-                emoji_prefix = "✅ "
-            elif "tìm thấy" in clean_msg.lower():
-                emoji_prefix = "🎯 "
-            elif "lỗi" in clean_msg.lower():
-                emoji_prefix = "❌ "
-        
-        formatted_msg = emoji_prefix + clean_msg
-        self._log_history.append(formatted_msg)
-        
-        # Max limit 500 log lines to preserve CPU/memory
+        self._log_history.append(clean_msg)
+
         if len(self._log_history) > 500:
             self._log_history.pop(0)
-            
-        html_parts = []
-        for i, msg in enumerate(self._log_history):
-            is_last = (i == len(self._log_history) - 1)
-            escaped = (msg
-                       .replace("&", "&amp;")
-                       .replace("<", "&lt;")
-                       .replace(">", "&gt;"))
-            if is_last:
-                html_parts.append(
-                    f'<div style="background-color:#313244; color:#f9e2af; padding:2px 6px; '
-                    f'margin:1px 0; border-radius:3px; font-weight:bold;">👉 {escaped}</div>'
-                )
-            else:
-                html_parts.append(
-                    f'<div style="color:#a6e3a1; padding:1px 6px; opacity:0.65;">{escaped}</div>'
-                )
-                
-        self._text.setHtml("".join(html_parts))
+
+        self._render_log()
         
-        # Auto-scroll
         cursor = self._text.textCursor()
         cursor.movePosition(QTextCursor.MoveOperation.End)
         self._text.setTextCursor(cursor)
@@ -600,7 +652,13 @@ class GridTracerCanvas(QWidget):
 
     def reset_overlay(self):
         self._overlay.clear()
+        self.refresh_from_grid()
+
+    def refresh_from_grid(self, snap: bool = True):
+        """Đồng bộ màu ô từ _grid (dùng khi chỉnh tường/start/end thủ công)."""
         self._sync_all_target_colors()
+        if snap:
+            self._current_colors = [row[:] for row in self._target_colors]
         AnimationManager.instance().register_canvas(self)
         self.update()
 
@@ -656,9 +714,8 @@ class GridTracerCanvas(QWidget):
 
     def _cell_size(self) -> int:
         if self._zoom_mode == "fit":
-            p = self.parent()
-            w = p.width() if p else 400
-            h = p.height() if p else 300
+            w = max(self.width(), 200)
+            h = max(self.height(), 200)
             return max(6, min((w - 10) // self.cols, (h - 10) // self.rows))
         else:
             base_cell_size = 24
@@ -690,10 +747,10 @@ class GridTracerCanvas(QWidget):
                 rect = self._cell_rect(r, c)
                 color = self._current_colors[r][c]
                 p.setBrush(QBrush(color))
-                p.setPen(QPen(C["border"], 0.5))
+                p.setPen(QPen(C["border"], 1.0))
                 p.drawRect(rect)
                 if self._grid[r][c] in ("start","end"):
-                    p.setPen(QPen(C["bg"]))
+                    p.setPen(QPen(QColor("#FFFFFF")))
                     p.setFont(QFont("Segoe UI", max(6, self._cell_size()//3), QFont.Weight.Bold))
                     p.drawText(rect, Qt.AlignmentFlag.AlignCenter,
                                "S" if self._grid[r][c]=="start" else "E")
@@ -722,21 +779,37 @@ class GridTracer(QWidget):
 
     def __init__(self, title: str = "Grid", rows: int = 18, cols: int = 32, parent=None):
         super().__init__(parent)
-        self._canvas = GridTracerCanvas(rows, cols, parent=self)
-        
-        # Scroll Area wrapper
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self._canvas = GridTracerCanvas(rows, cols)
+
         self._scroll_area = QScrollArea(self)
         self._scroll_area.setWidget(self._canvas)
         self._scroll_area.setWidgetResizable(True)
         self._scroll_area.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._scroll_area.setStyleSheet("QScrollArea { border: none; background: #1e1e2e; }")
-        
+        self._scroll_area.setMinimumHeight(280)
+        self._scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(_make_tracer_frame(f"🗺️ {title}", self._scroll_area))
-        
+        self._frame = _make_tracer_frame(f"{title}", self._scroll_area)
+        layout.addWidget(self._frame, stretch=1)
+
         self._canvas.cell_clicked.connect(self.cell_clicked)
+        self.apply_theme_styles()
+
+    def apply_theme_styles(self):
+        _apply_tracer_frame_theme(self._frame)
+        try:
+            t = _theme_tokens()
+            self._scroll_area.setStyleSheet(
+                f"QScrollArea {{ border: none; background: {t['BG_CANVAS']}; }}"
+            )
+        except Exception:
+            pass
+        self._canvas.refresh_from_grid()
 
     @property
     def canvas(self) -> GridTracerCanvas:
@@ -748,6 +821,9 @@ class GridTracer(QWidget):
     def reset_overlay(self):
         self._canvas.reset_overlay()
 
+    def refresh_from_grid(self):
+        self._canvas.refresh_from_grid()
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # CodeTracer  —  Code + Line Highlight real-time
@@ -755,24 +831,45 @@ class GridTracer(QWidget):
 class CodeTracer(QWidget):
     def __init__(self, title: str = "Code", parent=None):
         super().__init__(parent)
+        self._highlight_line = -1
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        lbl = QLabel(f"💻 {title}")
-        lbl.setStyleSheet(_TITLE_STYLE)
-        layout.addWidget(lbl)
+        self._title_lbl = QLabel(f"{title}")
+        layout.addWidget(self._title_lbl)
 
         self._editor = QTextEdit()
         self._editor.setReadOnly(True)
         self._editor.setFont(QFont("Consolas", 10))
-        self._editor.setStyleSheet(
-            "background:#181825; color:#cdd6f4; border:1px solid #45475a; "
-            "border-radius:0 0 6px 6px; padding:6px; selection-background-color:#45475a;"
-        )
         self._editor.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         layout.addWidget(self._editor)
         self._lines: list[str] = []
+        self.apply_theme_styles()
+
+    def apply_theme_styles(self):
+        try:
+            t = _theme_tokens()
+            self._title_lbl.setStyleSheet(f"""
+                background:{t["BG_WIDGET"]};
+                color:{t["COLOR_ACCENT"]};
+                font-weight:bold;
+                font-size:11px;
+                padding:4px 10px;
+                border-radius:4px 4px 0 0;
+            """)
+            self._editor.setStyleSheet(f"""
+                background:{t["BG_CANVAS"]};
+                color:{t["COLOR_TEXT"]};
+                border:1px solid {t["BORDER"]};
+                border-radius:0 0 6px 6px;
+                padding:6px;
+                selection-background-color:{t["BG_HOVER"]};
+            """)
+            if self._lines:
+                self.highlight_line(self._highlight_line)
+        except Exception:
+            pass
 
     def set_code(self, code: str):
         """Nạp code ban đầu (gọi 1 lần khi chọn algo)."""
@@ -783,6 +880,8 @@ class CodeTracer(QWidget):
         """Highlight dòng `line_no` (0-based). Gọi từ Main Thread."""
         if not self._lines:
             return
+        self._highlight_line = line_no
+        t = _theme_tokens()
         
         html_lines = []
         for i, line in enumerate(self._lines):
@@ -792,18 +891,22 @@ class CodeTracer(QWidget):
                        .replace(">", "&gt;")
                        .replace(" ", "&nbsp;"))
             
-            line_num_str = f'<span style="color:#6c7086; font-family:Consolas; font-size:10pt;">{i+1:2d} │ </span>'
+            line_num_str = (
+                f'<span style="color:{t["COLOR_TEXT_MUTED"]}; font-family:Consolas; font-size:10pt;">'
+                f'{i+1:2d} │ </span>'
+            )
             
             if i == line_no:
                 html_lines.append(
-                    f'<div style="background:#313244; color:#f9e2af; padding:1px 0; font-family:Consolas;">'
-                    f'{line_num_str}<span style="color:#f9e2af; font-weight:bold;">👉 {escaped}</span>'
+                    f'<div style="background:{t["BG_HOVER"]}; color:{t["COLOR_YELLOW"]}; '
+                    f'padding:1px 0; font-family:Consolas;">'
+                    f'{line_num_str}<span style="color:{t["COLOR_YELLOW"]}; font-weight:bold;"> {escaped}</span>'
                     f'</div>'
                 )
             else:
                 html_lines.append(
                     f'<div style="padding:1px 0; font-family:Consolas;">'
-                    f'{line_num_str}<span style="color:#cdd6f4;">&nbsp;&nbsp;{escaped}</span>'
+                    f'{line_num_str}<span style="color:{t["COLOR_TEXT"]};">&nbsp;&nbsp;{escaped}</span>'
                     f'</div>'
                 )
 
@@ -824,7 +927,8 @@ class CodeTracer(QWidget):
         if not self._lines:
             self._editor.clear()
             return
-            
+        self._highlight_line = -1
+        t = _theme_tokens()
         html_lines = []
         for i, line in enumerate(self._lines):
             escaped = (line
@@ -832,10 +936,13 @@ class CodeTracer(QWidget):
                        .replace("<", "&lt;")
                        .replace(">", "&gt;")
                        .replace(" ", "&nbsp;"))
-            line_num_str = f'<span style="color:#6c7086; font-family:Consolas; font-size:10pt;">{i+1:2d} │ </span>'
+            line_num_str = (
+                f'<span style="color:{t["COLOR_TEXT_MUTED"]}; font-family:Consolas; font-size:10pt;">'
+                f'{i+1:2d} │ </span>'
+            )
             html_lines.append(
                 f'<div style="padding:1px 0; font-family:Consolas;">'
-                f'{line_num_str}<span style="color:#cdd6f4;">&nbsp;&nbsp;{escaped}</span>'
+                f'{line_num_str}<span style="color:{t["COLOR_TEXT"]};">&nbsp;&nbsp;{escaped}</span>'
                 f'</div>'
             )
             
@@ -1516,7 +1623,12 @@ class LinkedListTracer(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(_make_tracer_frame(f"🔗 {title}", self._canvas))
+        self._frame = _make_tracer_frame(f"{title}", self._canvas)
+        layout.addWidget(self._frame)
+
+    def apply_theme_styles(self):
+        _apply_tracer_frame_theme(self._frame)
+        self._canvas.update()
 
     @property
     def canvas(self) -> LinkedListTracerCanvas:
@@ -1550,7 +1662,7 @@ class LinkedListTracer(QWidget):
             "broken_at": None,
             "found":     None,
             "new_node":  None,
-            "message":   "▶  Nhấn Run để xem hoạt ảnh thao tác...",
+            "message":   "  Nhấn Run để xem hoạt ảnh thao tác...",
         })
 
     def reset(self) -> None:
@@ -1564,39 +1676,15 @@ class StatisticsPanel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedHeight(210)
-        self.setStyleSheet("""
-            QWidget {
-                background: #181825;
-                border-top: 1px solid #313244;
-                color: #cdd6f4;
-                font-family: 'Segoe UI';
-            }
-            QLabel {
-                font-size: 11px;
-                color: #a6adc8;
-            }
-            QLabel#title {
-                font-size: 11px;
-                font-weight: bold;
-                color: #cba6f7;
-                border-bottom: 1px solid #313244;
-                padding-bottom: 4px;
-            }
-            QLabel.value {
-                font-family: 'Consolas', monospace;
-                font-weight: bold;
-                color: #f9e2af;
-                font-size: 11px;
-            }
-        """)
+        self._status_styles: dict[str, str] = {}
         
         layout = QVBoxLayout(self)
         layout.setContentsMargins(12, 10, 12, 10)
         layout.setSpacing(4)
         
-        title = QLabel("📊 THỐNG KÊ REALTIME")
-        title.setObjectName("title")
-        layout.addWidget(title)
+        self._title = QLabel("THỐNG KÊ REALTIME")
+        self._title.setObjectName("title")
+        layout.addWidget(self._title)
         
         from PyQt6.QtWidgets import QGridLayout
         grid = QGridLayout()
@@ -1604,51 +1692,85 @@ class StatisticsPanel(QWidget):
         
         grid.addWidget(QLabel("Thuật toán:"), 0, 0)
         self.lbl_algo = QLabel("—")
-        self.lbl_algo.setObjectName("lbl_algo")
-        self.lbl_algo.setStyleSheet("color: #89b4fa; font-weight: bold;")
         grid.addWidget(self.lbl_algo, 0, 1)
         
         grid.addWidget(QLabel("Trạng thái:"), 1, 0)
         self.lbl_status = QLabel("Ready")
-        self.lbl_status.setStyleSheet("color: #a6e3a1; font-weight: bold;")
         grid.addWidget(self.lbl_status, 1, 1)
         
         grid.addWidget(QLabel("Bước chạy:"), 2, 0)
         self.lbl_step = QLabel("0")
-        self.lbl_step.setStyleSheet("color: #f9e2af; font-family: 'Consolas';")
         grid.addWidget(self.lbl_step, 2, 1)
         
         grid.addWidget(QLabel("Elapsed Time:"), 3, 0)
         self.lbl_time = QLabel("0.0s")
-        self.lbl_time.setStyleSheet("color: #fab387; font-family: 'Consolas';")
         grid.addWidget(self.lbl_time, 3, 1)
         
         self.lbl_compares_title = QLabel("So sánh:")
         self.lbl_compares = QLabel("0")
-        self.lbl_compares.setStyleSheet("color: #f9e2af; font-family: 'Consolas';")
         grid.addWidget(self.lbl_compares_title, 4, 0)
         grid.addWidget(self.lbl_compares, 4, 1)
         
         self.lbl_swaps_title = QLabel("Hoán đổi:")
         self.lbl_swaps = QLabel("0")
-        self.lbl_swaps.setStyleSheet("color: #f9e2af; font-family: 'Consolas';")
         grid.addWidget(self.lbl_swaps_title, 5, 0)
         grid.addWidget(self.lbl_swaps, 5, 1)
         
         self.lbl_visited_title = QLabel("Đã duyệt node:")
         self.lbl_visited = QLabel("0")
-        self.lbl_visited.setStyleSheet("color: #89b4fa; font-family: 'Consolas';")
         grid.addWidget(self.lbl_visited_title, 6, 0)
         grid.addWidget(self.lbl_visited, 6, 1)
 
         self.lbl_extra_title = QLabel("Độ dài đường đi:")
         self.lbl_extra = QLabel("0")
-        self.lbl_extra.setStyleSheet("color: #a6e3a1; font-family: 'Consolas';")
         grid.addWidget(self.lbl_extra_title, 7, 0)
         grid.addWidget(self.lbl_extra, 7, 1)
         
         layout.addLayout(grid)
         layout.addStretch()
+        self.apply_theme_styles()
+
+    def apply_theme_styles(self):
+        try:
+            t = _theme_tokens()
+            self.setStyleSheet(f"""
+                QWidget {{
+                    background: {t["BG_WIDGET"]};
+                    border-top: 1px solid {t["BORDER"]};
+                    color: {t["COLOR_TEXT"]};
+                    font-family: 'Segoe UI';
+                }}
+                QLabel {{
+                    font-size: 11px;
+                    color: {t["COLOR_TEXT_MUTED"]};
+                    background: transparent;
+                }}
+            """)
+            self._title.setStyleSheet(f"""
+                font-size: 11px;
+                font-weight: bold;
+                color: {t["COLOR_ACCENT"]};
+                border-bottom: 1px solid {t["BORDER"]};
+                padding-bottom: 4px;
+                background: transparent;
+            """)
+            mono = "font-family: 'Consolas', monospace;"
+            self.lbl_algo.setStyleSheet(f"color: {t['COLOR_BLUE']}; font-weight: bold; {mono}")
+            self.lbl_step.setStyleSheet(f"color: {t['COLOR_YELLOW']}; {mono}")
+            self.lbl_time.setStyleSheet(f"color: {t['COLOR_YELLOW']}; {mono}")
+            self.lbl_compares.setStyleSheet(f"color: {t['COLOR_YELLOW']}; {mono}")
+            self.lbl_swaps.setStyleSheet(f"color: {t['COLOR_YELLOW']}; {mono}")
+            self.lbl_visited.setStyleSheet(f"color: {t['COLOR_BLUE']}; {mono}")
+            self.lbl_extra.setStyleSheet(f"color: {t['COLOR_GREEN']}; {mono}")
+            self._status_styles = {
+                "running": f"color: {t['COLOR_BLUE']}; font-weight: bold;",
+                "paused": f"color: {t['COLOR_YELLOW']}; font-weight: bold;",
+                "done": f"color: {t['COLOR_GREEN']}; font-weight: bold;",
+                "error": f"color: {t['COLOR_RED']}; font-weight: bold;",
+            }
+            self.lbl_status.setStyleSheet(self._status_styles["done"])
+        except Exception:
+            pass
         
     def update_stats(self, algo_name: str, status: str, step: int, total_steps: int | None,
                      compares: int, swaps: int, visited: int, elapsed_time: float,
@@ -1660,13 +1782,13 @@ class StatisticsPanel(QWidget):
         self.lbl_status.setText(status)
         
         if status == "Running":
-            self.lbl_status.setStyleSheet("color: #89b4fa; font-weight: bold;")
+            self.lbl_status.setStyleSheet(self._status_styles.get("running", ""))
         elif status == "Paused":
-            self.lbl_status.setStyleSheet("color: #f9e2af; font-weight: bold;")
+            self.lbl_status.setStyleSheet(self._status_styles.get("paused", ""))
         elif status in ("Finished", "Ready", "Done", "done"):
-            self.lbl_status.setStyleSheet("color: #a6e3a1; font-weight: bold;")
+            self.lbl_status.setStyleSheet(self._status_styles.get("done", ""))
         else:
-            self.lbl_status.setStyleSheet("color: #f38ba8; font-weight: bold;")
+            self.lbl_status.setStyleSheet(self._status_styles.get("error", ""))
             
         if total_steps is not None and total_steps > 0:
             self.lbl_step.setText(f"{step} / {total_steps}")
@@ -1786,7 +1908,7 @@ class ExplanationPanel(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         
-        lbl = QLabel("📖 Giải thích thuật toán")
+        lbl = QLabel("Giải thích thuật toán")
         lbl.setStyleSheet(_TITLE_STYLE)
         layout.addWidget(lbl)
         

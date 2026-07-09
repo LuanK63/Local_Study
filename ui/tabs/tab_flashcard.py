@@ -1,5 +1,4 @@
-"""
-ui/tabs/tab_flashcard.py — M8 Flashcard System Tab
+"""ui/tabs/tab_flashcard.py — M8 Flashcard System Tab
 Generate Anki-style flashcards.
 """
 from PyQt6.QtWidgets import (
@@ -31,7 +30,7 @@ class FlashcardTab(QWidget):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        layout.addWidget(SectionHeader("🃏 Flashcard System"))
+        layout.addWidget(SectionHeader("Flashcard System"))
 
         # Config row
         cfg = QHBoxLayout()
@@ -49,7 +48,7 @@ class FlashcardTab(QWidget):
         cfg.addWidget(self.num_spin)
 
         cfg.addStretch()
-        self.gen_btn = QPushButton("✨ Tạo Flashcard")
+        self.gen_btn = QPushButton("Tạo Flashcard")
         self.gen_btn.setFixedSize(130, 36)
         self.gen_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.gen_btn.clicked.connect(self._generate_flashcards)
@@ -91,18 +90,18 @@ class FlashcardTab(QWidget):
         controls = QHBoxLayout()
         controls.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.prev_btn = QPushButton("◀ Trước")
+        self.prev_btn = QPushButton("Trước")
         self.prev_btn.setFixedSize(100, 40)
         self.prev_btn.clicked.connect(self._prev_card)
         controls.addWidget(self.prev_btn)
 
-        self.flip_btn = QPushButton("🔄 Lật thẻ")
+        self.flip_btn = QPushButton("Lật thẻ")
         self.flip_btn.setFixedSize(120, 40)
         self.flip_btn.setFont(QFont("Inter", 10, QFont.Weight.Bold))
         self.flip_btn.clicked.connect(self._flip_card)
         controls.addWidget(self.flip_btn)
 
-        self.next_btn = QPushButton("Sau ▶")
+        self.next_btn = QPushButton("Sau ")
         self.next_btn.setFixedSize(100, 40)
         self.next_btn.clicked.connect(self._next_card)
         controls.addWidget(self.next_btn)
@@ -112,7 +111,7 @@ class FlashcardTab(QWidget):
         # Export
         export_layout = QHBoxLayout()
         export_layout.addStretch()
-        self.export_btn = QPushButton("💾 Xuất file Anki (.apkg)")
+        self.export_btn = QPushButton("Xuất file Anki (.apkg)")
         self.export_btn.setFixedSize(180, 36)
         self.export_btn.clicked.connect(self._export_anki)
         export_layout.addWidget(self.export_btn)

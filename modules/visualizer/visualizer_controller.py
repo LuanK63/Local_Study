@@ -132,12 +132,13 @@ class VisualizerController(QWidget):
         self._array_tracer  = Array1DTracer("Mảng Tìm kiếm")
         self._grid_tracer   = GridTracer("Lưới Pathfinding", self._grid_rows, self._grid_cols)
         self._linked_list_tracer = LinkedListTracer("Danh sách liên kết")
-        self._log_tracer    = LogTracer("Nhật ký thực thi")
-        self._code_tracer   = CodeTracer("Pseudocode")
+        self._log_tracer    = LogTracer("Nhật ký")
+        self._code_tracer   = CodeTracer("Mã giả")
 
         self._grid_tracer.cell_clicked.connect(self._on_grid_cell_clicked)
 
         self._build_ui()
+        self.apply_theme_styles()
         self._connect_signals()
 
         # Chọn algo đầu tiên mặc định
@@ -152,10 +153,6 @@ class VisualizerController(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # ── TOP BAR ───────────────────────────────────────────────────────────
-        root.addWidget(self._build_topbar())
-
-        # ── MAIN SPLITTER (left | center | right) ─────────────────────────────
         self._main_splitter = QSplitter(Qt.Orientation.Horizontal)
         self._main_splitter.setHandleWidth(2)
 
@@ -164,223 +161,86 @@ class VisualizerController(QWidget):
         self._main_splitter.addWidget(self._build_center())
         self._main_splitter.addWidget(self._build_right_panel())
 
-        self._main_splitter.setStretchFactor(0, 0)   # sidebar: fixed
-        self._main_splitter.setStretchFactor(1, 3)   # center: flex
-        self._main_splitter.setStretchFactor(2, 1)   # right: fixed
-        self._main_splitter.setSizes([210, 700, 340])
+        self._main_splitter.setStretchFactor(0, 0)
+        self._main_splitter.setStretchFactor(1, 4)
+        self._main_splitter.setStretchFactor(2, 2)
+        self._main_splitter.setSizes([200, 720, 300])
 
         root.addWidget(self._main_splitter)
 
-    # ── TOP BAR ───────────────────────────────────────────────────────────────
+    def _build_playback_controls(self) -> QWidget:
+        """Nút điều khiển chạy / tạm dừng / bước / đặt lại + thanh tốc độ."""
+        wrap = QWidget()
+        layout = QHBoxLayout(wrap)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
 
-    def _build_topbar(self) -> QWidget:
-        bar = QWidget()
-        bar.setFixedHeight(52)
-        bar.setStyleSheet("background:#181825; border-bottom:1px solid #313244;")
-        layout = QHBoxLayout(bar)
-        layout.setContentsMargins(16, 0, 16, 0)
-        layout.setSpacing(10)
-
-        # Logo + title
-        logo = QLabel("⚡")
-        logo.setFont(QFont("Segoe UI", 18))
-        layout.addWidget(logo)
-
-        title = QLabel("Algorithm Visualizer")
-        title.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
-        title.setStyleSheet("color:#cba6f7;")
-        layout.addWidget(title)
-
-        # Sidebar toggle button for Tablet
-        self._sidebar_toggle_btn = _btn("◀ Sidebar", "#313244", "#cdd6f4", "#45475a", h=30, bold=False)
-        self._sidebar_toggle_btn.setToolTip("Thu gọn / Mở rộng Sidebar danh sách thuật toán")
-        self._sidebar_toggle_btn.clicked.connect(self._toggle_sidebar)
-        layout.addWidget(self._sidebar_toggle_btn)
-
-        layout.addSpacing(10)
-
-        # Complexity badges
-        self._time_badge  = self._make_badge("Time: —", "#313244")
-        self._space_badge = self._make_badge("Space: —", "#313244")
-        layout.addWidget(self._time_badge)
-        layout.addWidget(self._space_badge)
-
-        layout.addStretch()
-
-        # Mode toggle
-        self._mode_builtin = _btn("Built-in", "#f38ba8", "#1e1e2e", "#f5a8b8", h=30)
-        self._mode_custom = _btn("Custom Code", "#45475a", "#cdd6f4", "#585b70", h=30)
-        self._mode_builtin.setCheckable(True)
-        self._mode_custom.setCheckable(True)
-        self._mode_builtin.setChecked(True)
-        layout.addWidget(self._mode_builtin)
-        layout.addWidget(self._mode_custom)
-
-        # Controls
-        self._run_btn    = _btn("▶  Run",    "#a6e3a1", "#11111b", "#b4f4af", h=38) # Nút chính nổi bật
-        self._run_btn.setToolTip("Chạy thuật toán trực quan hóa")
-        
-        self._pause_btn  = _btn("⏸  Pause",  "#313244", "#cdd6f4", "#45475a", h=34, bold=False) # Nút phụ
-        self._pause_btn.setToolTip("Tạm dừng / Tiếp tục thuật toán")
-        
-        self._step_btn   = _btn("⏭  Step",   "#313244", "#cdd6f4", "#45475a", h=34, bold=False)
-        self._step_btn.setToolTip("Chạy từng bước tiếp theo")
-        
-        self._reset_btn  = _btn("↺  Reset",  "#313244", "#cdd6f4", "#45475a", h=34, bold=False)
-        self._reset_btn.setToolTip("Đặt lại thuật toán về trạng thái ban đầu")
-
+        self._run_btn = _btn("Chạy", "#a6e3a1", "#11111b", "#b4f4af", h=34)
+        self._run_btn.setToolTip("Chạy thuật toán")
+        self._pause_btn = _btn("Tạm dừng", "#313244", "#cdd6f4", "#45475a", h=32, bold=False)
+        self._pause_btn.setToolTip("Tạm dừng / tiếp tục")
+        self._step_btn = _btn("Bước", "#313244", "#cdd6f4", "#45475a", h=32, bold=False)
+        self._step_btn.setToolTip("Chạy từng bước")
+        self._reset_btn = _btn("Đặt lại", "#313244", "#cdd6f4", "#45475a", h=32, bold=False)
+        self._reset_btn.setToolTip("Đặt lại về trạng thái ban đầu")
         self._pause_btn.setEnabled(False)
+
         for b in (self._run_btn, self._pause_btn, self._step_btn, self._reset_btn):
             layout.addWidget(b)
 
-        layout.addSpacing(10)
+        layout.addSpacing(6)
 
-        # Speed
-        speed_lbl = QLabel("Speed:")
-        speed_lbl.setStyleSheet("color:#6c7086; font-size:9px;")
+        speed_lbl = QLabel("Tốc độ")
+        speed_lbl.setObjectName("SpeedLabel")
+        speed_lbl.setFont(QFont("Segoe UI", 9))
         layout.addWidget(speed_lbl)
 
         self._speed_slider = QSlider(Qt.Orientation.Horizontal)
         self._speed_slider.setRange(30, 1200)
         self._speed_slider.setValue(500)
         self._speed_slider.setInvertedAppearance(True)
-        self._speed_slider.setFixedWidth(100)
-        self._speed_slider.setStyleSheet("""
-            QSlider::groove:horizontal { height:4px; background:#45475a; border-radius:2px; }
-            QSlider::handle:horizontal {
-                background:#89b4fa; width:12px; height:12px;
-                margin:-4px 0; border-radius:6px;
-            }
-        """)
+        self._speed_slider.setFixedWidth(90)
+        self._speed_slider.setObjectName("SpeedSlider")
         layout.addWidget(self._speed_slider)
 
-        layout.addSpacing(20)
-
-        self._return_btn = _btn("✕  Đóng", "#313244", "#f38ba8", "#45475a", h=34, bold=False)
-        self._return_btn.setToolTip("Đóng visualizer và trở lại màn hình chính")
-        layout.addWidget(self._return_btn)
-
-        return bar
-
-    def _toggle_sidebar(self):
-        if self._sidebar_widget.isVisible():
-            self._sidebar_widget.setVisible(False)
-            self._sidebar_toggle_btn.setText("▶ Sidebar")
-        else:
-            self._sidebar_widget.setVisible(True)
-            self._sidebar_toggle_btn.setText("◀ Sidebar")
-
-    def _make_badge(self, text: str, bg: str) -> QLabel:
-        lbl = QLabel(text)
-        lbl.setFont(QFont("Consolas", 9))
-        lbl.setStyleSheet(
-            f"background:{bg}; color:#cdd6f4; border-radius:4px; padding:3px 8px;"
-        )
-        return lbl
+        return wrap
 
     # ── SIDEBAR ───────────────────────────────────────────────────────────────
 
     def _build_sidebar(self) -> QWidget:
         sidebar = QWidget()
-        sidebar.setFixedWidth(210)
-        sidebar.setStyleSheet("background:#181825; border-right:1px solid #313244;")
+        sidebar.setFixedWidth(200)
+        sidebar.setStyleSheet("background:#181825; border-right:1px solid #3a3c52;")
         layout = QVBoxLayout(sidebar)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # Mode stack
-        self._sidebar_stack = QStackedWidget()
+        header = QLabel("Thuật toán")
+        header.setObjectName("SidebarHeader")
+        header.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        header.setContentsMargins(12, 10, 12, 4)
+        layout.addWidget(header)
 
-        # Page 1: Built-in algorithms
-        builtin_page = self._build_builtin_page()
-        self._sidebar_stack.addWidget(builtin_page)
-
-        # Page 2: Custom code
-        custom_page = self._build_custom_page()
-        self._sidebar_stack.addWidget(custom_page)
-
-        layout.addWidget(self._sidebar_stack)
-        return sidebar
-
-    def _build_builtin_page(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        # Search bar
         search_wrap = QWidget()
-        search_wrap.setStyleSheet("background:#181825; padding:8px 10px;")
+        self._search_wrap = search_wrap
+        search_wrap.setStyleSheet("background:#181825;")
         sw_layout = QHBoxLayout(search_wrap)
-        sw_layout.setContentsMargins(8, 8, 8, 4)
+        sw_layout.setContentsMargins(10, 0, 10, 6)
 
         self._search_box = QLineEdit()
-        self._search_box.setPlaceholderText("🔎  Tìm thuật toán...")
+        self._search_box.setPlaceholderText("Tìm kiếm...")
         self._search_box.setFixedHeight(30)
         self._search_box.setFont(QFont("Segoe UI", 9))
-        self._search_box.setStyleSheet(
-            "background:#313244; border:1px solid #45475a; border-radius:15px; "
-            "color:#cdd6f4; padding:0 12px;"
-        )
         sw_layout.addWidget(self._search_box)
         layout.addWidget(search_wrap)
 
-        # Algorithm list
         self._algo_list = QListWidget()
         self._algo_list.setStyleSheet(_SIDEBAR_ITEM_STYLE)
         self._algo_list.setFont(QFont("Segoe UI", 10))
         self._algo_list.setSpacing(1)
         self._populate_algo_list()
-        layout.addWidget(self._algo_list)
-
-        # Input panel at bottom
-        layout.addWidget(self._build_input_panel())
-        return page
-
-    def _build_custom_page(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        # Title
-        title = QLabel("Custom Code")
-        title.setStyleSheet("color:#cba6f7; font-size:12px; font-weight:bold; padding:8px 10px;")
-        layout.addWidget(title)
-
-        # Code editor
-        from PyQt6.QtWidgets import QTextEdit
-        self._code_editor = QTextEdit()
-        self._code_editor.setStyleSheet("""
-            background:#1e1e2e; color:#cdd6f4; border:none;
-            font-family:'Consolas'; font-size:10px; padding:8px;
-        """)
-        self._code_editor.setPlaceholderText("""
-# Example: Bubble Sort
-from algorithm_visualizer import Array1DTracer, LogTracer
-
-tracer = Array1DTracer("My Array")
-log = LogTracer("Log")
-tracer.set([5, 3, 8, 1])
-log.println("Starting bubble sort")
-
-for i in range(len(arr)):
-    for j in range(len(arr) - i - 1):
-        tracer.select(j, j+1)
-        if arr[j] > arr[j+1]:
-            arr[j], arr[j+1] = arr[j+1], arr[j]
-            tracer.patch(j, arr[j])
-            tracer.patch(j+1, arr[j+1])
-        tracer.deselect(j, j+1)
-""")
-        layout.addWidget(self._code_editor)
-
-        # Run button
-        run_custom_btn = _btn("Run Custom Code", "#a6e3a1", "#1e1e2e", "#94d3a2", h=36)
-        run_custom_btn.clicked.connect(self._run_custom_code)
-        layout.addWidget(run_custom_btn)
-
-        return page
+        layout.addWidget(self._algo_list, stretch=1)
+        return sidebar
 
     def _populate_algo_list(self, filter_text: str = ""):
         self._algo_list.clear()
@@ -390,7 +250,12 @@ for i in range(len(arr)):
             header = QListWidgetItem(cat)
             header.setFlags(Qt.ItemFlag.NoItemFlags)
             header.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
-            header.setForeground(QColor("#6c7086"))
+            try:
+                from ui.theme_manager import get_theme, PALETTES
+                c_muted = PALETTES[get_theme()]["COLOR_TEXT_MUTED"]
+            except Exception:
+                c_muted = "#6c7086"
+            header.setForeground(QColor(c_muted))
             header.setData(Qt.ItemDataRole.UserRole, None)
             self._algo_list.addItem(header)
 
@@ -402,103 +267,89 @@ for i in range(len(arr)):
                 self._algo_list.addItem(item)
 
     def _build_input_panel(self) -> QWidget:
-        """Panel nhập liệu ở cuối sidebar."""
+        """Thanh nhập liệu ngang phía trên vùng trực quan hóa."""
         frame = QFrame()
-        frame.setStyleSheet(
-            "background:#1e1e2e; border-top:1px solid #313244;"
-        )
-        layout = QVBoxLayout(frame)
-        layout.setContentsMargins(10, 8, 10, 10)
-        layout.setSpacing(6)
+        self._input_panel_frame = frame
+        frame.setObjectName("InputPanel")
+        outer = QVBoxLayout(frame)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(6)
 
-        lbl = QLabel("Input dữ liệu")
-        lbl.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
-        lbl.setStyleSheet("color:#6c7086;")
-        layout.addWidget(lbl)
+        row1 = QHBoxLayout()
+        row1.setContentsMargins(0, 0, 0, 0)
+        row1.setSpacing(8)
+
+        array_lbl = QLabel("Mảng")
+        array_lbl.setFont(QFont("Segoe UI", 9))
+        array_lbl.setObjectName("InputLabel")
+        self._array_lbl = array_lbl
+        row1.addWidget(array_lbl)
 
         self._array_input = QLineEdit("5, 3, 8, 1, 9, 2, 7, 4, 6")
-        self._array_input.setPlaceholderText("Mảng: 5, 3, 8, 1, 9")
+        self._array_input.setPlaceholderText("VD: 5, 3, 8, 1, 9")
         self._array_input.setFixedHeight(30)
-        layout.addWidget(self._array_input)
+        row1.addWidget(self._array_input, stretch=1)
+
+        self._target_lbl = QLabel("Giá trị")
+        self._target_lbl.setFont(QFont("Segoe UI", 9))
+        self._target_lbl.setObjectName("InputLabel")
+        row1.addWidget(self._target_lbl)
 
         self._target_input = QLineEdit("7")
-        self._target_input.setPlaceholderText("Target (tìm kiếm)")
+        self._target_input.setPlaceholderText("Target")
         self._target_input.setFixedHeight(30)
+        self._target_input.setFixedWidth(72)
         self._target_input.setValidator(QIntValidator(-9999, 9999))
-        layout.addWidget(self._target_input)
+        row1.addWidget(self._target_input)
 
-        # Random button
-        rand_btn = _btn("🎲  Ngẫu nhiên", "#313244", "#cdd6f4", "#45475a", h=28, bold=False)
+        rand_btn = _btn("Ngẫu nhiên", "#313244", "#cdd6f4", "#45475a", h=30, bold=False)
         rand_btn.clicked.connect(self._randomize_input)
-        layout.addWidget(rand_btn)
+        row1.addWidget(rand_btn)
 
-        # Grid interaction mode (ẩn mặc định)
-        self._grid_mode_group = QGroupBox("Chế độ vẽ lưới")
-        self._grid_mode_group.setStyleSheet(
-            "QGroupBox { border:1px solid #45475a; border-radius:6px; "
-            "margin-top:8px; padding-top:8px; color:#6c7086; font-size:9px; }"
-            "QGroupBox::title { subcontrol-origin:margin; left:8px; }"
-        )
-        gm_layout = QVBoxLayout(self._grid_mode_group)
-        gm_layout.setSpacing(2)
-        self._mode_wall  = QRadioButton("🟫 Vẽ Tường")
-        self._mode_start = QRadioButton("🟢 Đặt Start")
-        self._mode_end   = QRadioButton("🔴 Đặt End")
+        outer.addLayout(row1)
+
+        self._grid_mode_group = QGroupBox("Lưới — chọn chế độ vẽ")
+        self._grid_mode_group.setObjectName("GridModeGroup")
+        gm_outer = QHBoxLayout(self._grid_mode_group)
+        gm_outer.setContentsMargins(8, 4, 8, 6)
+        gm_outer.setSpacing(10)
+
+        self._mode_wall = QRadioButton("Tường")
+        self._mode_start = QRadioButton("Start")
+        self._mode_end = QRadioButton("End")
         self._mode_wall.setChecked(True)
         for rb in (self._mode_wall, self._mode_start, self._mode_end):
             rb.setFont(QFont("Segoe UI", 9))
-            rb.setStyleSheet("color:#cdd6f4;")
-            gm_layout.addWidget(rb)
+            gm_outer.addWidget(rb)
 
-        clear_walls_btn = _btn("🗑️ Xóa tường", "#313244", "#cdd6f4", "#45475a", h=26, bold=False)
+        clear_walls_btn = _btn("Xóa tường", "#313244", "#cdd6f4", "#45475a", h=28, bold=False)
         clear_walls_btn.clicked.connect(self._clear_walls)
-        gm_layout.addWidget(clear_walls_btn)
+        gm_outer.addWidget(clear_walls_btn)
 
-        # Maze button
-        self._maze_btn = _btn("🎲  Mê cung", "#313244", "#cdd6f4", "#45475a", h=26, bold=False)
-        self._maze_btn.setToolTip("Sinh mê cung ngẫu nhiên liên thông Start-End")
+        self._maze_btn = _btn("Mê cung", "#313244", "#cdd6f4", "#45475a", h=28, bold=False)
+        self._maze_btn.setToolTip("Sinh mê cung ngẫu nhiên")
         self._maze_btn.clicked.connect(self._generate_random_maze)
-        gm_layout.addWidget(self._maze_btn)
+        gm_outer.addWidget(self._maze_btn)
 
-        # Zoom layout & combobox
-        zoom_layout = QHBoxLayout()
-        zoom_layout.setSpacing(4)
-        zoom_label = QLabel("🔍 Zoom:")
-        zoom_label.setStyleSheet("color:#a6adc8; font-size:9px;")
-        zoom_layout.addWidget(zoom_label)
-        
         self._zoom_combo = QComboBox()
         self._zoom_combo.setFont(QFont("Segoe UI", 8))
-        self._zoom_combo.setStyleSheet("""
-            QComboBox {
-                background: #313244;
-                color: #cdd6f4;
-                border: 1px solid #45475a;
-                border-radius: 4px;
-                padding: 2px 4px;
-                min-width: 80px;
-            }
-        """)
-        self._zoom_combo.addItem("Fit Window", "fit")
-        self._zoom_combo.addItem("Small (0.75x)", "0.75")
-        self._zoom_combo.addItem("Medium (1.0x)", "1.0")
-        self._zoom_combo.addItem("Large (1.5x)", "1.5")
-        self._zoom_combo.setCurrentIndex(0) # Default to Fit Window
+        self._zoom_combo.addItem("Vừa cửa sổ", "fit")
+        self._zoom_combo.addItem("Nhỏ", "0.75")
+        self._zoom_combo.addItem("Vừa", "1.0")
+        self._zoom_combo.addItem("Lớn", "1.5")
+        self._zoom_combo.setCurrentIndex(0)
         self._zoom_combo.currentIndexChanged.connect(self._on_zoom_changed)
-        zoom_layout.addWidget(self._zoom_combo)
-        
-        gm_layout.addLayout(zoom_layout)
+        gm_outer.addWidget(self._zoom_combo)
+        gm_outer.addStretch()
 
         self._grid_mode_group.setVisible(False)
-        layout.addWidget(self._grid_mode_group)
+        outer.addWidget(self._grid_mode_group)
 
-        # Checkbox "Hiện Chỉ Số (Index)"
-        self._show_index_cb = QCheckBox("Hiện Chỉ Số (Index)")
+        self._show_index_cb = QCheckBox("Hiện chỉ số")
         self._show_index_cb.setChecked(False)
-        self._show_index_cb.setStyleSheet("color: #cdd6f4; font-family: 'Segoe UI'; font-size: 10pt; margin-top: 6px;")
         self._show_index_cb.toggled.connect(self._on_show_index_toggled)
         self._show_index_cb.setVisible(False)
-        layout.addWidget(self._show_index_cb)
+        outer.addWidget(self._show_index_cb)
 
         return frame
 
@@ -506,52 +357,44 @@ for i in range(len(arr)):
 
     def _build_center(self) -> QWidget:
         self._center = QWidget()
-        self._center.setStyleSheet("background:#1e1e2e;")
+        self._center.setStyleSheet("background:#1d1d2b;")
         self._center_layout = QVBoxLayout(self._center)
-        self._center_layout.setContentsMargins(12, 10, 6, 10)
-        self._center_layout.setSpacing(8)
+        self._center_layout.setContentsMargins(14, 12, 10, 10)
+        self._center_layout.setSpacing(10)
 
-        # Algo info header
-        self._algo_title_lbl = QLabel("Chọn thuật toán từ sidebar →")
-        self._algo_title_lbl.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
-        self._algo_title_lbl.setStyleSheet("color:#cba6f7;")
-        self._center_layout.addWidget(self._algo_title_lbl)
+        header = QWidget()
+        header.setObjectName("CenterHeader")
+        h_layout = QHBoxLayout(header)
+        h_layout.setContentsMargins(0, 0, 0, 0)
+        h_layout.setSpacing(12)
 
-        # Visual Status Panel ngay trên tracer stack
-        from PyQt6.QtWidgets import QFrame
-        self._visual_status_panel = QFrame()
-        self._visual_status_panel.setFixedHeight(32)
-        self._visual_status_panel.setStyleSheet("""
-            QFrame {
-                background: #181825;
-                border: 1px solid #313244;
-                border-radius: 6px;
-            }
-            QLabel {
-                color: #f9e2af;
-                font-size: 11px;
-                font-weight: bold;
-                font-family: 'Segoe UI';
-            }
-        """)
-        vsp_layout = QHBoxLayout(self._visual_status_panel)
-        vsp_layout.setContentsMargins(12, 0, 12, 0)
-        self._visual_status_lbl = QLabel("Sẵn sàng chạy thuật toán...")
-        vsp_layout.addWidget(self._visual_status_lbl)
-        self._center_layout.addWidget(self._visual_status_panel)
+        title_col = QVBoxLayout()
+        title_col.setSpacing(2)
+        self._algo_title_lbl = QLabel("Chọn thuật toán bên trái")
+        self._algo_title_lbl.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title_col.addWidget(self._algo_title_lbl)
 
-        # Stacked: chart / array / grid / linked_list
+        self._complexity_lbl = QLabel("")
+        self._complexity_lbl.setObjectName("ComplexityLabel")
+        self._complexity_lbl.setFont(QFont("Consolas", 9))
+        title_col.addWidget(self._complexity_lbl)
+        h_layout.addLayout(title_col, stretch=1)
+
+        h_layout.addWidget(self._build_playback_controls())
+        self._center_layout.addWidget(header)
+
+        self._center_layout.addWidget(self._build_input_panel())
+
         self._tracer_stack = QStackedWidget()
-        self._tracer_stack.addWidget(self._chart_tracer)   # index 0
-        self._tracer_stack.addWidget(self._array_tracer)   # index 1
-        self._tracer_stack.addWidget(self._grid_tracer)    # index 2
-        self._tracer_stack.addWidget(self._linked_list_tracer) # index 3
+        self._tracer_stack.addWidget(self._chart_tracer)
+        self._tracer_stack.addWidget(self._array_tracer)
+        self._tracer_stack.addWidget(self._grid_tracer)
+        self._tracer_stack.addWidget(self._linked_list_tracer)
         self._center_layout.addWidget(self._tracer_stack, stretch=1)
 
-        # Log tracer
+        self._log_tracer.setMinimumHeight(64)
+        self._log_tracer.setMaximumHeight(100)
         self._center_layout.addWidget(self._log_tracer, stretch=0)
-        self._log_tracer.setMinimumHeight(100)
-        self._log_tracer.setMaximumHeight(160)
 
         return self._center
 
@@ -559,78 +402,239 @@ for i in range(len(arr)):
 
     def _build_right_panel(self) -> QWidget:
         right = QWidget()
+        self._right_panel = right
         right.setStyleSheet("background:#181825; border-left:1px solid #313244;")
         layout = QVBoxLayout(right)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # Tab widget ở cột bên phải
-        from PyQt6.QtWidgets import QTabWidget
-        self._right_tabs = QTabWidget()
-        self._right_tabs.setStyleSheet("""
-            QTabWidget::panel {
-                border: none;
-                background: #181825;
-            }
-            QTabBar::tab {
-                background: #1e1e2e;
-                color: #a6adc8;
-                border: 1px solid #313244;
-                border-bottom: none;
-                border-top-left-radius: 4px;
-                border-top-right-radius: 4px;
-                padding: 6px 12px;
-                margin-right: 2px;
-                font-family: 'Segoe UI';
-                font-size: 11px;
-                font-weight: bold;
-            }
-            QTabBar::tab:selected {
-                background: #181825;
-                color: #cba6f7;
-                border-color: #45475a;
-            }
-            QTabBar::tab:hover {
-                background: #313244;
-            }
-        """)
-
-        # Tab 1: Pseudocode & Stats
-        tab1 = QWidget()
-        t1_layout = QVBoxLayout(tab1)
-        t1_layout.setContentsMargins(0, 0, 0, 0)
-        t1_layout.setSpacing(0)
-
         self._code_tracer.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        t1_layout.addWidget(self._code_tracer, stretch=1)
+        layout.addWidget(self._code_tracer, stretch=3)
 
-        # Thêm StatisticsPanel dưới CodeTracer
         from modules.visualizer.tracers import StatisticsPanel
         self._stats_panel = StatisticsPanel(parent=self)
-        t1_layout.addWidget(self._stats_panel, stretch=0)
+        layout.addWidget(self._stats_panel, stretch=2)
 
-        # Tab 2: Explanation
-        from modules.visualizer.tracers import ExplanationPanel
-        self._explanation_panel = ExplanationPanel(parent=self)
-
-        self._right_tabs.addTab(tab1, "💻 Code & Stats")
-        self._right_tabs.addTab(self._explanation_panel, "📖 Explanation")
-
-        layout.addWidget(self._right_tabs)
         return right
+
+    def apply_theme_styles(self):
+        try:
+            from ui.theme_manager import get_theme, PALETTES
+            theme = get_theme()
+            tokens = PALETTES[theme]
+            
+            # Apply _MAIN_STYLE translation
+            main_qss = f"""
+                QWidget#VisualizerController {{
+                    background: {tokens["BG_MAIN"]};
+                    color: {tokens["COLOR_TEXT"]};
+                    font-family: 'Segoe UI';
+                }}
+                QSplitter::handle {{
+                    background: {tokens["BORDER"]};
+                }}
+                QLineEdit {{
+                    background: {tokens["BG_SIDEBAR"]};
+                    border: 1px solid {tokens["BORDER"]};
+                    border-radius: 6px;
+                    color: {tokens["COLOR_TEXT"]};
+                    padding: 4px 10px;
+                }}
+                QLineEdit:hover {{
+                    border-color: {tokens["BORDER_HOVER"]};
+                }}
+                QLineEdit:focus {{
+                    border-color: {tokens["COLOR_ACCENT"]};
+                }}
+                QLabel {{
+                    color: {tokens["COLOR_TEXT"]};
+                }}
+                QScrollArea {{
+                    border: none;
+                    background: transparent;
+                }}
+            """
+            self.setStyleSheet(main_qss)
+
+            if hasattr(self, "_algo_title_lbl"):
+                self._algo_title_lbl.setStyleSheet(
+                    f"color: {tokens['COLOR_TEXT_TITLE']}; font-weight: bold; background: transparent;"
+                )
+            if hasattr(self, "_complexity_lbl"):
+                self._complexity_lbl.setStyleSheet(
+                    f"color: {tokens['COLOR_TEXT_MUTED']}; background: transparent;"
+                )
+
+            if hasattr(self, "_sidebar_widget"):
+                self._sidebar_widget.setStyleSheet(f"""
+                    background: {tokens["BG_SIDEBAR"]};
+                    border-right: 1px solid {tokens["BORDER"]};
+                """)
+
+            for hdr in self.findChildren(QLabel, "SidebarHeader"):
+                hdr.setStyleSheet(
+                    f"color: {tokens['COLOR_TEXT_MUTED']}; background: transparent; padding: 0;"
+                )
+
+            if hasattr(self, "_search_wrap"):
+                self._search_wrap.setStyleSheet(f"background: {tokens['BG_SIDEBAR']};")
+
+            self._algo_list.setStyleSheet(f"""
+                QListWidget {{
+                    background: {tokens["BG_SIDEBAR"]};
+                    border: none;
+                    outline: 0;
+                    color: {tokens["COLOR_TEXT"]};
+                    font-size: 10px;
+                }}
+                QListWidget::item {{
+                    padding: 6px 10px;
+                    border-radius: 4px;
+                }}
+                QListWidget::item:selected {{
+                    background: {tokens["BG_CHECKED"]};
+                    color: {tokens["COLOR_ACCENT"]};
+                    font-weight: bold;
+                }}
+                QListWidget::item:hover:!selected {{
+                    background: {tokens["BG_HOVER"]};
+                }}
+            """)
+
+            if hasattr(self, "_input_panel_frame"):
+                self._input_panel_frame.setStyleSheet(f"""
+                    QWidget#InputPanel {{
+                        background: {tokens["BG_WIDGET"]};
+                        border: 1px solid {tokens["BORDER"]};
+                        border-radius: 8px;
+                        padding: 4px;
+                    }}
+                """)
+
+            for lbl in self.findChildren(QLabel, "InputLabel"):
+                lbl.setStyleSheet(f"color: {tokens['COLOR_TEXT_MUTED']}; background: transparent;")
+
+            if hasattr(self, "_grid_mode_group"):
+                self._grid_mode_group.setStyleSheet(f"""
+                    QGroupBox#GridModeGroup {{
+                        border: 1px solid {tokens["BORDER"]};
+                        border-radius: 6px;
+                        margin-top: 4px;
+                        padding-top: 6px;
+                        color: {tokens["COLOR_TEXT_MUTED"]};
+                        font-size: 9px;
+                    }}
+                    QGroupBox::title {{
+                        subcontrol-origin: margin;
+                        left: 8px;
+                    }}
+                """)
+                for rb in (self._mode_wall, self._mode_start, self._mode_end):
+                    rb.setStyleSheet(f"color: {tokens['COLOR_TEXT']};")
+
+            if hasattr(self, "_zoom_combo"):
+                self._zoom_combo.setStyleSheet(f"""
+                    QComboBox {{
+                        background: {tokens["BG_SIDEBAR"]};
+                        color: {tokens["COLOR_TEXT"]};
+                        border: 1px solid {tokens["BORDER"]};
+                        border-radius: 4px;
+                        padding: 2px 6px;
+                        min-width: 72px;
+                    }}
+                    QComboBox QAbstractItemView {{
+                        background: {tokens["BG_SIDEBAR"]};
+                        color: {tokens["COLOR_TEXT"]};
+                        selection-background-color: {tokens["BG_HOVER"]};
+                        selection-color: {tokens["COLOR_ACCENT"]};
+                    }}
+                """)
+
+            if hasattr(self, "_show_index_cb"):
+                self._show_index_cb.setStyleSheet(
+                    f"color: {tokens['COLOR_TEXT']}; font-family: 'Segoe UI'; font-size: 9pt;"
+                )
+
+            if hasattr(self, "_center"):
+                self._center.setStyleSheet(f"background: {tokens['BG_MAIN']};")
+
+            if hasattr(self, "_right_panel"):
+                self._right_panel.setStyleSheet(
+                    f"background: {tokens['BG_SIDEBAR']}; border-left: 1px solid {tokens['BORDER']};"
+                )
+
+            for lbl in self.findChildren(QLabel, "SpeedLabel"):
+                lbl.setStyleSheet(f"color: {tokens['COLOR_TEXT_MUTED']}; font-size: 9px;")
+
+            if hasattr(self, "_speed_slider"):
+                self._speed_slider.setStyleSheet(f"""
+                    QSlider#SpeedSlider::groove:horizontal {{
+                        height: 4px;
+                        background: {tokens["BORDER"]};
+                        border-radius: 2px;
+                    }}
+                    QSlider#SpeedSlider::handle:horizontal {{
+                        background: {tokens["COLOR_ACCENT"]};
+                        width: 12px;
+                        height: 12px;
+                        margin: -4px 0;
+                        border-radius: 6px;
+                    }}
+                """)
+
+            self._restyle_button(self._run_btn, tokens["COLOR_GREEN"], "#FFFFFF", tokens["COLOR_ACCENT_HOVER"])
+            self._restyle_button(self._pause_btn, tokens["BG_WIDGET"], tokens["COLOR_TEXT"], tokens["BG_HOVER"])
+            self._restyle_button(self._step_btn, tokens["BG_WIDGET"], tokens["COLOR_TEXT"], tokens["BG_HOVER"])
+            self._restyle_button(self._reset_btn, tokens["BG_WIDGET"], tokens["COLOR_TEXT"], tokens["BG_HOVER"])
+            
+            # Update active/highlighted text if custom pages or widgets are selected
+            # Propagate theme change down to child tracers
+            for tracer in (self._chart_tracer, self._array_tracer, self._grid_tracer, 
+                           self._linked_list_tracer, self._log_tracer, self._code_tracer):
+                if hasattr(tracer, "apply_theme_styles"):
+                    tracer.apply_theme_styles()
+                    
+            if hasattr(self, "_stats_panel") and self._stats_panel:
+                self._stats_panel.apply_theme_styles()
+
+            if hasattr(self, "_grid_tracer") and self._grid_tracer:
+                self._grid_tracer.apply_theme_styles()
+                
+        except Exception as e:
+            print(f"[WARN] Failed to apply theme styles in visualizer: {e}")
+
+    def _restyle_button(self, btn, bg: str, fg: str, hover: str):
+        try:
+            from ui.theme_manager import get_theme, PALETTES
+            tokens = PALETTES[get_theme()]
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background: {bg};
+                    color: {fg};
+                    border: none;
+                    border-radius: 6px;
+                    padding: 0 14px;
+                }}
+                QPushButton:hover {{
+                    background: {hover};
+                }}
+                QPushButton:disabled {{
+                    background: {tokens["BG_HOVER"]};
+                    color: {tokens["COLOR_TEXT_DISABLED"]};
+                }}
+            """)
+        except Exception:
+            pass
 
     # ── Connect Signals ───────────────────────────────────────────────────────
 
     def _connect_signals(self):
-        self._return_btn.clicked.connect(self.return_requested.emit)
         self._run_btn.clicked.connect(self._on_run)
         self._pause_btn.clicked.connect(self._on_pause_resume)
         self._step_btn.clicked.connect(self._on_step)
         self._reset_btn.clicked.connect(self._on_reset)
-        self._mode_builtin.clicked.connect(self._on_mode_builtin)
-        self._mode_custom.clicked.connect(self._on_mode_custom)
         self._algo_list.itemClicked.connect(lambda _: self._on_algo_selected())
         self._search_box.textChanged.connect(
             lambda t: self._populate_algo_list(t)
@@ -677,13 +681,13 @@ for i in range(len(arr)):
 
         # Update UI panels
         self._stats_panel.reset()
-        self._visual_status_lbl.setText("Sẵn sàng chạy thuật toán...")
+        self._stats_panel.lbl_status.setText("Sẵn sàng")
 
-        # Update title + badges
-        self._algo_title_lbl.setText(f"{info['name']}")
+        self._algo_title_lbl.setText(info["name"])
         cplx = info.get("complexity", {})
-        self._time_badge.setText(f"⏱ Time: {cplx.get('time','?')}")
-        self._space_badge.setText(f"💾 Space: {cplx.get('space','?')}")
+        time_c = cplx.get("time", "—")
+        space_c = cplx.get("space", "—")
+        self._complexity_lbl.setText(f"Thời gian: {time_c}   ·   Bộ nhớ: {space_c}")
 
         # Swap tracer in center
         tracers = info.get("tracers", [])
@@ -700,13 +704,15 @@ for i in range(len(arr)):
         is_grid = info.get("input_type") == "grid"
         self._grid_mode_group.setVisible(is_grid)
         self._array_input.setVisible(not is_grid)
+        self._array_lbl.setVisible(not is_grid)
 
-        # Show/hide show index checkbox
         is_ll = "linked_list" in tracers
         self._show_index_cb.setVisible(is_ll)
-        
+
         input_type = info.get("input_type")
-        self._target_input.setVisible(input_type in ("array_target", "ll_insert_idx"))
+        show_target = input_type in ("array_target", "ll_insert_idx")
+        self._target_input.setVisible(show_target)
+        self._target_lbl.setVisible(show_target and not is_grid)
         if input_type == "ll_insert_idx":
             self._target_input.setValidator(None)
             self._target_input.setPlaceholderText("Vị trí, Giá trị (VD: 2, 9)")
@@ -714,9 +720,8 @@ for i in range(len(arr)):
             self._target_input.setValidator(QIntValidator(-9999, 9999))
             self._target_input.setPlaceholderText("Target (tìm kiếm/xóa)")
 
-        # Load code & Explanation
+        # Load code
         self._code_tracer.set_code(info.get("code", "# no pseudocode"))
-        self._explanation_panel.set_explanation(info)
         self._log_tracer.reset()
 
         # Reset tracers
@@ -740,7 +745,7 @@ for i in range(len(arr)):
 
         self._run_btn.setEnabled(True)
         self._pause_btn.setEnabled(False)
-        self._pause_btn.setText("⏸  Pause")
+        self._pause_btn.setText("Tạm dừng")
         self._step_btn.setEnabled(True)
 
     # ── Run / Control ─────────────────────────────────────────────────────────
@@ -769,7 +774,6 @@ for i in range(len(arr)):
         self._total_steps = None  # Built-in chạy real-time trong Thread nên không tính trước Total Steps
         
         self._stats_panel.reset()
-        self._visual_status_lbl.setText("Đang khởi chạy thuật toán...")
         self._log_tracer.reset()
         self._code_tracer.reset()
         
@@ -845,22 +849,22 @@ for i in range(len(arr)):
         if self._engine.is_paused():
             self._start_time = time.monotonic()
             self._engine.resume()
-            self._pause_btn.setText("⏸  Pause")
-            self._stats_panel.lbl_status.setText("Running")
+            self._pause_btn.setText("Tạm dừng")
+            self._stats_panel.lbl_status.setText("Đang chạy")
         else:
             if self._start_time > 0:
                 self._accumulated_time += (time.monotonic() - self._start_time)
             self._start_time = 0.0
             self._engine.pause()
-            self._pause_btn.setText("▶  Resume")
-            self._stats_panel.lbl_status.setText("Paused")
+            self._pause_btn.setText("Tiếp tục")
+            self._stats_panel.lbl_status.setText("Tạm dừng")
 
     def _on_step(self):
         """Chế độ Step: pause rồi resume ngay để chạy 1 frame."""
         if not self._engine.is_running():
             self._on_run()
             self._engine.pause()
-            self._pause_btn.setText("▶  Resume")
+            self._pause_btn.setText("Tiếp tục")
         else:
             self._engine.resume()
             QTimer.singleShot(self._speed_slider.value() + 50, self._engine.pause)
@@ -886,7 +890,7 @@ for i in range(len(arr)):
         self._total_steps = None
         
         self._stats_panel.reset()
-        self._visual_status_lbl.setText("Sẵn sàng chạy thuật toán...")
+        self._stats_panel.lbl_status.setText("Sẵn sàng")
         
         self._chart_tracer.reset()
         self._array_tracer.reset()
@@ -896,7 +900,7 @@ for i in range(len(arr)):
         self._code_tracer.reset()
         self._run_btn.setEnabled(True)
         self._pause_btn.setEnabled(False)
-        self._pause_btn.setText("⏸  Pause")
+        self._pause_btn.setText("Tạm dừng")
         if self._current_algo_id:
             info = ALGO_LIBRARY[self._current_algo_id]
             tracers = info.get("tracers", [])
@@ -940,7 +944,6 @@ for i in range(len(arr)):
 
         # Cập nhật Visual Status Panel & Log
         if message:
-            self._visual_status_lbl.setText(message)
             self._log_tracer.log(message)
 
         # Cập nhật code highlight
@@ -1047,11 +1050,11 @@ for i in range(len(arr)):
         if self._current_algo_id:
             algo_name = ALGO_LIBRARY[self._current_algo_id].get("name", "Thuật toán")
 
-        status_str = "Running"
+        status_str = "Đang chạy"
         if self._engine.is_paused():
-            status_str = "Paused"
+            status_str = "Tạm dừng"
         elif not self._engine.is_running():
-            status_str = "Finished"
+            status_str = "Hoàn tất"
 
         self._stats_panel.update_stats(
             algo_name=algo_name,
@@ -1110,13 +1113,13 @@ for i in range(len(arr)):
     def _on_started(self):
         self._run_btn.setEnabled(False)
         self._pause_btn.setEnabled(True)
-        self._pause_btn.setText("⏸  Pause")
-        self._stats_panel.lbl_status.setText("Running")
+        self._pause_btn.setText("Tạm dừng")
+        self._stats_panel.lbl_status.setText("Đang chạy")
 
     def _on_finished(self, msg: str):
         self._run_btn.setEnabled(True)
         self._pause_btn.setEnabled(False)
-        self._pause_btn.setText("⏸  Pause")
+        self._pause_btn.setText("Tạm dừng")
         
         # Dừng timer
         import time
@@ -1125,19 +1128,17 @@ for i in range(len(arr)):
         self._start_time = 0.0
         self._elapsed_update_timer.stop()
 
-        icon = "✅" if msg == "done" else "⏹"
-        self._log_tracer.log(f"{icon} {msg}")
+        icon = "Xong" if msg == "done" else "Dừng"
+        self._log_tracer.log(f"[{icon}] {msg}")
 
         algo_name = "Thuật toán"
         if self._current_algo_id:
             algo_name = ALGO_LIBRARY[self._current_algo_id].get("name", "Thuật toán")
 
         if msg == "done":
-            self._visual_status_lbl.setText(f"✅ Thuật toán {algo_name} đã hoàn tất thành công!")
-            self._stats_panel.lbl_status.setText("Finished")
+            self._stats_panel.lbl_status.setText("Hoàn tất")
         else:
-            self._visual_status_lbl.setText(f"⏹ Thuật toán đã dừng: {msg}")
-            self._stats_panel.lbl_status.setText("Stopped")
+            self._stats_panel.lbl_status.setText("Đã dừng")
             
         self._update_elapsed_time_ui()
 
@@ -1165,7 +1166,9 @@ for i in range(len(arr)):
             if grid[r][c] != "start":
                 grid[r][c] = "end"
 
-        self._grid_tracer.canvas.update()
+        if not self._engine.is_running():
+            self._grid_tracer.canvas._overlay.clear()
+        self._grid_tracer.canvas.refresh_from_grid()
 
     def _clear_walls(self):
         grid = self._grid_tracer.canvas._grid
@@ -1281,95 +1284,6 @@ for i in range(len(arr)):
         self._engine.stop()
         super().closeEvent(event)
 
-    # ── Mode Toggle ───────────────────────────────────────────────────────────
-
-    def _on_mode_builtin(self):
-        self._mode_builtin.setChecked(True)
-        self._mode_custom.setChecked(False)
-        self._sidebar_stack.setCurrentIndex(0)
-        self._algo_title_lbl.setText("Chọn thuật toán từ sidebar →")
-
-    def _on_mode_custom(self):
-        self._mode_builtin.setChecked(False)
-        self._mode_custom.setChecked(True)
-        self._sidebar_stack.setCurrentIndex(1)
-        self._algo_title_lbl.setText("Nhập code tùy chỉnh →")
-
-    def _run_custom_code(self):
-        """Execute custom code using algorithm_visualizer library."""
-        code = self._code_editor.toPlainText()
-        if not code.strip():
-            return
-
-        # Reset interpreter & stats
-        self._cmd_interpreter.reset()
-        
-        self._stats_step = 0
-        self._stats_compares = 0
-        self._stats_swaps = 0
-        self._stats_visited = 0
-        import time
-        self._start_time = time.monotonic()
-        self._accumulated_time = 0.0
-        self._total_steps = None
-        self._stats_panel.reset()
-        self._elapsed_update_timer.start()
-
-        # Execute code in a safe way
-        try:
-            # Import algorithm_visualizer
-            from modules import algorithm_visualizer
-
-            # Create a restricted globals
-            restricted_globals = {
-                '__builtins__': {
-                    'len': len,
-                    'range': range,
-                    'int': int,
-                    'str': str,
-                    'list': list,
-                    'print': print,
-                    'enumerate': enumerate,
-                    'zip': zip,
-                    'min': min,
-                    'max': max,
-                    'abs': abs,
-                    'sum': sum,
-                },
-                'algorithm_visualizer': algorithm_visualizer,
-                'Array1DTracer': algorithm_visualizer.Array1DTracer,
-                'LogTracer': algorithm_visualizer.LogTracer,
-                'ChartTracer': algorithm_visualizer.ChartTracer,
-                'GraphTracer': algorithm_visualizer.GraphTracer,
-                'Randomize': algorithm_visualizer.Randomize,
-            }
-
-            exec(code, restricted_globals)
-
-            # Get total steps from built commands list
-            self._total_steps = len(algorithm_visualizer.Commander.commands)
-
-            # Interpret commands
-            self._cmd_interpreter.interpret_commands(algorithm_visualizer.Commander.commands)
-
-            # Done
-            self._elapsed_update_timer.stop()
-            if self._start_time > 0:
-                self._accumulated_time += (time.monotonic() - self._start_time)
-            self._start_time = 0.0
-            self._update_elapsed_time_ui()
-            self._visual_status_lbl.setText("✅ Chạy Custom Code hoàn tất!")
-            self._stats_panel.lbl_status.setText("Finished")
-
-        except Exception as e:
-            self._elapsed_update_timer.stop()
-            self._start_time = 0.0
-            self._log_tracer.log(f"Lỗi thực thi code: {e}")
-            import traceback
-            self._log_tracer.log(traceback.format_exc())
-            self._visual_status_lbl.setText("❌ Lỗi Custom Code!")
-            self._stats_panel.lbl_status.setText("Error")
-
     def _on_delay_request(self, delay: int):
         """Handle delay from command interpreter."""
-        QTimer.singleShot(delay, lambda: None)  # Simple delay
+        QTimer.singleShot(delay, lambda: None)

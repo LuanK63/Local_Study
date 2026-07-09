@@ -99,7 +99,7 @@ def generate_steps(algorithm: str, input_data: str) -> dict:
 def get_algo_categories() -> dict[str, list[tuple[str, str]]]:
     """Return algorithms grouped by category for UI display."""
     return {
-        "🔃 Sắp xếp": [
+        " Sắp xếp": [
             ("bubble_sort",    "Bubble Sort"),
             ("selection_sort", "Selection Sort"),
             ("insertion_sort", "Insertion Sort"),
@@ -107,27 +107,27 @@ def get_algo_categories() -> dict[str, list[tuple[str, str]]]:
             ("quick_sort",     "Quick Sort"),
             ("heap_sort",      "Heap Sort"),
         ],
-        "🔍 Tìm kiếm": [
+        " Tìm kiếm": [
             ("binary_search", "Binary Search"),
             ("linear_search", "Linear Search"),
         ],
-        "🌳 Cây (BST/AVL)": [
+        " Cây (BST/AVL)": [
             ("bst_insert", "BST Insert"),
             ("bst_search", "BST Search"),
             ("bst_delete", "BST Delete"),
             ("avl_insert", "AVL Insert"),
         ],
-        "📊 Heap": [
+        " Heap": [
             ("min_heap_insert", "Min-Heap Insert"),
             ("max_heap_insert", "Max-Heap Insert"),
             ("heap_extract",    "Heap Extract"),
         ],
-        "🕸️ Đồ thị": [
+        " Đồ thị": [
             ("bfs",       "BFS"),
             ("dfs",       "DFS"),
             ("dijkstra",  "Dijkstra"),
         ],
-        "📦 CTDL cơ bản": [
+        " CTDL cơ bản": [
             ("stack_push",    "Stack Push"),
             ("stack_pop",     "Stack Pop"),
             ("queue_enqueue", "Queue Enqueue"),

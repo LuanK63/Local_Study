@@ -1,5 +1,4 @@
-"""
-ui/worker.py — Background worker threads for LLM calls.
+"""ui/worker.py — Background worker threads for LLM calls.
 Prevents UI from freezing during long operations.
 """
 from PyQt6.QtCore import QThread, pyqtSignal, QObject

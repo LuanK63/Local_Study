@@ -28,7 +28,7 @@ def generate_learning_path(subject_id: str) -> str:
     topic_lines = []
     for t in subject.topics:
         weak_info = next((w for w in weak if w["topic_id"] == t["id"]), None)
-        status = f"⚠️ Yếu ({weak_info['wrong_rate']*100:.0f}%)" if weak_info and weak_info["wrong_rate"] > 0.4 else "✅"
+        status = f" Yếu ({weak_info['wrong_rate']*100:.0f}%)" if weak_info and weak_info["wrong_rate"] > 0.4 else ""
         topic_lines.append(
             f"- [{status}] Phase {t['phase']}: {t['name']} (id: {t['id']})"
         )

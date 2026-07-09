@@ -1,8 +1,0 @@
-﻿FOUND SOMEWHERE!
-LĂ½ thuyáº¿t Ä‘á»“ thá»‹ ] 235 ^ LĂª Minh HoĂ ng end; procedure Ford_Bellman; {Thuáº­t toĂ¡n Ford-Bellman} var Stop: Boolean; u, v, CountLoop: Integer; begin for CountLoop := 1 to n - 1 do begin Stop := True; for 
-FOUND SOMEWHERE!
-] 236 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 nhĂ£n theo cĂ´ng thá»©c: d[v] := min(d[v], d[u] + c[u, v]) vá»›i âˆ€u, v âˆˆ V. NhÆ° váº­y náº¿u nhÆ° ta dĂ¹ng Ä‘á»‰nh u sá»­a nhĂ£n Ä‘á»‰nh v, sau Ä‘Ă³ náº¿u ta láº¡i tá»‘i Æ°u Ä‘Æ°á»£c d[u] thĂªm ná»¯a thĂ¬ t
-FOUND SOMEWHERE!
-LĂ½ thuyáº¿t Ä‘á»“ thá»‹ ] 237 ^ LĂª Minh HoĂ ng OutputFile = 'MINPATH.OUT'; max = 1000; maxEC = 1000; maxC = max * maxEC; var c: aray[1.max, 1..max] of Integer; d: aray[1.max] of Integer; Trace: aray[1.max] of
-FOUND SOMEWHERE!
-] 248 ^ ChuyĂªn Ä‘á» ÄHSPHN 199-204 1Â£ mua Ä‘Æ°á»£c 190Â¥ 1Â¥ mua Ä‘Æ°á»£c 0.009$ Tá»« 1$, ta cĂ³ thá»ƒ Ä‘á»•i sang 0.7Â£, sau Ä‘Ă³ sang 0.7x190=133Â¥, rá»“i Ä‘á»•i láº¡i sang 13x0.09=1.197$. Kiáº¿m Ä‘Æ°á»£c 0.197$ lĂ£i. Giáº£ sá»­ ráº±ng cĂ³ n l

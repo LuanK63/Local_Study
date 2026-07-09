@@ -1,0 +1,1027 @@
+[
+  {
+    "id": "Q001",
+    "question": "Khi cài đặt danh sách bằng một mảng thì các phần tử được tổ chức và quản lý số lượng như thế nào?",
+    "question_type": "factual",
+    "difficulty": "easy",
+    "topic": "Array",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Khi cài đặt danh sách bằng một mảng, thì có một biến nguyên n lưu số phần tử hiện có trong danh sách. Nếu mảng được đánh số bắt đầu từ 1 thì các phần tử trong danh sách được cất giữ trong mảng bằng các phần tử được đánh số từ 1 tới n."
+    ],
+    "ground_truth_docs": ["Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"],
+    "ground_truth_pages": [59]
+  },
+{
+  "id": "Q002",
+  "question": "Cấu trúc lưu trữ của mỗi phần tử (nút) trong danh sách nối đơn được thiết kế như thế nào?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Linked List",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Danh sách nối đơn gồm các nút được nối với nhau theo một chiều. Mỗi nút là một bản ghi (record) gồm hai trường:\nTrường thứ nhất chứa giá trị lưu trong nút đó\nTrường thứ hai chứa liên kết (con trỏ) tới nút kế tiếp, tức là chứa một thông tin đủ để biết nút kế tiếp nút đó trong danh sách là nút nào, trong trường hợp là nút cuối cùng (không có nút kế tiếp), trường liên kết này được gán một giá trị đặc biệt."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    59
+  ]
+},
+  {
+    "id": "Q003",
+    "question": "Ngăn xếp (Stack) là gì và nguyên tắc hoạt động LIFO được áp dụng như thế nào?",
+    "question_type": "factual",
+    "difficulty": "easy",
+    "topic": "Stack",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Ngăn xếp là một kiểu danh sách được trang bị hai phép toán bổ sung một phần tử vào cuối danh sách và loại bỏ một phần tử cũng ở cuối danh sách.\nCó thể hình dung ngăn xếp như hình ảnh một chồng đĩa, đĩa nào được đặt vào chồng sau cùng sẽ nằm trên tất cả các đĩa khác và sẽ được lấy ra đầu tiên. Vì nguyên tắc “vào sau ra trước” đó, Stack còn có tên gọi là danh sách kiểu LIFO (Last In First Out) và vị trí cuối danh sách được gọi là đỉnh (Top) của Stack."
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        64
+    ]
+  },
+  {
+    "id": "Q004",
+  "question": "Nguyên tắc hoạt động Queue, và nêu ứng dụng điển hình của queue?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Stack, Queue",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Hàng đợi là một kiểu danh sách được trang bị hai phép toán bổ sung một phần tử vào cuối danh sách (Rear) và loại bỏ một phần tử ở đầu danh sách (Front).\nCó thể hình dung hàng đợi như một đoàn người xếp hàng mua vé: Người nào xếp hàng trước sẽ được mua vé trước. Vì nguyên tắc “vào trước ra trước” đó, Queue còn có tên gọi là danh sách kiểu FIFO (First In First Out)."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    66
+  ]
+  },
+  {
+    "id": "Q005",
+    "question": "Cây nhị phân tìm kiếm (BST) là gì và tính chất quan trọng nhất của nó?",
+    "question_type": "factual",
+    "difficulty": "easy",
+    "topic": "BST",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Cây nhị phân tìm kiếm ứng với dãy khoá đó là một cây nhị phân mà mỗi nút chứa giá trị một khoá trong n khoá đã cho, hai giá trị chứa trong hai nút bất kỳ là khác nhau. Đối với mọi nút trên cây, tính chất sau luôn được thoả mãn:\nMọi khoá nằm trong cây con trái của nút đó đều nhỏ hơn khoá ứng với nút đó.\nMọi khoá nằm trong cây con phải của nút đó đều lớn hơn khoá ứng với nút đó"
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        127
+    ]
+  },
+  {
+  "id": "Q006",
+  "question": "Độ phức tạp của các thao tác trên cây BST trong trường hợp trung bình và xấu nhất là bao nhiêu? Giải pháp nào được nhắc đến để khắc phục tình trạng cây suy biến?",
+  "question_type": "factual",
+  "difficulty": "hard",
+  "topic": "BST, AVL",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Trường hợp trung bình, thì các thao tác tìm kiếm, chèn, xoá trên BST có độ phức tạp là O(lgn). Còn trong trường hợp xấu nhất, cây nhị phân tìm kiếm bị suy biến thì các thao tác đó đều có độ phức tạp là O(n), với n là số nút trên cây BST."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    131,
+    132
+  ]
+  },
+  {
+  "id": "Q007",
+  "question": "Phép trộn 2 đường trong thuật toán sắp xếp trộn hoạt động theo nguyên tắc nào?",
+  "question_type": "procedural",
+  "difficulty": "hard",
+  "topic": "AVL",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Phép trộn 2 đường là phép hợp nhất hai dãy khoá đã sắp xếp để ghép lại thành một dãy khoá có kích thước bằng tổng kích thước của hai dãy khoá ban đầu và dãy khoá tạo thành cũng có thứ tự sắp xếp. Nguyên tắc thực hiện của nó khá đơn giản: so sánh hai khoá đứng đầu hai dãy, chọn ra khoá nhỏ nhất và đưa nó vào miền sắp xếp (một dãy khoá phụ có kích thước bằng tổng kích thước hai dãy khoá ban đầu) ở vị trí thích hợp. Sau đó, khoá này bị loại ra khỏi dãy khoá chứa nó. Quá trình tiếp tục cho tới khi một trong hai dãy khoá đã cạn, khi đó chỉ cần chuyển toàn bộ dãy khoá còn lại ra miền sắp xếp là xong."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    111
+  ]
+},
+{
+  "id": "Q008",
+  "question": "Đống (heap) là một dạng cấu trúc cây gì và giá trị lưu tại mọi nút có tính chất gì so với các nút con của nó?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Heap",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Đống là một dạng cây nhị phân hoàn chỉnh đặc biệt mà giá trị lưu tại mọi nút có độ ưu tiên cao hơn hay bằng giá trị lưu trong hai nút con của nó. Trong thuật toán sắp xếp kiểu vun đống, ta coi quan hệ “ưu tiên hơn hay bằng” là quan hệ “lớn hơn hay bằng\": ≥"
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    101
+  ]
+},
+{
+  "id": "Q009",
+  "question": "Cách cài đặt phép băm thứ hai bằng danh sách nối đơn hoạt động như thế nào và mang lại ưu điểm gì so với phương pháp trên?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Hash Table",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Cách thứ hai là chia dãy khoá làm m nhóm, Mỗi nhóm là một danh sách nối đơn chứa các giá trị khoá và ghi nhận lại chốt của mỗi danh sách nối đơn. Với một khoá tìm kiếm, ta xác định được phải tìm khoá đó trong danh sách nối đơn nào và tiến hành tìm kiếm tuần tự trên danh sách nối đơn đó. Với cách lưu trữ này, việc bổ sung cũng như loại bỏ một giá trị khỏi tập hợp khoá dễ dàng hơn rất nhiều phương pháp trên."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    132
+  ]
+},
+  {
+    "id": "Q010",
+    "question": "Tư tưởng cơ bản của phép băm (Hash) là gì và quá trình tìm kiếm một khóa X được thực hiện như thế nào theo phương pháp này?",
+    "question_type": "factual",
+    "difficulty": "medium",
+    "topic": "Hash Table",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Tư tưởng của phép băm là dựa vào giá trị các khoá k[1..n], chia các khoá đó ra thành các nhóm. Những khoá thuộc cùng một nhóm có một đặc điểm chung và đặc điểm này không có trong các nhóm khác. Khi có một khoá tìm kiếm X, trước hết ta xác định xem nếu X thuộc vào dãy khoá đã cho thì nó phải thuộc nhóm nào và tiến hành tìm kiếm trên nhóm đó."
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        132
+    ]
+  },
+ {
+  "id": "Q011",
+  "question": "Khi có nhiều đường đi từ đỉnh xuất phát tới đỉnh đích, thuật toán tìm kiếm theo chiều sâu (DFS) luôn trả về một đường đi có đặc điểm gì?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Graph, BFS, DFS",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Có thể có nhiều đường đi từ s tới f, nhưng thuật toán DFS luôn trả về một đường đi có thứ tự từ điển nhỏ nhất."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    189
+  ]
+},
+  {
+    "id": "Q012",
+    "question": "Mô tả các bước thực hiện thuật toán Dijkstra tìm đường đi ngắn nhất trên đồ thị có trọng số không âm?",
+    "question_type": "procedural",
+    "difficulty": "hard",
+    "topic": "Graph",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Thuật toán Dijkstra (E.Dijkstra - 1959) có thể mô tả như sau:\nBước 1: Khởi tạo\nVới đỉnh v ∈ V, gọi nhãn d[v] là độ dài đường đi ngắn nhất từ s tới v. Ban đầu d[v] được khởi gán như trong thuật toán Ford-Bellman (d[s] = 0 và d[v] = ∞ với ∀v ≠ s). Nhãn của mỗi đỉnh có hai trạng thái tự do hay cố định, nhãn tự do có nghĩa là có thể còn tối ưu hơn được nữa và nhãn cố định tức là d[v] đã bằng độ dài đường đi ngắn nhất từ s tới v nên không thể tối ưu thêm. Để làm điều này ta có thể sử dụng kỹ thuật đánh dấu: Free[v] = TRUE hay FALSE tuỳ theo d[v] tự do hay cố định. Ban đầu các nhãn đều tự do.\nBước 2: Lặp\nBước lặp gồm có hai thao tác:\nCố định nhãn: Chọn trong các đỉnh có nhãn tự do, lấy ra đỉnh u là đỉnh có d[u] nhỏ nhất, và cố định nhãn đỉnh u.\nSửa nhãn: Dùng đỉnh u, xét tất cả những đỉnh v và sửa lại các d[v] theo công thức:\n[ ] [ ] [ ] [ ]( )d v  := min d v , d u +c u,v\nBước lặp sẽ kết thúc khi mà đỉnh đích f được cố định nhãn (tìm được đường đi ngắn nhất từ s tới f); hoặc tại thao tác cố định nhãn, tất cả các đỉnh tự do đều có nhãn là +∞ (không tồn tại đường đi).\nBước 3: Kết hợp với việc lưu vết đường đi trên từng bước sửa nhãn, thông báo đường đi ngắn nhất tìm được hoặc cho biết không tồn tại đường đi (d[f] = +∞)."
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        236
+    ]
+  },
+{
+  "id": "Q013",
+  "question": "Đồ thị vô hướng được định nghĩa như thế nào về đặc tính của các cạnh trong tập E?",
+  "question_type": "comparative",
+  "difficulty": "easy",
+  "topic": "Graph",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "G được gọi là đồ thị vô hướng (undirected graph) nếu các cạnh trong E là không định hướng, tức là cạnh nối hai đỉnh u, v bất kỳ cũng là cạnh nối hai đỉnh v, u. Hay nói cách khác, tập E gồm các cặp (u, v) không tính thứ tự. (u, v)≡(v, u)"
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    179
+  ]
+},
+  {
+    "id": "Q014",
+    "question": "Độ phức tạp tính toán, tính ổn định và việc sử dụng bộ nhớ của thuật toán sắp xếp QuickSort?",
+    "question_type": "factual",
+    "difficulty": "medium",
+    "topic": "Sorting",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Trường hợp tồi tệ nhất là tại mỗi bước chọn chốt để phân đoạn, ta chọn đúng vào khoá lớn nhất hoặc nhỏ nhất của dãy khoá, tạo ra một đoạn gồm 1 khoá và đoạn còn lại gồm n - 1 khoá, khi đó độ phức tạp tính toán của QuickSort là Θ(n2). Thời gian thực hiện giải thuật QuickSort trung bình là Θ(nlgn)."
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        96
+    ]
+  },
+  {
+    "id": "Q015",
+    "question": "Giải thích tại sao trong trường hợp xấu nhất, độ phức tạp của thuật toán HeapSort cũng chỉ là O(nlgn)?",
+    "question_type": "procedural",
+    "difficulty": "medium",
+    "topic": "Sorting",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Về độ phức tạp của thuật toán, ta đã biết rằng cây nhị phân hoàn chỉnh có n nút thì chiều cao của nó là [lg(n)] + 1. Cứ cho là trong trường hợp xấu nhất thủ tục Adjust phải thực hiện tìm đường đi từ nút gốc tới nút lá ở xa nhất thì đường đi tìm được cũng chỉ dài bằng chiều cao của cây nên thời gian thực hiện một lần gọi Adjust là O(lgn). Từ đó có thể suy ra, trong trường hợp xấu nhất, độ phức tạp của HeapSort cũng chỉ là O(nlgn)."
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        104
+    ]
+  },
+{
+  "id": "Q016",
+  "question": "Ma trận kề có những ưu điểm gì trong việc biểu diễn đồ thị?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Graph",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Ưu điểm của ma trận kề:\nĐơn giản, trực quan, dễ cài đặt trên máy tính\nĐể kiểm tra xem hai đỉnh (u, v) của đồ thị có kề nhau hay không, ta chỉ việc kiểm tra bằng một phép so sánh: a[u, v] ≠ 0."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    181
+  ]
+},
+  {
+    "id": "Q017",
+    "question": "Cây nhị phân hoàn chỉnh (complete binary tree) và cây nhị phân đầy đủ (full binary tree) được định nghĩa và phân biệt như thế nào?",
+    "question_type": "comparative",
+    "difficulty": "medium",
+    "topic": "Tree",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Các cây trong Hình 20 được gọi là cây nhị phân hoàn chỉnh (complete binary tree): Nếu chiều cao của cây là h thì mọi nút có mức < h - 1 đều có đúng 2 nút con. Còn nếu mọi nút có mức ≤ h - 1 đều có đúng 2 nút con như trường hợp cây f) ở trên thì cây đó được gọi là cây nhị phân đầy đủ (full binary tree). Cây nhị phân đầy đủ là trường hợp riêng của cây nhị phân hoàn chỉnh."
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        72
+    ]
+  },
+{
+  "id": "Q018",
+  "question": "Phép tìm kiếm nhị phân có thể áp dụng trên dãy khoá có đặc điểm gì, và nếu khoá k[median] nhỏ hơn khoá tìm kiếm X thì quá trình tìm kiếm sẽ tiếp tục ở đoạn nào?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Searching",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Phép tìm kiếm nhị phân có thể áp dụng trên dãy khoá đã có thứ tự: k[1] ≤ k[2] ≤ … ≤ k[n]. Giả sử ta cần tìm trong đoạn k[inf...sup] với khoá tìm kiếm là X, trước hết ta xét khoá nằm giữa dãy k[median] với median = (inf + sup) div 2; Nếu k[median] < X thì có nghĩa là đoạn từ k[inf] tới k[median] chỉ chứa toàn khoá < X, ta tiến hành tìm kiếm tiếp với đoạn từ k[median+1]tới k[sup]."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    126
+  ]
+},
+  {
+    "id": "Q019",
+    "question": "Phép duyệt cây theo thứ tự giữa (inorder traversal) được thực hiện theo nguyên tắc nào?",
+    "question_type": "procedural",
+    "difficulty": "medium",
+    "topic": "Tree",
+    "source_book": "le_minh_hoang",
+    "reference_contexts": [
+        "Trong phép duyệt theo thứ tự giữa thì giá trị trong mỗi nút bất kỳ sẽ được liệt kê sau giá trị lưu ở nút con trái và được liệt kê trước giá trị lưu ở nút con phải của nút đó, có thể mô tả bằng thủ tục đệ quy sau:"
+    ],
+    "ground_truth_docs": [
+        "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+    ],
+    "ground_truth_pages": [
+        74
+    ]
+  },
+{
+  "id": "Q020",
+  "question": "So sánh thuật toán sắp xếp kiểu chọn và thuật toán sắp xếp nổi bọt về tổng số phép so sánh và độ phức tạp tính toán?",
+  "question_type": "comparative",
+  "difficulty": "easy",
+  "topic": "Sorting",
+  "source_book": "le_minh_hoang",
+  "reference_contexts": [
+    "Đối với phương pháp kiểu lựa chọn, có thể coi phép so sánh (k[j] < k[jmin]) là phép toán tích cực để đánh giá hiệu suất thuật toán về mặt thời gian. Ở lượt thứ i, để chọn ra khoá nhỏ nhất bao giờ cũng cần n - i phép so sánh, số lượng phép so sánh này không hề phụ thuộc gì vào tình trạng ban đầu của dãy khoá cả. Từ đó suy ra tổng số phép so sánh sẽ phải thực hiện là:\n(n - 1) + (n - 2) + … + 1 = n * (n - 1) / 2\nVậy thuật toán sắp xếp kiểu chọn có độ phức tạp tính toán là O(n2)",
+    "Đối với thuật toán sắp xếp nổi bọt, có thể coi phép toán tích cực là phép so sánh k[j] < k[j-1]. Và số lần thực hiện phép so sánh này là:\n(n - 1) + (n - 2) + … + 1 = n * (n - 1) / 2\nVậy thuật toán sắp xếp nổi bọt cũng có độ phức tạplà O(n2). Bất kể tình trạng dữ liệu vào như thế nào."
+  ],
+  "ground_truth_docs": [
+    "Giai_thuat_va_Lap_trinh_Le_Minh_Hoang"
+  ],
+  "ground_truth_pages": [
+    91
+  ]
+},
+{
+  "id": "Q021",
+  "question": "How is a linked list defined, and what is the main advantage of using it compared to an array when representing a sequence of items?",
+  "question_type": "comparative",
+  "difficulty": "easy",
+  "topic": "Linked List",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Definition. A linked list is a recursive data structure that is either empty (null) or a reference to a node having a generic item and a reference to a linked list.",
+    "A linked list represents a sequence of items. In the example just considered, first represents the sequence to be or. We can also use an array to represent a sequence of items. For example, we could use\nString[] s = { \"to\", \"be\", \"or\" };\nto represent the same sequence of strings. The difference is that it is easier to insert items into the sequence and to remove items from the sequence with linked lists."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    142,
+    143
+  ]
+},
+{
+  "id": "Q022",
+  "question": "What is the main performance flaw of the resizing array implementation of a stack, and how does the linked-list implementation overcome it?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Stack",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "The flaw in ResizingArrayStack is that some push and pop operations require resizing: this takes time proportional to the size of the stack.",
+    "This use of linked lists achieves our optimum design goals: ■ It can be used for any type of data. ■ The space required is always proportional to the size of the collection. ■ The time per operation is always independent of the size of the collection."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    141,
+    146
+  ]
+},
+{
+  "id": "Q023",
+  "question": "What is the fundamental difference in the ordering policy between a FIFO queue and a pushdown stack?",
+  "question_type": "comparative",
+  "difficulty": "easy",
+  "topic": "Queue",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "A FIFO queue (or just a queue) is a collection that is based on the first-in-first-out (FIFO) policy.",
+    "A pushdown stack (or just a stack) is a collection that is based on the last-in-first-out (LIFO) policy."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    125,
+    126
+  ]
+},
+  {
+    "id": "Q024",
+    "question": "How is a binary search tree (BST) defined and what ordering restriction does it satisfy?",
+    "question_type": "factual",
+    "difficulty": "easy",
+    "topic": "BST",
+    "source_book": "sedgewick",
+    "reference_contexts": [
+        "Definition. A binary search tree (BST) is a binary tree where each node has a Comparable key (and an associated value) and satisfies the restriction that the key in any node is larger than the keys in all nodes in that node’s left subtree and smaller than the keys in all nodes in that node’s right subtree."
+    ],
+    "ground_truth_docs": [
+        "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+        396
+    ]
+  },
+{
+  "id": "Q025",
+  "question": "How is the structural conversion between a red-black BST and a 2-3 tree described to establish their one-to-one correspondence?",
+  "question_type": "comparative",
+  "difficulty": "hard",
+  "topic": "BST, AVL",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "If we draw the red links horizontally in a red-black BST, all of the null links are the same distance from the root, and if we then collapse together the nodes connected by red links, the result is a 2-3 tree. Conversely, if we draw 3-nodes in a 2-3 tree as two 2-nodes connected by a red link that leans left, then no node has two red links connected to it, and the tree has perfect black balance, since the black links correspond to the 2-3 tree links, which are perfectly balanced by definition."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    432
+  ]
+},
+{
+  "id": "Q026",
+  "question": "How is a binary heap defined in terms of its key arrangement and representation?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Heap",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Definition. A binary heap is a collection of keys arranged in a complete heap-ordered binary tree, represented in level order in an array (not using the first entry)."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    313
+  ]
+},
+{
+  "id": "Q027",
+  "question": "What is the primary performance difference between separate chaining and linear probing in practice?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Hash Table",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "In practice, the primary performance difference between the two methods has to do with the fact that separate chaining uses a small block of memory for each key-value pair, while linear probing uses two large arrays for the whole table."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    476
+  ]
+},
+{
+  "id": "Q028",
+  "question": "What are the basic steps performed by breadth-first search after putting the source vertex on the queue, which are repeated until the queue is empty?",
+  "question_type": "procedural",
+  "difficulty": "medium",
+  "topic": "Graph, BFS",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "We put the source vertex on the queue, then perform the following steps until the queue is empty: ■ Take the next vertex v from the queue and mark it. ■ Put onto the queue all unmarked vertices that are adjacent to v."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    538
+  ]
+},
+ {
+  "id": "Q029",
+  "question": "How does a depth-first-search-based solution use the recursive call stack to detect a directed cycle?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "Graph, DFS",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Developing a depth-first-search-based solution to this problem is not difficult, based on the fact that the recursive call stack maintained by the system represents the “current” directed path under consideration (like the string back to the entrance in Tremaux maze exporation). If we ever find a directed edge v->w to a vertex w that is on that stack, we have found a cycle, since the stack is evidence of a directed path from w to v, and the edge v->w completes the cycle."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    576
+  ]
+},
+{
+  "id": "Q030",
+  "question": "What problem does the queue-based implementation of the Bellman-Ford algorithm solve, and what are its worst-case time and space complexities according to Proposition Y?",
+  "question_type": "comparative",
+  "difficulty": "hard",
+  "topic": "Graph",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Proposition Y. The queue-based implementation of the Bellman-Ford algorithm solves the shortest-paths problem from a given source s (or finds a negative cycle reachable from s) for any edge-weighted digraph with V vertices, in time proportional to EV and extra space proportional to V, in the worst case."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    673
+  ]
+},
+  {
+    "id": "Q031",
+    "question": "How is the mergesort algorithm defined based on the merging operation, and what are its primary performance guarantee and disadvantage?",
+    "question_type": "procedural",
+    "difficulty": "medium",
+    "topic": "Sorting",
+    "source_book": "sedgewick",
+    "reference_contexts": [
+        "The algorithms that we consider in this section are based on a simple operation known as merging : combining two ordered arrays to make one larger ordered array. This operation immediately leads to a simple recursive sort method known as mergesort : to sort an array, divide it into two halves, sort the two halves (recursively), and then merge the results. As you will see, one of mergesort’s most attractive properties is that it guarantees to sort any array of N items in time proportional to N log N. Its prime disadvantage is that it uses extra space proportional to N."
+    ],
+    "ground_truth_docs": [
+        "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+        270
+    ]
+  },
+{
+  "id": "Q032",
+  "question": "What are the three conditions that the partitioning process rearranges the array to make hold?",
+  "question_type": "procedural",
+  "difficulty": "medium",
+  "topic": "Sorting",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "The crux of the method is the  partitioning process, which rearranges the array to make the following three conditions hold: ■  The entry a[j] is in its final place in the array, for some j. ■ No entry in a[lo] through a[j-1] is greater than a[j]. ■ No entry in a[j+1] through a[hi] is less than a[j]."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    289
+  ]
+},
+  {
+    "id": "Q033",
+    "question": "Why is heapsort considered theoretically significant in its use of time and space, and why is it rarely used in typical modern applications compared to quicksort and mergesort?",
+    "question_type": "comparative",
+    "difficulty": "hard",
+    "topic": "Sorting",
+    "source_book": "sedgewick",
+    "reference_contexts": [
+        "Heapsort is significant in the study of the complexity of sorting (see page 279) because it is the only method that we have seen that is optimal (within a constant factor) in its use of both time and space—it is guaranteed to use ~2N lg N compares and constant extra space in the worst case. When space is very tight (for example, in an embedded system or on a low-cost mobile device) it is popular because it can be implemented with just a few dozen lines (even in machine code) while still providing optimal performance. However, it is rarely used in typical applications on modern systems because it has poor cache performance: array entries are rarely compared with nearby array entries, so the number of cache misses is far higher than for quicksort, mergesort, and even shellsort, where most compares are with nearby entries."
+    ],
+    "ground_truth_docs": [
+        "Algorithms_4th_Sedgewick"
+    ],
+    "ground_truth_pages": [
+        327
+    ]
+  },
+{
+  "id": "Q034",
+  "question": "What is the fundamental limitation of arrays in Java regarding their size once created, and how does this impact the space used by the stack?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Array",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Choosing an array to represent the stack contents implies that clients must estimate the maximum size of the stack ahead of time. In Java, we cannot change the size of an array once created, so the stack always uses space proportional to that maximum."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    135
+  ]
+},
+ {
+  "id": "Q035",
+  "question": "How is a symbol table defined as a data structure in terms of the operations it supports?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "Symbol Table",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Definition. A symbol table is a data structure for key-value pairs that supports two operations: insert (put) a new pair into the table and search for (get) the value associated with a given key."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    362
+  ]
+},
+{
+  "id": "Q036",
+  "question": "How does the concept of two vertices being connected in an undirected graph contrast with a vertex being reachable from another in a digraph?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Graph",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "In an undirected graph, two vertices v and w are connected if there is a path connecting them—we can use that path to get from v to w or to get from w to v. In a digraph, by contrast, a vertex w is reachable from a vertex v if there is a directed path from v to w, but there may or may not be a directed path back to v from w."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    584
+  ]
+},
+{
+  "id": "Q037",
+  "question": "What is the primary difference in how Prim's and Kruskal's algorithms build the minimum spanning tree one edge at a time?",
+  "question_type": "comparative",
+  "difficulty": "hard",
+  "topic": "Graph",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Prim’s algorithm builds the MST one edge at a time, finding a new edge to attach to a single growing tree at each step. Kruskal’s algorithm also builds the MST one edge at a time; but, by contrast, it finds an edge that connects two trees in a forest of growing trees."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    623
+  ]
+},
+{
+  "id": "Q038",
+  "question": "How does the bottom-up reheapify (swim) procedure make progress toward fixing a heap order violation when a node's key becomes larger than its parent's key?",
+  "question_type": "procedural",
+  "difficulty": "medium",
+  "topic": "Heap",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "Bottom-up reheapify (swim). If the heap order is violated because a node’s key becomes larger than that node’s parent’s key, then we can make progress toward fixing the violation by exchanging the node with its parent. After the exchange, the node is larger than both its children (one is the old parent, and the other is smaller than the old parent because it was a child of that node) but the node may still be larger than its parent."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    315
+  ]
+},
+{
+  "id": "Q039",
+  "question": "How does binary search locate a search key in an ordered array by comparing it with the key in the middle of the subarray?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Searching",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "We maintain indices into the sorted key array that delimit the subarray that might contain the search key. To search, we compare the search key against the key in the middle of the subarray. If the search key is less than the key in the middle, we search in the left half of the subarray; if the search key is greater than the key in the middle, we search in the right half of the subarray; otherwise the key in the middle is equal to the search key."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    380
+  ]
+},
+{
+  "id": "Q040",
+  "question": "How is an AVL tree defined, and how does coloring its links based on node heights relate it to a perfectly balanced 2-3-4 tree?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "AVL",
+  "source_book": "sedgewick",
+  "reference_contexts": [
+    "3.3.32 AVL trees. An AVL tree is a BST where the height of every node and that of its sibling differ by at most 1. (The oldest balanced tree algorithms are based on using rotations to maintain height balance in AVL trees.) Show that coloring red links that go from nodes of even height to nodes of odd height in an AVL tree gives a (perfectly balanced) 2-3-4 tree, where red links are not necessarily left-leaning."
+  ],
+  "ground_truth_docs": [
+    "Algorithms_4th_Sedgewick"
+  ],
+  "ground_truth_pages": [
+    451
+  ]
+},
+{
+  "id": "Q041",
+  "question": "What is the access time for any array element under the assumption that the computer can access all memory locations in the same amount of time, as in the RAM model?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Array",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Assuming that the computer can access all memory locations in the same amount of time (as in the RAM model described in Section 2.2), it takes constant time to access any array element, regardless of the index."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    252
+  ]
+},
+ {
+  "id": "Q042",
+  "question": "In the worst case, how do the times for insertion and deletion in an array compare with those for a doubly linked list, and what is the worst-case time for deleting an element from a singly linked list?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Linked List",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "In the worst case, therefore, insertion and deletion take ‚.n/ time in an array, compared with O.1/ time for a doubly linked list. (Exercise 10.2-1 asks you to show that deleting an element from a singly linked list takes ‚.n/ time in the worst case.)"
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    261
+  ]
+},
+{
+  "id": "Q043",
+  "question": "Which element is deleted from a stack to implement its last-in, first-out (LIFO) policy?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "Stack",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "In a stack, the element deleted from the set is the one most recently inserted: the stack implements a last-in, ûrst-out, or LIFO, policy."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    254
+  ]
+},
+{
+  "id": "Q044",
+  "question": "How does the deletion policy of a queue differ from that of a stack?",
+  "question_type": "comparative",
+  "difficulty": "easy",
+  "topic": "Queue",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "In a stack, the element deleted from the set is the one most recently inserted: the stack implements a last-in, ûrst-out, or LIFO, policy. Similarly, in a queue, the element deleted is always the one that has been in the set for the longest time: the queue implements a ûrst-in, ûrst-out, or FIFO, policy."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    254
+  ]
+},
+{
+  "id": "Q045",
+  "question": "What specific property must the keys in a binary search tree always satisfy regarding the nodes in their left and right subtrees?",
+  "question_type": "factual",
+  "difficulty": "easy",
+  "topic": "BST",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "The keys in a binary search tree are always stored in such a way as to satisfy the  binary-search-tree property: Let x be a node in a binary search tree. If y is a node in the left subtree  of x , then y: key හ x: key. If y is a node in the right subtree of x , then y: key  x: key."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    314
+  ]
+},
+  {
+    "id": "Q046",
+    "question": "How does the structure of a binary search tree affect the worst-case running time of its basic operations, and what is its expected height when built on a random set of keys?",
+    "question_type": "comparative",
+    "difficulty": "medium",
+    "topic": "BST",
+    "source_book": "introduction_to_algorithms_4th",
+    "reference_contexts": [
+        "Basic operations on a binary search tree take time proportional to the height of the tree. For a complete binary tree with n nodes, such operations run in ‚.lg n/ worst-case time. If the tree is a linear chain of n nodes, however, the same oper- ations take ‚.n/ worst-case time. In Chapter 13, we’ll see a variation of binary search trees, red-black trees, whose operations guarantee a height of O.lg n/. We won’t prove it here, but if you build a binary search tree on a random set of n keys, its expected height is O.lg n/ even if you don’t try to limit its height."
+    ],
+    "ground_truth_docs": [
+        "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+    ],
+    "ground_truth_pages": [
+        312
+    ]
+  },
+{
+  "id": "Q047",
+  "question": "How is a red-black tree defined, and what are the five red-black properties it must satisfy?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "Red-Black Tree",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "***A red-black tree is a binary search tree that satisûes the following red-black*** ***properties:*** 1. Every node is either red or black. 2. The root is black. 3. Every leaf (NIL) is black. 4. If a node is red, then both its children are black. 5. For each node, all simple paths from the node to descendant leaves contain the same number of black nodes."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    331,
+    332
+  ]
+},
+{
+  "id": "Q048",
+  "question": "How does the MAX-HEAPIFY procedure let a value float down to maintain the max-heap property?",
+  "question_type": "procedural",
+  "difficulty": "hard",
+  "topic": "Heap",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "MAX-HEAPIFY lets the value at AŒi <üoat down= in the max-heap so that the subtree rooted at index i obeys the max-heap property. Figure 6.2 illustrates the action of MAX-HEAPIFY. Each step determines the largest of the elements AŒi, AŒLEFT.i/, and AŒRIGHT.i/ and stores the index of the largest element in largest . If AŒi is largest, then the subtree rooted at node i is already a max-heap and nothing else needs to be done. Otherwise, one of the two children contains the largest element. Positions i and largest swap their contents, which causes node i and its children to satisfy the max-heap property. The node indexed by largest , however, just had its value decreased, and thus the subtree rooted at largest might violate the max-heap property. Consequently, MAX-HEAPIFY calls itself recursively on that subtree."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    164
+  ]
+},
+{
+  "id": "Q049",
+  "question": "How does the BUILD-MAX-HEAP procedure convert an array into a max-heap?",
+  "question_type": "procedural",
+  "difficulty": "medium",
+  "topic": "Heap",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "The procedure BUILD-MAX-HEAP converts an array AŒ1 W n into a max-heap by calling MAX-HEAPIFY in a bottom-up manner. Exercise 6.1-8 says that the ele- ments in the subarray AŒbn=2c C 1 W n are all leaves of the tree, and so each is a 1-element heap to begin with. BUILD-MAX-HEAP goes through the remain- ing nodes of the tree and runs MAX-HEAPIFY on each one."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    167
+  ]
+},
+{
+  "id": "Q050",
+  "question": "How does a hash function map the universe of keys into the slots of a hash table, as compared to direct addressing?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "Hash Table",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "With direct addressing, an element with key k is stored in slot k, but with hash- ing, we use a hash function h to compute the slot number from the key k, so that the element goes into slot h.k/. The hash function h maps the universe U of keys into the slots of a hash table T Œ0 W m  1: h W U ! f0; 1; : : : ;m  1g ; where the size m of the hash table is typically much less than jU j."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    275
+  ]
+},
+{
+  "id": "Q051",
+  "question": "What is the fundamental difference between open addressing and chaining regarding where elements are stored, and how does this impact the load factor ˛ in open addressing?",
+  "question_type": "comparative",
+  "difficulty": "hard",
+  "topic": "Hash Table",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "This section describes open addressing, a method for collision resolution that, un- like chaining, does not make use of storage outside of the hash table itself. In open addressing, all elements occupy the hash table itself. That is, each table entry con- tains either an element of the dynamic set or NIL. No lists or elements are stored outside the table, unlike in chaining. Thus, in open addressing, the hash table can <ûll up= so that no further insertions can be made. One consequence is that the load factor ˛ can never exceed 1."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    293
+  ]
+},
+{
+  "id": "Q052",
+  "question": "What is the primary purpose of breadth-first search when exploring a graph from a distinguished source vertex, and what does the computed distance to a reachable vertex represent?",
+  "question_type": "procedural",
+  "difficulty": "medium",
+  "topic": "Graph, BFS",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Given a graph G D .V;E/ and a distinguished source vertex s , breadth-ûrst search systematically explores the edges of G to <discover= every vertex that is reachable from s . It computes the distance from s to each reachable vertex, where the distance to a vertex v equals the smallest number of edges needed to go from s to v."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    554
+  ]
+},
+{
+  "id": "Q053",
+  "question": "What does the parenthesis theorem state regarding the intervals of timestamps for any two vertices in any depth-first search?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "Graph, DFS",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Theorem 20.7 (Parenthesis theorem) In any depth-ûrst search of a (directed or undirected) graph G D .V;E/, for any two vertices u and v, exactly one of the following three conditions holds:  * the intervals Œu: d; u: f  and Œv: d; v: f  are entirely disjoint, and neither u nor v* is a descendant of the other in the depth-ûrst forest,  * the interval Œu: d; u: f  is contained entirely within the interval Œv: d; v: f , and u* is a descendant of v in a depth-ûrst tree, or  * the interval Œv: d; v: f  is contained entirely within the interval Œu: d; u: f , and v* is a descendant of u in a depth-ûrst tree."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    567
+  ]
+},
+{
+  "id": "Q054",
+  "question": "What is the running time of DFS, and what does its predecessor subgraph form due to the structure of recursive calls?",
+  "question_type": "comparative",
+  "difficulty": "medium",
+  "topic": "Graph, BFS, DFS",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "The running time of DFS is therefore ‚.V C E/. Depth-ûrst search yields valuable information about the structure of a graph. Perhaps the most basic property of depth-ûrst search is that the predecessor subgraph G  does indeed form a forest of trees, since the structure of the depth-ûrst trees exactly mirrors the structure of recursive calls of DFS-VISIT."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    567
+  ]
+},
+{
+  "id": "Q055",
+  "question": "What are the three steps of the divide-and-conquer strategy used by merge sort?",
+  "question_type": "procedural",
+  "difficulty": "hard",
+  "topic": "Sorting",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Divide the subarray AŒp W r to be sorted into two adjacent subarrays, each of half** the size. To do so, compute the midpoint q of AŒp W r (taking the average of p and r ), and divide AŒp W r into subarrays AŒp W q and AŒq C 1 W r. **Conquer by sorting each of the two subarrays AŒp W q and AŒq C 1 W r recursively** using merge sort. **Combine by merging the two sorted subarrays AŒp W q and AŒq C 1 W r back into** AŒp W r, producing the sorted answer."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    35
+  ]
+},
+{
+  "id": "Q056",
+  "question": "How does the analysis use indicator random variables to express the total number of comparisons in RANDOMIZED-QUICKSORT?",
+  "question_type": "procedural",
+  "difficulty": "hard",
+  "topic": "Sorting",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Theorem 7.4 The expected running time of RANDOMIZED-QUICKSORT on an input of n distinct elements is O.n lg n/. Proof The analysis uses indicator random variables (see Section 5.2). Let the n distinct elements be ´ 1 < ´ 2 <    < ´ n , and for 1 හ i < j හ n, deûne the indicator random variable X ij D I f´ i is compared with ´ j g. From Lemma 7.2, each pair is compared at most once, and so we can express X as follows: X D n1 X i D1 n X j Di C1 X ij :"
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    197
+  ]
+},
+{
+  "id": "Q057",
+  "question": "How does counting sort manage to beat the Ω(n lg n) lower bound required for comparison sort algorithms?",
+  "question_type": "comparative",
+  "difficulty": "hard",
+  "topic": "Sorting",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Counting sort can beat the lower bound of .n lg n/ proved in Section 8.1 be- cause it is not a comparison sort. In fact, no comparisons between input elements occur anywhere in the code. Instead, counting sort uses the actual values of the elements to index into an array. The .n lg n/ lower bound for sorting does not apply when we depart from the comparison sort model."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    209
+  ]
+},
+{
+  "id": "Q058",
+  "question": "How does the binary search algorithm reduce the search space in a sorted array?",
+  "question_type": "factual",
+  "difficulty": "medium",
+  "topic": "Searching",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "***2.3-6*** Referring back to the searching problem (see Exercise 2.1-4), observe that if the subarray being searched is already sorted, the searching algorithm can check the midpoint of the subarray against v and eliminate half of the subarray from further ***consideration. The binary search algorithm repeats this procedure, halving the*** size of the remaining portion of the subarray each time."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    44
+  ]
+},
+{
+  "id": "Q059",
+  "question": "What are the four steps of the STRONGLY-CONNECTED-COMPONENTS procedure used to compute the strongly connected components of a directed graph?",
+  "question_type": "procedural",
+  "difficulty": "hard",
+  "topic": "Graph",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "STRONGLY-CONNECTED-COMPONENTS .G/  1 call DFS.G/ to compute ûnish times u: f for each vertex u 2 create G T 3 call DFS.G T /, but in the main loop of DFS, consider the vertices in order of decreasing u: f (as computed in line 1) 4 output the vertices of each tree in the depth-ûrst forest formed in line 3 as a separate strongly connected component"
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    578
+  ]
+},
+{
+  "id": "Q060",
+  "question": "How do Dijkstra's algorithm and the Bellman-Ford algorithm compare in terms of their requirements on edge weights and the handling of negative-weight cycles?",
+  "question_type": "comparative",
+  "difficulty": "hard",
+  "topic": "Graph",
+  "source_book": "introduction_to_algorithms_4th",
+  "reference_contexts": [
+    "Some shortest-paths algorithms, such as Dijkstra9s algorithm, assume that all edge weights in the input graph are nonnegative, as in a road network. Others, such as the Bellman-Ford algorithm, allow negative-weight edges in the input graph and produce a correct answer as long as no negative-weight cycles are reachable from the source. Typically, if there is such a negative-weight cycle, the algorithm can detect and report its existence."
+  ],
+  "ground_truth_docs": [
+    "Introduction to Algorithms 4th.Leiserson.Stein.Rivest.Cormen.MIT.Press"
+  ],
+  "ground_truth_pages": [
+    607
+  ]
+}
+]

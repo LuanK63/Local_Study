@@ -148,7 +148,7 @@ class DijkstraVisualizer:
             if (r, c) == (er, ec):
                 path = self._reconstruct_path(prev, sr, sc, er, ec)
                 self._emit(engine, dist, visited, frontier, current=(r, c),
-                           path=path, message="✅ Tìm thấy đường đi ngắn nhất!")
+                           path=path, message=" Tìm thấy đường đi ngắn nhất!")
                 return
 
             # Duyệt 4 láng giềng (lên, xuống, trái, phải)
@@ -174,7 +174,7 @@ class DijkstraVisualizer:
 
         # Nếu heap rỗng mà chưa đến đích → không có đường đi
         self._emit(engine, dist, visited, frontier, current=None,
-                   path=None, message="❌ Không tìm thấy đường đi!")
+                   path=None, message=" Không tìm thấy đường đi!")
 
     # ── Private helpers ───────────────────────────────────────────────────────
 

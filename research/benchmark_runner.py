@@ -10,7 +10,15 @@ import argparse
 import time
 import json
 import os
+import sys
 from pathlib import Path
+
+if sys.platform.startswith("win"):
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from utils.config import get_config
 from core.retrieval.hybrid_retriever import ingest_subject_documents
@@ -18,8 +26,20 @@ from core.pipeline.retrieval_pipeline import RetrievalPipeline
 from research.utils.yaml_loader import load_benchmark_matrix, load_chunking_config
 from research.utils.dataset_loader import load_active_dataset
 from research.database.init_benchmark_db import get_benchmark_connection, init_benchmark_db
-from research.evaluation.relevance import evaluate_relevance
+from research.evaluation.relevance import (
+    V5_CONTAINMENT_THRESHOLD,
+    best_ref_containment,
+    evaluate_relevance,
+    uses_containment_eval,
+)
 from research.evaluation.metrics import calculate_metrics
+
+
+def _resolve_retrieval_version(dataset_version: str) -> str:
+    if uses_containment_eval(dataset_version):
+        return "v1-containment"
+    return "v1"
+
 
 def run_experiment(exp_name: str, exp_id: int, questions: list, dataset_version: str):
     """Thực thi một experiment (với một chunking strategy cố định)."""
@@ -140,6 +160,13 @@ def run_experiment(exp_name: str, exp_id: int, questions: list, dataset_version:
         db_conn.close()
     
     # 4. Chạy các câu hỏi Benchmark
+    containment_eval = uses_containment_eval(dataset_version)
+    if containment_eval:
+        print(
+            f"[{exp_name}] Chế độ chấm: containment-only "
+            f"(token recall >= {V5_CONTAINMENT_THRESHOLD}, không cosine)"
+        )
+
     pipeline = RetrievalPipeline(
         subject_id=subject_id,
         top_k=5,
@@ -168,10 +195,19 @@ def run_experiment(exp_name: str, exp_id: int, questions: list, dataset_version:
         
         # Đánh giá relevance
         relevant_flags = []
+        containment_scores = []
         for chunk in final_chunks:
             chunk_text = chunk.get("text", "")
-            is_rel = evaluate_relevance(ref_contexts, chunk_text)
+            coverage = best_ref_containment(ref_contexts, chunk_text)
+            containment_scores.append(coverage)
+            if containment_eval:
+                is_rel = coverage >= V5_CONTAINMENT_THRESHOLD
+            else:
+                is_rel = evaluate_relevance(ref_contexts, chunk_text)
             relevant_flags.append(is_rel)
+
+        ref_coverage = max(containment_scores) if containment_scores else 0.0
+        full_hit = 1.0 if ref_coverage >= V5_CONTAINMENT_THRESHOLD else 0.0
             
         # Tính toán metric
         metrics = calculate_metrics(relevant_flags, k=5)
@@ -179,9 +215,15 @@ def run_experiment(exp_name: str, exp_id: int, questions: list, dataset_version:
         # Ghi vào db table question_results
         cur = conn.cursor()
         cur.execute("""
-            INSERT INTO question_results (experiment_id, question_id, hit_rate, mrr, retrieval_latency)
-            VALUES (?, ?, ?, ?, ?)
-        """, (exp_id, question_id, metrics["hit_rate_at_k"], metrics["mrr"], latency))
+            INSERT INTO question_results (
+                experiment_id, question_id, hit_rate, mrr, retrieval_latency,
+                ref_coverage, full_hit
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            exp_id, question_id, metrics["hit_rate_at_k"], metrics["mrr"], latency,
+            ref_coverage, full_hit,
+        ))
         conn.commit()
         
         # Cộng dồn
@@ -282,6 +324,11 @@ def main():
         
     print(f"Đã nạp Benchmark Matrix gồm {len(matrix)} cấu hình.")
     print(f"Đã nạp Dataset {ds_version} gồm {len(questions)} câu hỏi.")
+    if uses_containment_eval(ds_version):
+        print(
+            f"Dataset v5 → chấm containment-only (token recall >= {V5_CONTAINMENT_THRESHOLD}), "
+            "retrieval_version=v1-containment"
+        )
 
     if args.smoke_test:
         print("\n>>> CHẾ ĐỘ SMOKE TEST <<<")
@@ -293,7 +340,7 @@ def main():
     conn = get_benchmark_connection()
     cur = conn.cursor()
     
-    retrieval_version = "v1" # Hardcode retrieval pipeline version (hybrid -> rerank -> crag)
+    retrieval_version = _resolve_retrieval_version(ds_version)
     
     experiments_to_run = []
     

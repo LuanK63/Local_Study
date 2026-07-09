@@ -1,5 +1,4 @@
-"""
-ui/setup_wizard.py
+"""ui/setup_wizard.py
 First-run setup dialog: installs Ollama and pulls required models automatically.
 Shows a step-by-step progress UI. Only shown once (tracked in global_config or a flag file).
 """
@@ -37,23 +36,23 @@ class SetupWorker(QObject):
         try:
             # ── Step 1: Ollama ────────────────────────────────────────────────
             if not self._ollama_installed():
-                self.step_changed.emit("⬇️  Đang tải Ollama (~100 MB)...")
+                self.step_changed.emit("  Đang tải Ollama (~100 MB)...")
                 self._download_ollama()
-                self.step_changed.emit("⚙️  Đang cài đặt Ollama...")
+                self.step_changed.emit("  Đang cài đặt Ollama...")
                 self._install_ollama()
 
             # ── Step 2: Start Ollama service ──────────────────────────────────
-            self.step_changed.emit("🚀  Đang khởi động Ollama service...")
+            self.step_changed.emit("  Đang khởi động Ollama service...")
             self._start_ollama()
 
             # ── Step 3: Pull models ───────────────────────────────────────────
             for model_id, model_desc in REQUIRED_MODELS:
                 if not self._model_exists(model_id):
-                    self.step_changed.emit(f"📥  Đang tải {model_desc}...")
+                    self.step_changed.emit(f"  Đang tải {model_desc}...")
                     self.log.emit(f"[ollama pull {model_id}]")
                     self._pull_model(model_id)
                 else:
-                    self.log.emit(f"✓ {model_id} đã có sẵn")
+                    self.log.emit(f" {model_id} đã có sẵn")
 
             self.finished.emit(True, "")
 
@@ -78,7 +77,7 @@ class SetupWorker(QObject):
             str(OLLAMA_INSTALLER_PATH),
             reporthook=reporthook,
         )
-        self.log.emit("✓ Tải Ollama xong")
+        self.log.emit("Tải Ollama xong")
 
     def _install_ollama(self):
         # Silent install
@@ -88,7 +87,7 @@ class SetupWorker(QObject):
         )
         if result.returncode not in (0, 3010):  # 3010 = restart required
             raise RuntimeError(f"Cài Ollama thất bại (code {result.returncode})")
-        self.log.emit("✓ Cài Ollama thành công")
+        self.log.emit("Cài Ollama thành công")
         # Clean up installer
         try:
             OLLAMA_INSTALLER_PATH.unlink()
@@ -99,7 +98,7 @@ class SetupWorker(QObject):
         # Start server in background if not running
         try:
             subprocess.run(["ollama", "list"], capture_output=True, timeout=5)
-            self.log.emit("✓ Ollama service đang chạy")
+            self.log.emit("Ollama service đang chạy")
             return
         except Exception:
             pass
@@ -113,7 +112,7 @@ class SetupWorker(QObject):
             time.sleep(1)
             try:
                 subprocess.run(["ollama", "list"], capture_output=True, timeout=3)
-                self.log.emit("✓ Ollama service đã khởi động")
+                self.log.emit("Ollama service đã khởi động")
                 return
             except Exception:
                 pass
@@ -142,7 +141,7 @@ class SetupWorker(QObject):
         process.wait()
         if process.returncode != 0:
             raise RuntimeError(f"Pull model {model_id} thất bại")
-        self.log.emit(f"✓ {model_id} đã tải xong")
+        self.log.emit(f" {model_id} đã tải xong")
 
 
 # ── Dialog ────────────────────────────────────────────────────────────────────
@@ -165,7 +164,7 @@ class SetupWizard(QDialog):
         layout.setSpacing(14)
 
         # Title
-        title = QLabel("🚀 Chào mừng đến với Local Study RAG Agent")
+        title = QLabel("Chào mừng đến với Local Study RAG Agent")
         title.setFont(QFont("Inter", 13, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -197,7 +196,7 @@ class SetupWizard(QDialog):
 
         # Note
         note = QLabel(
-            "⚠️  Lần đầu tiên sẽ cần tải ~5 GB dữ liệu (model AI).\n"
+            "  Lần đầu tiên sẽ cần tải ~5 GB dữ liệu (model AI).\n"
             "Từ lần sau sẽ khởi động ngay lập tức."
         )
         note.setFont(QFont("Inter", 10))
@@ -206,7 +205,7 @@ class SetupWizard(QDialog):
         layout.addWidget(note)
 
         # Continue button (hidden until done)
-        self.btn_continue = QPushButton("✅  Bắt đầu sử dụng")
+        self.btn_continue = QPushButton("  Bắt đầu sử dụng")
         self.btn_continue.setFixedHeight(40)
         self.btn_continue.setFont(QFont("Inter", 11, QFont.Weight.Bold))
         self.btn_continue.setVisible(False)
@@ -242,14 +241,14 @@ class SetupWizard(QDialog):
         self.progress_bar.setRange(0, 1)
         self.progress_bar.setValue(1)
         if success:
-            self.step_label.setText("✅  Thiết lập hoàn tất!")
-            self._append_log("\n🎉 Sẵn sàng sử dụng!")
+            self.step_label.setText("  Thiết lập hoàn tất!")
+            self._append_log("\n Sẵn sàng sử dụng!")
             self.btn_continue.setVisible(True)
         else:
-            self.step_label.setText(f"❌  Lỗi: {error}")
+            self.step_label.setText(f"  Lỗi: {error}")
             self._append_log(f"\n[LỖI] {error}")
             # Allow retry or exit
-            self.btn_continue.setText("❌  Đóng")
+            self.btn_continue.setText("  Đóng")
             self.btn_continue.setVisible(True)
 
     def _on_continue(self):

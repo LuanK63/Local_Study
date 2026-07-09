@@ -4,13 +4,24 @@ Run with: python main.py  OR  LocalStudyRAGAgent.exe
 """
 import sys
 import os
+
+os.environ["CHROMA_TELEMETRY"] = "False"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+os.environ["POSTHOG_DISABLED"] = "1"
+
 import types
+
+# Đảm bảo thư mục gốc của dự án nằm trong sys.path để chạy được ứng dụng từ bất kỳ thư mục làm việc nào
+_root = os.path.dirname(os.path.abspath(__file__))
+if _root not in sys.path:
+    sys.path.insert(0, _root)
 
 # Reconfigure stdout/stderr to use UTF-8 on Windows to avoid UnicodeEncodeErrors
 if sys.platform.startswith('win'):
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 
 # Tắt ChromaDB telemetry (analytics) — loại bỏ warning "Failed to send telemetry"
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
@@ -54,7 +65,10 @@ def main():
     app.setApplicationVersion("1.0.0")
     app.setStyle("Fusion")
     app.setFont(QFont("Inter", 12))
-    load_stylesheet(app)
+    
+    # Always use light mode (theme toggle hidden in UI).
+    from ui.theme_manager import apply_theme
+    apply_theme("light", app)
 
     # ── First-run setup ───────────────────────────────────────────────────────
     from ui.setup_wizard import needs_setup, mark_setup_done, SetupWizard
@@ -88,3 +102,20 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Block này không bao giờ chạy, nhưng buộc PyInstaller phải quét tĩnh và đóng gói đầy đủ các module
+if False:
+    import modules.algorithm_visualizer
+    import modules.code_explainer
+    import modules.code_generator
+    import modules.code_grader
+    import modules.code_sandbox
+    import modules.complexity_analyzer
+    import modules.concept_explainer
+    import modules.flashcard_system
+    import modules.learning_path
+    import modules.practice_mode
+    import modules.lesson_mode
+    import modules.quiz_generator
+    import modules.weakness_detector
+

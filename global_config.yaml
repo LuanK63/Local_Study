@@ -3,7 +3,7 @@ llm:
   fallback_model: "qwen2.5-coder:3b"
   base_url: "http://localhost:11434"
   temperature: 0.2
-  timeout: 120
+  timeout: 300
 
 judge_model:
   provider: ollama
@@ -21,40 +21,64 @@ embedding:
   base_url: "http://localhost:11434"
 
 retrieval:
-  # Active chunking strategy (fixed | recursive | semantic | parent_child)
-  chunking_strategy: "recursive"
+
+  # fixed | recursive | token | sentence | paragraph | semantic | parent_child
+  chunking_strategy: "parent_child"
 
   # Parent-Child Chunking
-  parent_chunk_size: 1200   # ký tự — chunk lớn gửi cho LLM (1 mục/khái niệm đầy đủ)
-  child_chunk_size: 300     # ký tự — chunk nhỏ để embed + search
-  child_chunk_overlap: 30   # ký tự gối nhau giữa child chunks
+  parent_chunk_size: 1200
+  child_chunk_size: 300
+  child_chunk_overlap: 30
 
-  # Fixed Chunker
+
+  # Fixed Chunking
   fixed_chunk_size: 512
-  fixed_chunk_overlap: 102
+  fixed_chunk_overlap: 100
 
-  # Recursive Chunker
+
+  # Recursive Chunking
   recursive_chunk_size: 512
-  recursive_chunk_overlap: 102
+  recursive_chunk_overlap: 100
 
-  # Semantic Chunker
+
+  # Token Chunking
+  token_chunk_size: 256
+  token_chunk_overlap: 50
+
+
+  # Sentence Chunking
+  sentence_count: 5
+  overlap_sentences: 1
+
+
+  # Paragraph Chunking
+  paragraphs_per_chunk: 1
+  overlap_paragraphs: 0
+
+
+  # Semantic Chunking
   semantic_threshold_factor: 1.2
-
-  # Alias cho backward-compat
+  # Backward Compatibility
   chunk_size: 512
-  chunk_overlap: 102
+  chunk_overlap: 100
+
 
   top_k: 5
   bm25_weight: 0.5
   vector_weight: 0.5
   # search_mode: hybrid | semantic | bm25
-  # hybrid  = BM25 + Vector với RRF fusion (mặc định, tốt nhất cho tiếng Việt kỹ thuật)
-  # semantic = chỉ Vector search (embedding similarity)
-  # bm25     = chỉ BM25 keyword search
+ 
   search_mode: hybrid
   hyde:
     enabled: false
     temperature: 0.3
+
+rag:
+  mode: pure_rag
+  enable_rewrite: false
+  enable_crag: false
+  
+  rewrite_similarity_threshold: 0.40
 
 sandbox:
   timeout_seconds: 5

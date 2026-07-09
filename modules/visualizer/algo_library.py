@@ -37,7 +37,7 @@ def _bubble_sort(engine: "RenderEngine", data: list[int]):
                 "algo": "bubble_sort",
                 "data": arr[:],
                 "status": "comparing",
-                "message": f"🔍 So sánh arr[{j}]={arr[j]} và arr[{j+1}]={arr[j+1]}",
+                "message": f" So sánh arr[{j}]={arr[j]} và arr[{j+1}]={arr[j+1]}",
                 "compare_indices": [j, j+1],
                 "swap_indices": [],
                 "sorted_indices": list(sorted_set),
@@ -51,7 +51,7 @@ def _bubble_sort(engine: "RenderEngine", data: list[int]):
                     "algo": "bubble_sort",
                     "data": arr[:],
                     "status": "swapping",
-                    "message": f"🔄 Hoán đổi → arr[{j}]={arr[j]}, arr[{j+1}]={arr[j+1]}",
+                    "message": f" Hoán đổi → arr[{j}]={arr[j]}, arr[{j+1}]={arr[j+1]}",
                     "compare_indices": [],
                     "swap_indices": [j, j+1],
                     "sorted_indices": list(sorted_set),
@@ -63,7 +63,7 @@ def _bubble_sort(engine: "RenderEngine", data: list[int]):
             "algo": "bubble_sort",
             "data": arr[:],
             "status": "sorted",
-            "message": f"✅ Pass {i+1}/{n-1} xong. Phần tử {arr[n-i-1]} đã đúng vị trí.",
+            "message": f" Pass {i+1}/{n-1} xong. Phần tử {arr[n-i-1]} đã đúng vị trí.",
             "compare_indices": [],
             "swap_indices": [],
             "sorted_indices": list(sorted_set),
@@ -74,7 +74,7 @@ def _bubble_sort(engine: "RenderEngine", data: list[int]):
         "algo": "bubble_sort",
         "data": arr[:],
         "status": "done",
-        "message": "✅ Sắp xếp hoàn tất!",
+        "message": " Sắp xếp hoàn tất!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": list(range(n)),
@@ -98,7 +98,7 @@ def _selection_sort(engine: "RenderEngine", data: list[int]):
                 "algo": "selection_sort",
                 "data": arr[:],
                 "status": "comparing",
-                "message": f"🔍 Tìm min: arr[{j}]={arr[j]} vs min hiện tại arr[{min_idx}]={arr[min_idx]}",
+                "message": f" Tìm min: arr[{j}]={arr[j]} vs min hiện tại arr[{min_idx}]={arr[min_idx]}",
                 "compare_indices": [j],
                 "swap_indices": [min_idx],
                 "sorted_indices": list(sorted_set),
@@ -114,7 +114,7 @@ def _selection_sort(engine: "RenderEngine", data: list[int]):
                 "algo": "selection_sort",
                 "data": arr[:],
                 "status": "swapping",
-                "message": f"🔄 Hoán đổi arr[{i}] ↔ arr[{min_idx}]",
+                "message": f" Hoán đổi arr[{i}] ↔ arr[{min_idx}]",
                 "compare_indices": [],
                 "swap_indices": [i, min_idx],
                 "sorted_indices": list(sorted_set),
@@ -126,7 +126,7 @@ def _selection_sort(engine: "RenderEngine", data: list[int]):
             "algo": "selection_sort",
             "data": arr[:],
             "status": "sorted",
-            "message": f"✅ Đã đặt {arr[i]} vào vị trí {i}",
+            "message": f" Đã đặt {arr[i]} vào vị trí {i}",
             "compare_indices": [],
             "swap_indices": [],
             "sorted_indices": list(sorted_set),
@@ -137,7 +137,7 @@ def _selection_sort(engine: "RenderEngine", data: list[int]):
         "algo": "selection_sort",
         "data": arr[:],
         "status": "done",
-        "message": "✅ Sắp xếp hoàn tất!",
+        "message": " Sắp xếp hoàn tất!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": list(range(n)),
@@ -158,7 +158,7 @@ def _insertion_sort(engine: "RenderEngine", data: list[int]):
             "algo": "insertion_sort",
             "data": arr[:],
             "status": "comparing",
-            "message": f"🔍 Xét phần tử chèn key = arr[{i}]={key}",
+            "message": f" Xét phần tử chèn key = arr[{i}]={key}",
             "compare_indices": [i],
             "swap_indices": [],
             "sorted_indices": list(range(i)),
@@ -175,7 +175,7 @@ def _insertion_sort(engine: "RenderEngine", data: list[int]):
                     "algo": "insertion_sort",
                     "data": arr[:],
                     "status": "swapping",
-                    "message": f"🔄 Dịch chuyển arr[{j}]={arr[j]} sang phải",
+                    "message": f" Dịch chuyển arr[{j}]={arr[j]} sang phải",
                     "compare_indices": [],
                     "swap_indices": [j, j+1],
                     "sorted_indices": list(range(i+1)),
@@ -190,7 +190,7 @@ def _insertion_sort(engine: "RenderEngine", data: list[int]):
             "algo": "insertion_sort",
             "data": arr[:],
             "status": "swapping",
-            "message": f"🎯 Đặt key={key} vào vị trí {j+1}",
+            "message": f" Đặt key={key} vào vị trí {j+1}",
             "compare_indices": [j+1],
             "swap_indices": [],
             "sorted_indices": list(range(i+1)),
@@ -201,7 +201,7 @@ def _insertion_sort(engine: "RenderEngine", data: list[int]):
         "algo": "insertion_sort",
         "data": arr[:],
         "status": "done",
-        "message": "✅ Sắp xếp hoàn tất!",
+        "message": " Sắp xếp hoàn tất!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": list(range(n)),
@@ -232,7 +232,7 @@ def _merge_sort_run(engine, arr, l, r, state):
             "algo": "merge_sort",
             "data": arr[:],
             "status": "comparing",
-            "message": f"🔍 Trộn [{l}:{r}] → arr[{k}]={arr[k]}",
+            "message": f" Trộn [{l}:{r}] → arr[{k}]={arr[k]}",
             "compare_indices": list(range(l, k+1)),
             "swap_indices": [],
             "sorted_indices": [],
@@ -254,7 +254,7 @@ def _merge_sort(engine: "RenderEngine", data: list[int]):
         "algo": "merge_sort",
         "data": arr[:],
         "status": "done",
-        "message": "✅ Merge Sort hoàn tất!",
+        "message": " Merge Sort hoàn tất!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": list(range(len(arr))),
@@ -270,7 +270,7 @@ def _quick_sort_run(engine, arr, low, high, state):
         "algo": "quick_sort",
         "data": arr[:],
         "status": "comparing",
-        "message": f"🔍 Chọn Pivot = arr[{high}] = {pivot}",
+        "message": f" Chọn Pivot = arr[{high}] = {pivot}",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": [],
@@ -286,7 +286,7 @@ def _quick_sort_run(engine, arr, low, high, state):
             "algo": "quick_sort",
             "data": arr[:],
             "status": "comparing",
-            "message": f"🔍 So sánh arr[{j}]={arr[j]} và pivot={pivot}",
+            "message": f" So sánh arr[{j}]={arr[j]} và pivot={pivot}",
             "compare_indices": [j],
             "swap_indices": [],
             "pivot": high,
@@ -301,7 +301,7 @@ def _quick_sort_run(engine, arr, low, high, state):
                 "algo": "quick_sort",
                 "data": arr[:],
                 "status": "swapping",
-                "message": f"🔄 Hoán đổi phân vùng: arr[{i}] ↔ arr[{j}]",
+                "message": f" Hoán đổi phân vùng: arr[{i}] ↔ arr[{j}]",
                 "compare_indices": [],
                 "swap_indices": [i, j],
                 "pivot": high,
@@ -314,7 +314,7 @@ def _quick_sort_run(engine, arr, low, high, state):
         "algo": "quick_sort",
         "data": arr[:],
         "status": "swapping",
-        "message": f"🎯 Đặt pivot vào vị trí phân chia {i+1}",
+        "message": f" Đặt pivot vào vị trí phân chia {i+1}",
         "compare_indices": [],
         "swap_indices": [i+1, high],
         "current_line": 8,
@@ -333,7 +333,7 @@ def _quick_sort(engine: "RenderEngine", data: list[int]):
         "algo": "quick_sort",
         "data": arr[:],
         "status": "done",
-        "message": "✅ Quick Sort hoàn tất!",
+        "message": " Quick Sort hoàn tất!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": list(range(len(arr))),
@@ -362,7 +362,7 @@ def _heap_sort(engine: "RenderEngine", data: list[int]):
                 "algo": "heap_sort",
                 "data": arr[:],
                 "status": "swapping",
-                "message": f"🔄 Heapify: hoán đổi arr[{i}]={arr[i]} và arr[{largest}]={arr[largest]}",
+                "message": f" Heapify: hoán đổi arr[{i}]={arr[i]} và arr[{largest}]={arr[largest]}",
                 "compare_indices": [],
                 "swap_indices": [i, largest],
                 "sorted_indices": [],
@@ -378,7 +378,7 @@ def _heap_sort(engine: "RenderEngine", data: list[int]):
         "algo": "heap_sort",
         "data": arr[:],
         "status": "comparing",
-        "message": "✅ Max-Heap đã xây dựng xong!",
+        "message": " Max-Heap đã xây dựng xong!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": [],
@@ -396,7 +396,7 @@ def _heap_sort(engine: "RenderEngine", data: list[int]):
             "algo": "heap_sort",
             "data": arr[:],
             "status": "swapping",
-            "message": f"🔄 Đưa max={arr[i]} xuống cuối vị trí {i}",
+            "message": f" Đưa max={arr[i]} xuống cuối vị trí {i}",
             "compare_indices": [],
             "swap_indices": [0, i],
             "sorted_indices": list(sorted_set),
@@ -409,7 +409,7 @@ def _heap_sort(engine: "RenderEngine", data: list[int]):
         "algo": "heap_sort",
         "data": arr[:],
         "status": "done",
-        "message": "✅ Heap Sort hoàn tất!",
+        "message": " Heap Sort hoàn tất!",
         "compare_indices": [],
         "swap_indices": [],
         "sorted_indices": list(range(n)),
@@ -430,7 +430,7 @@ def _linear_search(engine: "RenderEngine", data: list[int], target: int):
         "algo": "linear_search",
         "data": arr,
         "status": "comparing",
-        "message": f"🔎 Bắt đầu tìm kiếm {target} trong mảng {arr}",
+        "message": f" Bắt đầu tìm kiếm {target} trong mảng {arr}",
         "compare_indices": [],
         "swap_indices": [],
         "visited_indices": [],
@@ -443,7 +443,7 @@ def _linear_search(engine: "RenderEngine", data: list[int], target: int):
         visited += 1
         is_match = (v == target)
         status = "done" if is_match else "comparing"
-        msg = f"🎯 Tìm thấy {target} tại index {i}!" if is_match else f"🔍 So sánh: arr[{i}]={v} ≠ {target}"
+        msg = f" Tìm thấy {target} tại index {i}!" if is_match else f" So sánh: arr[{i}]={v} ≠ {target}"
         
         engine.emit_frame({
             "algo": "linear_search",
@@ -463,7 +463,7 @@ def _linear_search(engine: "RenderEngine", data: list[int], target: int):
         "algo": "linear_search",
         "data": arr,
         "status": "done",
-        "message": f"❌ Không tìm thấy {target} trong mảng",
+        "message": f" Không tìm thấy {target} trong mảng",
         "compare_indices": [],
         "swap_indices": [],
         "visited_indices": list(range(len(arr))),
@@ -482,7 +482,7 @@ def _binary_search(engine: "RenderEngine", data: list[int], target: int):
         "algo": "binary_search",
         "data": arr,
         "status": "comparing",
-        "message": f"🔎 Bắt đầu Binary Search tìm {target} trong mảng {arr}",
+        "message": f" Bắt đầu Binary Search tìm {target} trong mảng {arr}",
         "compare_indices": [],
         "swap_indices": [],
         "visited_indices": [],
@@ -500,7 +500,7 @@ def _binary_search(engine: "RenderEngine", data: list[int], target: int):
             "algo": "binary_search",
             "data": arr,
             "status": "comparing",
-            "message": f"🔍 Kiểm tra mid={mid} (arr[mid]={arr[mid]}). Vùng tìm kiếm: [{l}:{r}]",
+            "message": f" Kiểm tra mid={mid} (arr[mid]={arr[mid]}). Vùng tìm kiếm: [{l}:{r}]",
             "compare_indices": [mid],
             "swap_indices": list(range(l, r+1)),
             "visited_indices": list(visited_set),
@@ -512,7 +512,7 @@ def _binary_search(engine: "RenderEngine", data: list[int], target: int):
                 "algo": "binary_search",
                 "data": arr,
                 "status": "done",
-                "message": f"🎯 Tìm thấy {target} tại index {mid}!",
+                "message": f" Tìm thấy {target} tại index {mid}!",
                 "compare_indices": [],
                 "swap_indices": [],
                 "sorted_indices": [mid],
@@ -526,7 +526,7 @@ def _binary_search(engine: "RenderEngine", data: list[int], target: int):
                 "algo": "binary_search",
                 "data": arr,
                 "status": "comparing",
-                "message": f"🔍 arr[{mid}]={arr[mid]} < {target} → thu hẹp sang nửa phải [{mid+1}:{r}]",
+                "message": f" arr[{mid}]={arr[mid]} < {target} → thu hẹp sang nửa phải [{mid+1}:{r}]",
                 "compare_indices": [mid],
                 "swap_indices": [],
                 "visited_indices": list(visited_set),
@@ -537,7 +537,7 @@ def _binary_search(engine: "RenderEngine", data: list[int], target: int):
         else:
             engine.emit_frame({"algo":"binary_search","array":arr,"selected":[mid],"line":8,"log":f"arr[{mid}]={arr[mid]} > {target} → tìm nửa trái"})
             r = mid - 1
-    engine.emit_frame({"algo":"binary_search","array":arr,"line":10,"log":f"❌ Không tìm thấy {target}"})
+    engine.emit_frame({"algo":"binary_search","array":arr,"line":10,"log":f" Không tìm thấy {target}"})
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -569,7 +569,7 @@ def _dijkstra(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: in
         "current_node": None,
         "current_distance": 0.0,
         "path_nodes": [],
-        "message": f"🏁 Khởi tạo Dijkstra: Điểm bắt đầu tại ({sr}, {sc}), Điểm đích tại ({er}, {ec})",
+        "message": f" Khởi tạo Dijkstra: Điểm bắt đầu tại ({sr}, {sc}), Điểm đích tại ({er}, {ec})",
         "current_line": 0
     })
     
@@ -591,7 +591,7 @@ def _dijkstra(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: in
             "current_node": (r, c),
             "current_distance": d,
             "path_nodes": [],
-            "message": f"🔍 Duyệt ô ({r}, {c}) có khoảng cách ngắn nhất là {d:.0f}",
+            "message": f" Duyệt ô ({r}, {c}) có khoảng cách ngắn nhất là {d:.0f}",
             "current_line": 3
         })
         
@@ -620,7 +620,7 @@ def _dijkstra(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: in
                     "current_node": (r, c),
                     "current_distance": d,
                     "path_nodes": [],
-                    "message": f"🗺️ Cập nhật ô lân cận ({nr}, {nc}) với khoảng cách = {nd}",
+                    "message": f" Cập nhật ô lân cận ({nr}, {nc}) với khoảng cách = {nd}",
                     "current_line": 10
                 })
                 
@@ -644,7 +644,7 @@ def _dijkstra(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: in
                 "current_node": path[i-1],
                 "current_distance": dist[er][ec],
                 "path_nodes": path[:i],
-                "message": f"📈 Hoạt ảnh đường đi ngắn nhất: Bước {i}/{len(path)}",
+                "message": f" Hoạt ảnh đường đi ngắn nhất: Bước {i}/{len(path)}",
                 "current_line": 7
             })
     else:
@@ -657,7 +657,7 @@ def _dijkstra(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: in
             "current_node": None,
             "current_distance": INF,
             "path_nodes": [],
-            "message": "❌ Kết thúc: Không tìm thấy đường đi!",
+            "message": " Kết thúc: Không tìm thấy đường đi!",
             "current_line": 11
         })
 
@@ -684,7 +684,7 @@ def _bfs(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: int):
         "frontier_nodes": list(frontier_nodes),
         "current_node": None,
         "path_nodes": [],
-        "message": f"🏁 Khởi tạo BFS: Điểm bắt đầu tại ({sr}, {sc}), Điểm đích tại ({er}, {ec})",
+        "message": f" Khởi tạo BFS: Điểm bắt đầu tại ({sr}, {sc}), Điểm đích tại ({er}, {ec})",
         "current_line": 0
     })
     
@@ -703,7 +703,7 @@ def _bfs(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: int):
             "frontier_nodes": list(frontier_nodes),
             "current_node": (r, c),
             "path_nodes": [],
-            "message": f"🔍 Duyệt ô ({r}, {c}) từ Queue và xét các ô lân cận",
+            "message": f" Duyệt ô ({r}, {c}) từ Queue và xét các ô lân cận",
             "current_line": 3
         })
         
@@ -728,7 +728,7 @@ def _bfs(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: int):
                         "frontier_nodes": list(frontier_nodes),
                         "current_node": (r, c),
                         "path_nodes": [],
-                        "message": f"🗺️ Thêm ô lân cận ({nr}, {nc}) vào Queue",
+                        "message": f" Thêm ô lân cận ({nr}, {nc}) vào Queue",
                         "current_line": 10
                     })
                     
@@ -751,7 +751,7 @@ def _bfs(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: int):
                 "frontier_nodes": list(frontier_nodes),
                 "current_node": path[i-1],
                 "path_nodes": path[:i],
-                "message": f"📈 Hoạt ảnh đường đi: Bước {i}/{len(path)}",
+                "message": f" Hoạt ảnh đường đi: Bước {i}/{len(path)}",
                 "current_line": 5
             })
     else:
@@ -763,7 +763,7 @@ def _bfs(engine: "RenderEngine", grid: list[list[str]], rows: int, cols: int):
             "frontier_nodes": [],
             "current_node": None,
             "path_nodes": [],
-            "message": "❌ Kết thúc: Không tìm thấy đường đi!",
+            "message": " Kết thúc: Không tìm thấy đường đi!",
             "current_line": 11
         })
 
@@ -835,18 +835,18 @@ def _ll_insert_head(engine, data: list[int], target: int, node_ids: list[str] | 
 
     new_nd = _LLNode(target)
     _ll_emit(engine, head, new_node=new_nd.id, new_node_val=target,
-             message=f"✨ Tạo node mới [{target}] — chưa nối vào list", operation="insert_head", insert_index=0)
+             message=f" Tạo node mới [{target}] — chưa nối vào list", operation="insert_head", insert_index=0)
     if engine.should_stop(): return
 
     new_nd.nxt = head
     head = new_nd
     size += 1
     _ll_emit(engine, head, active=new_nd.id, broken_at=new_nd.id,
-             message=f"✂️ Nối node mới → node cũ (old HEAD)...", operation="insert_head", insert_index=0)
+             message=f" Nối node mới → node cũ (old HEAD)...", operation="insert_head", insert_index=0)
     if engine.should_stop(): return
 
     _ll_emit(engine, head, active=new_nd.id,
-             message=f"✅ Đã chèn [{target}] vào đầu danh sách! Size = {size}", operation="insert_head", insert_index=0)
+             message=f" Đã chèn [{target}] vào đầu danh sách! Size = {size}", operation="insert_head", insert_index=0)
 
 
 def _ll_insert_tail(engine, data: list[int], target: int, node_ids: list[str] | None = None):
@@ -857,14 +857,14 @@ def _ll_insert_tail(engine, data: list[int], target: int, node_ids: list[str] | 
 
     new_nd = _LLNode(target)
     _ll_emit(engine, head, new_node=new_nd.id, new_node_val=target,
-             message=f"✨ Tạo node mới [{target}]", operation="insert_tail", insert_index=size)
+             message=f" Tạo node mới [{target}]", operation="insert_tail", insert_index=size)
     if engine.should_stop(): return
 
     if head is None:
         head = new_nd
         size += 1
         _ll_emit(engine, head, active=new_nd.id,
-                 message=f"✅ List rỗng → [{target}] là HEAD. Insert hoàn tất!", operation="insert_tail", insert_index=size)
+                 message=f" List rỗng → [{target}] là HEAD. Insert hoàn tất!", operation="insert_tail", insert_index=size)
         return
 
     cur = head
@@ -873,17 +873,17 @@ def _ll_insert_tail(engine, data: list[int], target: int, node_ids: list[str] | 
         if engine.should_stop(): return
         visited.add(cur.id)
         _ll_emit(engine, head, highlight=set(visited), active=cur.id,
-                 message=f"🔍 Duyệt node [{cur.val}] — tìm cuối list...", operation="insert_tail", insert_index=size)
+                 message=f" Duyệt node [{cur.val}] — tìm cuối list...", operation="insert_tail", insert_index=size)
         cur = cur.nxt
 
     _ll_emit(engine, head, highlight=set(visited), active=cur.id, broken_at=cur.id,
-             message=f"✂️ Tìm thấy cuối [{cur.val}] — cắt liên kết NULL...", operation="insert_tail", insert_index=size)
+             message=f" Tìm thấy cuối [{cur.val}] — cắt liên kết NULL...", operation="insert_tail", insert_index=size)
     if engine.should_stop(): return
 
     cur.nxt = new_nd
     size += 1
     _ll_emit(engine, head, active=new_nd.id,
-             message=f"✅ Nối [{cur.val}] → [{target}]. Insert hoàn tất! Size = {size}", operation="insert_tail", insert_index=size)
+             message=f" Nối [{cur.val}] → [{target}]. Insert hoàn tất! Size = {size}", operation="insert_tail", insert_index=size)
 
 
 def _ll_insert_idx(engine, data: list[int], index: int, value: int, node_ids: list[str] | None = None):
@@ -903,7 +903,7 @@ def _ll_insert_idx(engine, data: list[int], index: int, value: int, node_ids: li
 
     new_nd = _LLNode(value)
     _ll_emit(engine, head, new_node=new_nd.id, new_node_val=value,
-             message=f"✨ Tạo node mới [{value}]", operation="insert_idx", insert_index=index)
+             message=f" Tạo node mới [{value}]", operation="insert_idx", insert_index=index)
     if engine.should_stop(): return
 
     cur = head
@@ -912,19 +912,19 @@ def _ll_insert_idx(engine, data: list[int], index: int, value: int, node_ids: li
         if engine.should_stop(): return
         visited.add(cur.id)
         _ll_emit(engine, head, highlight=set(visited), active=cur.id,
-                 message=f"🔍 Duyệt node [{cur.val}] (vị trí {i})...", operation="insert_idx", insert_index=index)
+                 message=f" Duyệt node [{cur.val}] (vị trí {i})...", operation="insert_idx", insert_index=index)
         cur = cur.nxt
 
     old_next = cur.nxt
     _ll_emit(engine, head, highlight=set(visited), active=cur.id, broken_at=cur.id,
-             message=f"✂️ Cắt liên kết [{cur.val}] → [{old_next.val if old_next else 'None'}]", operation="insert_idx", insert_index=index)
+             message=f" Cắt liên kết [{cur.val}] → [{old_next.val if old_next else 'None'}]", operation="insert_idx", insert_index=index)
     if engine.should_stop(): return
 
     new_nd.nxt = old_next
     cur.nxt = new_nd
     size += 1
     _ll_emit(engine, head, active=new_nd.id,
-             message=f"✅ Chèn [{value}] tại vị trí {index} — hoàn tất! Size = {size}", operation="insert_idx", insert_index=index)
+             message=f" Chèn [{value}] tại vị trí {index} — hoàn tất! Size = {size}", operation="insert_idx", insert_index=index)
 
 
 def _ll_delete(engine, data: list[int], target: int, node_ids: list[str] | None = None):
@@ -934,17 +934,17 @@ def _ll_delete(engine, data: list[int], target: int, node_ids: list[str] | None 
     if engine.should_stop(): return
 
     if head is None:
-        _ll_emit(engine, head, message="❌ Danh sách rỗng!", operation="delete")
+        _ll_emit(engine, head, message=" Danh sách rỗng!", operation="delete")
         return
 
     if head.val == target:
         old_id = head.id
         _ll_emit(engine, head, active=old_id,
-                 message=f"🎯 Tìm thấy [{target}] tại HEAD — đang xóa...", operation="delete")
+                 message=f" Tìm thấy [{target}] tại HEAD — đang xóa...", operation="delete")
         if engine.should_stop(): return
         head = head.nxt
         size -= 1
-        _ll_emit(engine, head, message=f"✅ Đã xóa [{target}] khỏi HEAD! Size = {size}", operation="delete")
+        _ll_emit(engine, head, message=f" Đã xóa [{target}] khỏi HEAD! Size = {size}", operation="delete")
         return
 
     cur = head
@@ -956,12 +956,12 @@ def _ll_delete(engine, data: list[int], target: int, node_ids: list[str] | None 
         if cur.nxt.val == target:
             target_nd = cur.nxt
             _ll_emit(engine, head, highlight=set(visited), active=target_nd.id,
-                     message=f"🎯 Tìm thấy [{target}] — chuẩn bị cắt liên kết...", operation="delete")
+                     message=f" Tìm thấy [{target}] — chuẩn bị cắt liên kết...", operation="delete")
             if engine.should_stop(): return
 
             _ll_emit(engine, head, highlight=set(visited), active=target_nd.id,
                      broken_at=cur.id,
-                     message=f"✂️ Cắt [{cur.val}] → [{target}]...", operation="delete")
+                     message=f" Cắt [{cur.val}] → [{target}]...", operation="delete")
             if engine.should_stop(): return
 
             cur.nxt = target_nd.nxt
@@ -969,22 +969,22 @@ def _ll_delete(engine, data: list[int], target: int, node_ids: list[str] | None 
             size -= 1
             found = True
             _ll_emit(engine, head, active=cur.id,
-                     message=f"✅ Đã xóa [{target}]. Nối lại [{cur.val}] → "
+                     message=f" Đã xóa [{target}]. Nối lại [{cur.val}] → "
                              f"[{cur.nxt.val if cur.nxt else 'None'}]. Size = {size}", operation="delete")
             break
 
         _ll_emit(engine, head, highlight=set(visited), active=cur.id,
-                 message=f"🔍 [{cur.val}] ≠ {target}, tiếp tục duyệt...", operation="delete")
+                 message=f" [{cur.val}] ≠ {target}, tiếp tục duyệt...", operation="delete")
         cur = cur.nxt
 
     if not found:
-        _ll_emit(engine, head, message=f"❌ Không tìm thấy [{target}] để xóa!", operation="delete")
+        _ll_emit(engine, head, message=f" Không tìm thấy [{target}] để xóa!", operation="delete")
 
 
 def _ll_search(engine, data: list[int], target: int, node_ids: list[str] | None = None):
     """Tìm kiếm tuần tự với hoạt ảnh."""
     head, _ = _ll_build_from(data, node_ids)
-    _ll_emit(engine, head, message=f"🔍 Bắt đầu tìm kiếm [{target}]...", operation="search")
+    _ll_emit(engine, head, message=f" Bắt đầu tìm kiếm [{target}]...", operation="search")
     if engine.should_stop(): return
 
     cur = head
@@ -993,16 +993,16 @@ def _ll_search(engine, data: list[int], target: int, node_ids: list[str] | None 
     while cur:
         if engine.should_stop(): return
         _ll_emit(engine, head, highlight=set(visited), active=cur.id,
-                 message=f"🔍 Kiểm tra node [{cur.val}] tại vị trí {idx}...", operation="search")
+                 message=f" Kiểm tra node [{cur.val}] tại vị trí {idx}...", operation="search")
         if cur.val == target:
             _ll_emit(engine, head, found=cur.id,
-                     message=f"✅ Tìm thấy [{target}] tại vị trí {idx}!", operation="search")
+                     message=f" Tìm thấy [{target}] tại vị trí {idx}!", operation="search")
             return
         visited.add(cur.id)
         cur = cur.nxt
         idx += 1
 
-    _ll_emit(engine, head, message=f"❌ Không tìm thấy [{target}] trong danh sách!", operation="search")
+    _ll_emit(engine, head, message=f" Không tìm thấy [{target}] trong danh sách!", operation="search")
 
 
 # Pseudocode strings
@@ -1180,7 +1180,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     # ── Sorting ──────────────────────────────────────────────────────────────
     "bubble_sort": {
         "name": "Bubble Sort",
-        "category": "🔃 Sorting",
+        "category": "Sorting",
         "tracers": ["chart", "log", "code"],
         "code": _BUBBLE_CODE,
         "input_type": "array",
@@ -1197,7 +1197,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "selection_sort": {
         "name": "Selection Sort",
-        "category": "🔃 Sorting",
+        "category": "Sorting",
         "tracers": ["chart", "log", "code"],
         "code": _SELECTION_CODE,
         "input_type": "array",
@@ -1214,7 +1214,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "insertion_sort": {
         "name": "Insertion Sort",
-        "category": "🔃 Sorting",
+        "category": "Sorting",
         "tracers": ["chart", "log", "code"],
         "code": _INSERTION_CODE,
         "input_type": "array",
@@ -1231,7 +1231,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "merge_sort": {
         "name": "Merge Sort",
-        "category": "🔃 Sorting",
+        "category": "Sorting",
         "tracers": ["chart", "log", "code"],
         "code": _MERGE_CODE,
         "input_type": "array",
@@ -1248,7 +1248,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "quick_sort": {
         "name": "Quick Sort",
-        "category": "🔃 Sorting",
+        "category": "Sorting",
         "tracers": ["chart", "log", "code"],
         "code": _QUICK_CODE,
         "input_type": "array",
@@ -1265,7 +1265,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "heap_sort": {
         "name": "Heap Sort",
-        "category": "🔃 Sorting",
+        "category": "Sorting",
         "tracers": ["chart", "log", "code"],
         "code": _HEAP_CODE,
         "input_type": "array",
@@ -1283,7 +1283,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     # ── Search ───────────────────────────────────────────────────────────────
     "linear_search": {
         "name": "Linear Search",
-        "category": "🔍 Searching",
+        "category": "Searching",
         "tracers": ["array1d", "log", "code"],
         "code": _LINEAR_SEARCH_CODE,
         "input_type": "array_target",
@@ -1300,7 +1300,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "binary_search": {
         "name": "Binary Search",
-        "category": "🔍 Searching",
+        "category": "Searching",
         "tracers": ["array1d", "log", "code"],
         "code": _BINARY_SEARCH_CODE,
         "input_type": "array_target",
@@ -1318,7 +1318,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     # ── Pathfinding ───────────────────────────────────────────────────────────
     "dijkstra": {
         "name": "Dijkstra",
-        "category": "🗺️ Pathfinding",
+        "category": "Pathfinding",
         "tracers": ["grid", "log", "code"],
         "code": _DIJKSTRA_CODE,
         "input_type": "grid",
@@ -1335,7 +1335,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "bfs": {
         "name": "BFS Pathfinding",
-        "category": "🗺️ Pathfinding",
+        "category": "Pathfinding",
         "tracers": ["grid", "log", "code"],
         "code": _BFS_CODE,
         "input_type": "grid",
@@ -1353,7 +1353,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     # ── Linked List ───────────────────────────────────────────────────────────
     "ll_insert_head": {
         "name": "Insert at Head",
-        "category": "🔗 Linked List",
+        "category": "Linked List",
         "tracers": ["linked_list", "log", "code"],
         "code": _LL_INSERT_HEAD_CODE,
         "input_type": "array_target",
@@ -1370,7 +1370,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "ll_insert_tail": {
         "name": "Insert at Tail",
-        "category": "🔗 Linked List",
+        "category": "Linked List",
         "tracers": ["linked_list", "log", "code"],
         "code": _LL_INSERT_TAIL_CODE,
         "input_type": "array_target",
@@ -1387,7 +1387,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "ll_insert_idx": {
         "name": "Insert at Index",
-        "category": "🔗 Linked List",
+        "category": "Linked List",
         "tracers": ["linked_list", "log", "code"],
         "code": _LL_INSERT_IDX_CODE,
         "input_type": "ll_insert_idx",
@@ -1404,7 +1404,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "ll_delete": {
         "name": "Delete by Value",
-        "category": "🔗 Linked List",
+        "category": "Linked List",
         "tracers": ["linked_list", "log", "code"],
         "code": _LL_DELETE_CODE,
         "input_type": "array_target",
@@ -1421,7 +1421,7 @@ ALGO_LIBRARY: dict[str, dict] = {
     },
     "ll_search": {
         "name": "Search",
-        "category": "🔗 Linked List",
+        "category": "Linked List",
         "tracers": ["linked_list", "log", "code"],
         "code": _LL_SEARCH_CODE,
         "input_type": "array_target",
@@ -1440,10 +1440,15 @@ ALGO_LIBRARY: dict[str, dict] = {
 
 
 
-def get_categories() -> dict[str, list[tuple[str,str]]]:
+_HIDDEN_CATEGORIES = {"Linked List"}
+
+
+def get_categories() -> dict[str, list[tuple[str, str]]]:
     """Trả về {category: [(algo_id, algo_name), ...]}"""
     cats: dict[str, list] = {}
     for aid, info in ALGO_LIBRARY.items():
         cat = info["category"]
+        if cat in _HIDDEN_CATEGORIES:
+            continue
         cats.setdefault(cat, []).append((aid, info["name"]))
     return cats

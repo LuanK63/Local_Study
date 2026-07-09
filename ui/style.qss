@@ -92,17 +92,17 @@ QPushButton:disabled {
 }
 
 /* Action buttons (non-nav) — keep center alignment */
-QPushButton[text="🔍 Hỏi"],
-QPushButton[text="✨ Tạo code"],
-QPushButton[text="🔍 Giải thích"],
-QPushButton[text="⏱ Phân tích Complexity"],
-QPushButton[text="▶ Tạo Simulation"],
-QPushButton[text="📝 Ra đề"],
-QPushButton[text="✅ Nộp bài"],
-QPushButton[text="✨ Tạo Flashcard"],
-QPushButton[text="🎲 Tạo Quiz"],
-QPushButton[text="✨ Tạo Lộ Trình Học Tập"],
-QPushButton[text="🔍 Quét Lịch Sử Học Tập"] {
+QPushButton[text="Hỏi"],
+QPushButton[text="Tạo code"],
+QPushButton[text="Giải thích"],
+QPushButton[text="Phân tích Complexity"],
+QPushButton[text="Tạo Simulation"],
+QPushButton[text="Ra đề"],
+QPushButton[text="Nộp bài"],
+QPushButton[text="Tạo Flashcard"],
+QPushButton[text="Tạo Quiz"],
+QPushButton[text="Tạo Lộ Trình Học Tập"],
+QPushButton[text="Quét Lịch Sử Học Tập"] {
     text-align: center;
     border-left: none;
     border-radius: 8px;

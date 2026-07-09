@@ -9,7 +9,7 @@ ensuring isolation between research and production code.
 import time
 from typing import Dict, Any, List
 from core.retrieval.hybrid_retriever import search as retrieval_search
-from core.pipeline.agentic_rag import evaluate_chunks
+from core.pipeline.advanced_rag import evaluate_chunks
 from utils.config import get_config
 
 class RetrievalPipeline:

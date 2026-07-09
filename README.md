@@ -1,6 +1,6 @@
 # Local Study RAG Agent
 
-Hệ thống Trợ lý Học tập Cục bộ áp dụng mô hình **Agentic RAG (Retrieval-Augmented Generation)** và **Hybrid Search**, được thiết kế đặc biệt để hỗ trợ tra cứu, học tập và tổng hợp kiến thức từ các tài liệu học thuật chuyên sâu một cách hoàn toàn offline (Local-first).
+Hệ thống Trợ lý Học tập Cục bộ áp dụng mô hình **Advanced RAG (Retrieval-Augmented Generation)** và **Hybrid Search**, được thiết kế đặc biệt để hỗ trợ tra cứu, học tập và tổng hợp kiến thức từ các tài liệu học thuật chuyên sâu một cách hoàn toàn offline (Local-first).
 
 ---
 
@@ -93,7 +93,7 @@ Local_Study_RAG_Agent/
 │   ├── document_processor/  # Xử lý PDF và Text Extraction
 │   │   └── chunking/        # Các chiến lược cắt văn bản (Heuristic, Recursive, Fixed)
 │   ├── evaluation/          # Đánh giá chất lượng RAG bằng RAGAS
-│   ├── pipeline/            # Luồng Agentic RAG, Answer Generator, Grader
+│   ├── pipeline/            # Luồng Advanced RAG, Answer Generator, Grader
 │   └── retrieval/           # Hybrid Search (BM25, Vector Search)
 ├── data/              # Nơi lưu trữ CSDL và Benchmarks (Git Ignored)
 │   ├── chromadb/            # Dữ liệu vector
@@ -124,7 +124,7 @@ Local_Study_RAG_Agent/
 * **Mục đích:** Tìm kiếm chính xác các phân đoạn tài liệu phù hợp với câu hỏi của người dùng.
 * **Luồng xử lý:** Câu hỏi được đưa qua hai kênh song song. Kênh 1 (`vector_search.py`) dùng `nomic-embed-text` để so khớp ngữ nghĩa. Kênh 2 (`bm25_search.py`) tính toán tần suất xuất hiện từ khóa. Cuối cùng, thuật toán **Reciprocal Rank Fusion (RRF)** gộp và tính điểm lại (re-ranking) để đưa ra Top K chunks tốt nhất.
 
-### 5.3. Pipeline Agentic RAG & CRAG
+### 5.3. Pipeline Advanced RAG & CRAG
 * **Mục đích:** Não bộ của hệ thống.
 * **Luồng xử lý:** 
   1. `route_query` phân loại ý định người dùng (Hỏi bài, Nhờ viết code, hay Trò chuyện).
